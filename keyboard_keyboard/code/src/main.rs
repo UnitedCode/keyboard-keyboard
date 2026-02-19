@@ -1,5 +1,5 @@
 //! hall_effect_keyboard — Daisy Seed + CD74HC4051 + A1302
-//! Relative-threshold scanning with per-channel baseline calibration
+//! Adaptive baseline + relative-threshold scanning
 //! MIDI output over USART1 at 31250 baud
 #![no_main]
 #![no_std]
@@ -18,7 +18,7 @@ mod app {
     const NUM_KEYS: usize = 8;
     const NUM_ACTIVE_KEYS: usize = 6;
 
-    // Map each mux channel to a MIDI note number.
+    // C major pentatonic starting at C3
     const KEY_TO_NOTE: [u8; NUM_KEYS] = [48, 50, 52, 55, 57, 60, 62, 64];
 
     use crate::midi_sender::MidiSender;
@@ -45,29 +45,34 @@ mod app {
     // ── Calibration ────────────────────────────────────────────────────────────
     const CALIBRATION_SAMPLES: usize = 64;
 
-    // ── Key thresholds (relative to per-channel baseline) ─────────────────────
-    const FIRST_DELTA: u16 = 200;
-    const SECOND_DELTA: u16 = 400;
-    const RELEASE_DELTA: u16 = 150;
+    // ── Key thresholds (relative to adaptive baseline) ────────────────────────
+    // With an actual press-vs-rest range of ~200–500 counts, we use tight
+    // thresholds. The adaptive baseline tracks drift so these stay meaningful.
+    const FIRST_DELTA: u16 = 80; // start tracking — must be above noise floor
+    const SECOND_DELTA: u16 = 160; // trigger Note On — ~halfway into a real press
+    const RELEASE_DELTA: u16 = 50; // release Note Off — key nearly back to rest
 
     // ── Debounce ───────────────────────────────────────────────────────────────
-    // How many consecutive ticks a threshold must be exceeded before we act.
-    // At 1kHz scan rate, 3 ticks = 3ms — filters out single-sample noise
-    // spikes while adding negligible latency.
     const DEBOUNCE_TICKS: u8 = 3;
 
     // ── Moving average filter ──────────────────────────────────────────────────
-    // Number of samples to average per channel. Must be a power of 2 for
-    // efficient division. 4 samples = 4ms of smoothing at 1kHz.
     const FILTER_SIZE: usize = 4;
     const FILTER_SHIFT: u32 = 2; // log2(FILTER_SIZE)
 
+    // ── Adaptive baseline ──────────────────────────────────────────────────────
+    // When a key is idle, the baseline slowly tracks the current reading using
+    // an exponential moving average:  baseline += (reading - baseline) / ALPHA
+    // Higher ALPHA = slower adaptation = more stable but slower to track drift.
+    // At 1kHz scan rate, ALPHA=256 gives a ~256ms time constant.
+    const BASELINE_ALPHA: u32 = 256;
+    // Only adapt when the delta is below this guard — prevents a held key
+    // from dragging the baseline up.
+    const BASELINE_GUARD: u16 = 40;
+
     // ── Velocity ───────────────────────────────────────────────────────────────
-    const VELOCITY_WINDOW_MS: u32 = 80;
+    const VELOCITY_WINDOW_MS: u32 = 30;
 
     // ── Diagnostic logging ─────────────────────────────────────────────────────
-    // Set to true to log raw ADC values every LOG_INTERVAL_MS.
-    // Use this to see what your channels are doing at rest and find noise.
     const DIAG_LOGGING: bool = true;
     const LOG_INTERVAL_MS: u32 = 500;
 
@@ -88,9 +93,7 @@ mod app {
             }
         }
 
-        /// Feed a new raw sample, return the filtered (averaged) value.
         fn feed(&mut self, raw: u16) -> u16 {
-            // Subtract the oldest sample, add the new one
             self.sum -= self.ring[self.index] as u32;
             self.sum += raw as u32;
             self.ring[self.index] = raw;
@@ -98,7 +101,6 @@ mod app {
             (self.sum >> FILTER_SHIFT) as u16
         }
 
-        /// Prime all slots with the same value (used after calibration).
         fn prime(&mut self, value: u16) {
             for slot in self.ring.iter_mut() {
                 *slot = value;
@@ -120,7 +122,6 @@ mod app {
     pub struct KeyState {
         phase: KeyPhase,
         pub last_adc: u16,
-        /// Counts consecutive ticks above/below a threshold for debouncing.
         debounce_count: u8,
     }
 
@@ -176,8 +177,9 @@ mod app {
                             } else if elapsed >= VELOCITY_WINDOW_MS {
                                 1u8
                             } else {
-                                let v = 127u32.saturating_sub((elapsed * 126) / VELOCITY_WINDOW_MS);
-                                (v + 1).min(127) as u8
+                                let t = (elapsed * 127) / VELOCITY_WINDOW_MS;
+                                let v = 127u32.saturating_sub((t * t) / 127);
+                                v.max(1).min(127) as u8
                             };
 
                             self.phase = KeyPhase::FullyActuated { velocity };
@@ -194,7 +196,6 @@ mod app {
                         }
                         None
                     } else {
-                        // In between thresholds — reset debounce
                         self.debounce_count = 0;
                         None
                     }
@@ -216,6 +217,11 @@ mod app {
                     }
                 }
             }
+        }
+
+        /// Returns true if the key is in Idle phase (safe to adapt baseline).
+        fn is_idle(&self) -> bool {
+            matches!(self.phase, KeyPhase::Idle)
         }
     }
 
@@ -270,7 +276,6 @@ mod app {
         adc.set_resolution(ADC_RESOLUTION);
         adc.set_sample_time(ADC_SAMPLE_TIME);
 
-        // Wait for power supply and sensors to fully stabilize
         cortex_m::asm::delay(480 * 50_000); // 50ms startup delay
 
         // ── Baseline calibration ─────────────────────────────────────
@@ -279,7 +284,7 @@ mod app {
 
         for ch in 0..NUM_ACTIVE_KEYS {
             set_mux_channel(ch, &mut s0, &mut s1, &mut s2);
-            cortex_m::asm::delay(480 * 200); // 200µs — longer settle for calibration
+            cortex_m::asm::delay(480 * 200); // 200µs settle
 
             let mut accumulator: u32 = 0;
             let mut sample_count = 0u32;
@@ -300,9 +305,6 @@ mod app {
                 0
             };
             baselines[ch] = avg as u16;
-
-            // Prime the moving average filter with the baseline value
-            // so it doesn't ramp up from zero on first scan.
             filters[ch].prime(avg as u16);
 
             info!(
@@ -353,10 +355,7 @@ mod app {
 
         set_mux_channel(0, &mut s0, &mut s1, &mut s2);
 
-        info!(
-            "Hall effect keyboard startup done! (DIAG_LOGGING={})",
-            DIAG_LOGGING
-        );
+        info!("Hall effect keyboard startup done! (adaptive baseline enabled)");
 
         (
             Shared {
@@ -411,24 +410,49 @@ mod app {
         });
 
         let mut pending: heapless::Vec<(usize, KeyEvent), 8> = heapless::Vec::new();
-        let baselines = ctx.shared.baselines.lock(|b| *b);
+
+        // Take a mutable copy of baselines so we can adapt them.
+        let mut baselines = ctx.shared.baselines.lock(|b| *b);
 
         for ch in 0..NUM_ACTIVE_KEYS {
             set_mux_channel(ch, ctx.local.s0, ctx.local.s1, ctx.local.s2);
-            // Increased settle time: 10µs instead of 2µs.
-            // This gives the mux output + ADC input capacitance time to
-            // settle to the new channel's voltage, preventing crosstalk
-            // from the previous channel bleeding into this reading.
-            cortex_m::asm::delay(480 * 10);
+            cortex_m::asm::delay(480 * 10); // 10µs settle
 
             let result: Result<u32, _> = ctx.local.adc.read(ctx.local.adc_pin);
             if let Ok(raw) = result {
                 ctx.local.adc_buffer[ch] = raw;
-
-                // Feed through the moving average filter before threshold comparison.
                 let filtered = ctx.local.filters[ch].feed(raw as u16);
 
                 ctx.shared.key_states.lock(|states| {
+                    // ── Adaptive baseline ────────────────────────────
+                    // Only adapt when the key is idle AND the current
+                    // reading is close to the baseline (within guard).
+                    // This prevents a pressed key from pulling the
+                    // baseline up, but lets it track thermal drift,
+                    // sensor settling, and magnetic interference.
+                    if states[ch].is_idle() {
+                        let delta = filtered.saturating_sub(baselines[ch]);
+                        let neg_delta = baselines[ch].saturating_sub(filtered);
+
+                        if delta < BASELINE_GUARD || neg_delta > 0 {
+                            // Exponential moving average:
+                            //   baseline += (filtered - baseline) / ALPHA
+                            // Using i32 to handle both directions.
+                            let diff = filtered as i32 - baselines[ch] as i32;
+                            let adjustment = diff / BASELINE_ALPHA as i32;
+                            // Nudge by at least ±1 if there's any difference,
+                            // so the baseline doesn't get stuck.
+                            let nudge = if diff > 0 {
+                                adjustment.max(1)
+                            } else if diff < 0 {
+                                adjustment.min(-1)
+                            } else {
+                                0
+                            };
+                            baselines[ch] = (baselines[ch] as i32 + nudge).max(0).min(4095) as u16;
+                        }
+                    }
+
                     if let Some(event) = states[ch].update(filtered, baselines[ch], now, ch) {
                         pending.push((ch, event)).ok();
                     }
@@ -436,9 +460,10 @@ mod app {
             }
         }
 
+        // Write adapted baselines back.
+        ctx.shared.baselines.lock(|b| *b = baselines);
+
         // ── Diagnostic logging ───────────────────────────────────────
-        // Every LOG_INTERVAL_MS, dump the filtered delta for every active
-        // channel so you can see what's happening at rest.
         if DIAG_LOGGING && now % LOG_INTERVAL_MS == 0 {
             for ch in 0..NUM_ACTIVE_KEYS {
                 let filtered = (ctx.local.filters[ch].sum >> FILTER_SHIFT) as u16;
