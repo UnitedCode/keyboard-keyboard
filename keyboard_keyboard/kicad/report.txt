@@ -1,0 +1,1 @@
+Info: Updated footprint SW5 (Rotary_Encoder:RotaryEncoder_Alps_EC11E-Switch_Vertical_H20mm_CircularMountingHoles): : (no changes)
