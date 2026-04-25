@@ -1,6 +1,38 @@
-//! hall_effect_keyboard — Daisy Seed + CD74HC4051 + A1302
+//! hall_effect_keyboard — Daisy Seed + SN74LV4051A × 5 + MT9102ET × 40
 //! Adaptive baseline + relative-threshold scanning
 //! MIDI output over USART1 at 31250 baud
+//!
+//! ## Readable keys: 40 of 100
+//!
+//! The schematic routes mux Z-outputs to Daisy pins that are either
+//! not wired to any ADC on the STM32H750, or claimed by libdaisy internals:
+//!
+//!   AM5  → Daisy26 (PD11)  — not an ADC pin
+//!   AM6  → Daisy27 (PG9)   — not an ADC pin
+//!   AM8  → Daisy29 (PB14)  — not an ADC pin
+//!   AM9  → Daisy30 (PB15)  — not an ADC pin
+//!   AM10 → Daisy31 (SAI2_MCLK) — claimed by audio subsystem
+//!   AM11 → Daisy31 (SAI2_MCLK) — same
+//!   AM12 → Daisy32 (SAI2_SD_B) — claimed by audio subsystem
+//!   AM13 → Daisy32 (SAI2_SD_B) — same
+//!
+//! Working muxes: AM1–AM4 (Daisy22–25) and AM7 (Daisy28) → 40 keys.
+//! A PCB respin routing the dead outputs to free ADC pins will restore them.
+//!
+//! ## Wiring
+//!
+//! Select lines (all muxes share these):
+//!   Daisy8  → MUX_SELECT_0  (A / bit 0)
+//!   Daisy9  → MUX_SELECT_1  (B / bit 1)
+//!   Daisy10 → MUX_SELECT_2  (C / bit 2)
+//!
+//! Mux Z-outputs:
+//!   Daisy22 (PA2)  → AM1   (ADC1 IN14)
+//!   Daisy23 (PA1)  → AM2   (ADC1 IN17)
+//!   Daisy24 (PA0)  → AM3   (ADC1 IN16)
+//!   Daisy25 (PF11) → AM4   (ADC1 IN2)
+//!   Daisy28        → AM7   (ADC1)
+
 #![no_main]
 #![no_std]
 
@@ -15,11 +47,90 @@ mod midi_sender;
 )]
 mod app {
     const BLOCK_SIZE: usize = 128;
-    const NUM_KEYS: usize = 8;
-    const NUM_ACTIVE_KEYS: usize = 6;
 
-    // C major pentatonic starting at C3
-    const KEY_TO_NOTE: [u8; NUM_KEYS] = [48, 50, 52, 55, 57, 60, 62, 64];
+    const NUM_KEYS: usize = 40;
+    const NUM_MUXES: usize = 5; // AM1, AM2, AM3, AM4, AM7
+    const NUM_ADC_PINS: usize = 5; // one per mux, no shared wires
+    const MUX_CHANNELS: usize = 8;
+
+    // ── Key map ──────────────────────────────────────────────────────────────
+    //
+    // Generated from keyboard_keyboard.net — dead muxes removed.
+    //
+    // Compact mux index:
+    //   0 = AM1  (Daisy22)
+    //   1 = AM2  (Daisy23)
+    //   2 = AM3  (Daisy24)
+    //   3 = AM4  (Daisy25)
+    //   4 = AM7  (Daisy28)
+    #[rustfmt::skip]
+    const KEY_MAP: [(u8, u8); NUM_KEYS] = [
+        (0, 4),  // HE1  → AM1 X4
+        (0, 6),  // HE2  → AM1 X6
+        (0, 7),  // HE3  → AM1 X7
+        (0, 5),  // HE4  → AM1 X5
+        (0, 2),  // HE5  → AM1 X2
+        (0, 1),  // HE6  → AM1 X1
+        (0, 0),  // HE7  → AM1 X0
+        (0, 3),  // HE8  → AM1 X3
+        (1, 4),  // HE9  → AM2 X4
+        (1, 6),  // HE10 → AM2 X6
+        (1, 7),  // HE11 → AM2 X7
+        (1, 5),  // HE12 → AM2 X5
+        (1, 2),  // HE13 → AM2 X2
+        (1, 1),  // HE14 → AM2 X1
+        (2, 4),  // HE15 → AM3 X4
+        (2, 6),  // HE16 → AM3 X6
+        (2, 7),  // HE17 → AM3 X7
+        (2, 5),  // HE18 → AM3 X5
+        (2, 2),  // HE19 → AM3 X2
+        (2, 1),  // HE20 → AM3 X1
+        (2, 0),  // HE21 → AM3 X0
+        (2, 3),  // HE22 → AM3 X3
+        (3, 4),  // HE23 → AM4 X4
+        (3, 6),  // HE24 → AM4 X6
+        (3, 7),  // HE25 → AM4 X7
+        (3, 5),  // HE26 → AM4 X5
+        (3, 2),  // HE27 → AM4 X2
+        (1, 3),  // HE28 → AM2 X3
+        (1, 0),  // HE29 → AM2 X0
+        // HE30–43: AM5/AM6 (Daisy26/27 not ADC-capable) — omitted
+        (3, 1),  // HE41 → AM4 X1
+        (3, 0),  // HE42 → AM4 X0
+        (3, 3),  // HE43 → AM4 X3
+        (4, 4),  // HE44 → AM7 X4
+        (4, 6),  // HE45 → AM7 X6
+        (4, 7),  // HE46 → AM7 X7
+        (4, 5),  // HE47 → AM7 X5
+        (4, 2),  // HE48 → AM7 X2
+        (4, 1),  // HE49 → AM7 X1
+        (4, 0),  // HE50 → AM7 X0
+        (4, 3),  // HE51 → AM7 X3
+        // HE52–100: AM8–AM13 (not ADC-capable or claimed by SAI) — omitted
+    ];
+
+    /// Reverse lookup: SLOT_TO_KEY[mux][channel] = key index in KEY_MAP,
+    /// or 0xFF if that (mux, channel) slot has no sensor.
+    const SLOT_TO_KEY: [[u8; MUX_CHANNELS]; NUM_MUXES] = [
+        [6, 5, 4, 7, 0, 3, 1, 2],
+        [28, 13, 12, 27, 8, 11, 9, 10],
+        [20, 19, 18, 21, 14, 17, 15, 16],
+        [30, 29, 26, 31, 22, 25, 23, 24],
+        [38, 37, 36, 39, 32, 35, 33, 34],
+    ];
+
+    // C major pentatonic cycling across octaves for 40 keys.
+    const KEY_TO_NOTE: [u8; NUM_KEYS] = {
+        let pattern = [48u8, 50, 52, 55, 57, 60, 62, 64, 67, 69];
+        let mut notes = [0u8; NUM_KEYS];
+        let mut i = 0;
+        while i < NUM_KEYS {
+            let octave = (i / pattern.len()) as u8;
+            notes[i] = pattern[i % pattern.len()].saturating_add(octave * 12);
+            i += 1;
+        }
+        notes
+    };
 
     use crate::midi_sender::MidiSender;
     use libdaisy::gpio::*;
@@ -38,45 +149,38 @@ mod app {
     };
     use log::info;
 
-    // ── ADC config ─────────────────────────────────────────────────────────────
     const ADC_SAMPLE_TIME: AdcSampleTime = AdcSampleTime::T_16;
     const ADC_RESOLUTION: Resolution = Resolution::TwelveBit;
-
-    // ── Calibration ────────────────────────────────────────────────────────────
     const CALIBRATION_SAMPLES: usize = 64;
 
-    // ── Key thresholds (relative to adaptive baseline) ────────────────────────
-    // With an actual press-vs-rest range of ~200–500 counts, we use tight
-    // thresholds. The adaptive baseline tracks drift so these stay meaningful.
-    const FIRST_DELTA: u16 = 80; // start tracking — must be above noise floor
-    const SECOND_DELTA: u16 = 160; // trigger Note On — ~halfway into a real press
-    const RELEASE_DELTA: u16 = 50; // release Note Off — key nearly back to rest
+    // With real sensors the press range is ~200-500 counts above baseline.
+    // These conservative values ignore floating-pin noise.
+    // Lower them once sensors are connected and DIAG shows real readings.
+    const FIRST_DELTA: u16 = 200;
+    const SECOND_DELTA: u16 = 350;
+    const RELEASE_DELTA: u16 = 150;
+    const DEBOUNCE_TICKS: u8 = 5;
 
-    // ── Debounce ───────────────────────────────────────────────────────────────
-    const DEBOUNCE_TICKS: u8 = 3;
-
-    // ── Moving average filter ──────────────────────────────────────────────────
     const FILTER_SIZE: usize = 4;
-    const FILTER_SHIFT: u32 = 2; // log2(FILTER_SIZE)
+    const FILTER_SHIFT: u32 = 2;
 
-    // ── Adaptive baseline ──────────────────────────────────────────────────────
-    // When a key is idle, the baseline slowly tracks the current reading using
-    // an exponential moving average:  baseline += (reading - baseline) / ALPHA
-    // Higher ALPHA = slower adaptation = more stable but slower to track drift.
-    // At 1kHz scan rate, ALPHA=256 gives a ~256ms time constant.
+    // Only adapt baseline when reading is within BASELINE_GUARD of current
+    // baseline — prevents floating-pin noise from dragging it around.
     const BASELINE_ALPHA: u32 = 256;
-    // Only adapt when the delta is below this guard — prevents a held key
-    // from dragging the baseline up.
-    const BASELINE_GUARD: u16 = 40;
+    const BASELINE_GUARD: u16 = 100;
 
-    // ── Velocity ───────────────────────────────────────────────────────────────
     const VELOCITY_WINDOW_MS: u32 = 30;
 
-    // ── Diagnostic logging ─────────────────────────────────────────────────────
-    const DIAG_LOGGING: bool = true;
-    const LOG_INTERVAL_MS: u32 = 500;
+    // Suppress all key events for this many ms after boot while the
+    // baseline settles. Floating pins stabilise within a few hundred ms;
+    // connected sensors may need longer if there is supply ripple on startup.
+    const WARMUP_MS: u32 = 2000;
 
-    // ── Per-channel filter state ───────────────────────────────────────────────
+    const DIAG_LOGGING: bool = true;
+    const LOG_INTERVAL_MS: u32 = 50; // 20Hz — fast enough to catch a keypress
+    const LOG_KEY: usize = 0; // HE1 = AM1 X4 = Daisy22
+
+    // ── Filter ────────────────────────────────────────────────────────────────
     #[derive(Clone, Copy)]
     pub struct ChannelFilter {
         ring: [u16; FILTER_SIZE],
@@ -92,7 +196,6 @@ mod app {
                 sum: 0,
             }
         }
-
         fn feed(&mut self, raw: u16) -> u16 {
             self.sum -= self.ring[self.index] as u32;
             self.sum += raw as u32;
@@ -100,7 +203,6 @@ mod app {
             self.index = (self.index + 1) % FILTER_SIZE;
             (self.sum >> FILTER_SHIFT) as u16
         }
-
         fn prime(&mut self, value: u16) {
             for slot in self.ring.iter_mut() {
                 *slot = value;
@@ -110,7 +212,7 @@ mod app {
         }
     }
 
-    // ── Key state machine ──────────────────────────────────────────────────────
+    // ── State machine ─────────────────────────────────────────────────────────
     #[derive(Clone, Copy, Debug)]
     pub enum KeyPhase {
         Idle,
@@ -150,7 +252,7 @@ mod app {
                         self.debounce_count = self.debounce_count.saturating_add(1);
                         if self.debounce_count >= DEBOUNCE_TICKS {
                             info!(
-                                "key={} FirstActuated: delta={} adc={} baseline={}",
+                                "key={} FirstActuated delta={} adc={} baseline={}",
                                 key_idx, delta, adc_value, baseline
                             );
                             self.phase = KeyPhase::FirstActuated { tick };
@@ -161,17 +263,11 @@ mod app {
                     }
                     None
                 }
-
                 KeyPhase::FirstActuated { tick: t1 } => {
                     if delta >= SECOND_DELTA {
                         self.debounce_count = self.debounce_count.saturating_add(1);
                         if self.debounce_count >= DEBOUNCE_TICKS {
                             let elapsed = tick.saturating_sub(t1);
-                            info!(
-                                "key={} fully actuated: delta={} elapsed={}ms",
-                                key_idx, delta, elapsed
-                            );
-
                             let velocity = if elapsed == 0 {
                                 127u8
                             } else if elapsed >= VELOCITY_WINDOW_MS {
@@ -181,7 +277,10 @@ mod app {
                                 let v = 127u32.saturating_sub((t * t) / 127);
                                 v.max(1).min(127) as u8
                             };
-
+                            info!(
+                                "key={} FullyActuated elapsed={}ms vel={}",
+                                key_idx, elapsed, velocity
+                            );
                             self.phase = KeyPhase::FullyActuated { velocity };
                             self.debounce_count = 0;
                             Some(KeyEvent::NoteOn { velocity })
@@ -200,7 +299,6 @@ mod app {
                         None
                     }
                 }
-
                 KeyPhase::FullyActuated { .. } => {
                     if delta < RELEASE_DELTA {
                         self.debounce_count = self.debounce_count.saturating_add(1);
@@ -219,7 +317,6 @@ mod app {
             }
         }
 
-        /// Returns true if the key is in Idle phase (safe to adapt baseline).
         fn is_idle(&self) -> bool {
             matches!(self.phase, KeyPhase::Idle)
         }
@@ -231,7 +328,9 @@ mod app {
         NoteOff,
     }
 
-    // ── RTIC resources ──────────────────────────────────────────────────────────
+    type MuxRaw = [[u16; MUX_CHANNELS]; NUM_MUXES];
+
+    // ── Resources ─────────────────────────────────────────────────────────────
     #[shared]
     struct Shared {
         tick_ms: u32,
@@ -244,17 +343,23 @@ mod app {
     struct Local {
         audio: audio::Audio,
         adc: Adc<stm32::ADC1, adc::Enabled>,
-        adc_pin: Daisy15<Analog>,
-        s0: Daisy0<Output<PushPull>>,
-        s1: Daisy1<Output<PushPull>>,
-        s2: Daisy2<Output<PushPull>>,
+        adc_pins: (
+            Daisy22<Analog>, // AM1
+            Daisy23<Analog>, // AM2
+            Daisy24<Analog>, // AM3
+            Daisy25<Analog>, // AM4
+            Daisy28<Analog>, // AM7
+        ),
+        s0: Daisy8<Output<PushPull>>,
+        s1: Daisy9<Output<PushPull>>,
+        s2: Daisy10<Output<PushPull>>,
         timer2: timer::Timer<stm32::TIM2>,
-        adc_buffer: [u32; NUM_KEYS],
+        mux_raw: MuxRaw,
         midi_sender: MidiSender,
         filters: [ChannelFilter; NUM_KEYS],
     }
 
-    // ── init ────────────────────────────────────────────────────────────────────
+    // ── init ──────────────────────────────────────────────────────────────────
     #[init]
     fn init(ctx: init::Context) -> (Shared, Local, init::Monotonics) {
         logger::init();
@@ -265,72 +370,113 @@ mod app {
         let ccdr = system::System::init_clocks(device.PWR, device.RCC, &device.SYSCFG);
         let mut system = libdaisy::system_init!(core, device, ccdr, BLOCK_SIZE);
 
-        // ── GPIO (mux select lines) ─────────────────────────────────
-        let mut s0 = system.gpio.daisy0.take().unwrap().into_push_pull_output();
-        let mut s1 = system.gpio.daisy1.take().unwrap().into_push_pull_output();
-        let mut s2 = system.gpio.daisy2.take().unwrap().into_push_pull_output();
-        let mut adc_pin = system.gpio.daisy15.take().unwrap().into_analog();
+        let mut s0 = system
+            .gpio
+            .daisy8
+            .take()
+            .expect("daisy8 unavailable")
+            .into_push_pull_output();
+        let mut s1 = system
+            .gpio
+            .daisy9
+            .take()
+            .expect("daisy9 unavailable")
+            .into_push_pull_output();
+        let mut s2 = system
+            .gpio
+            .daisy10
+            .take()
+            .expect("daisy10 unavailable")
+            .into_push_pull_output();
 
-        // ── ADC ──────────────────────────────────────────────────────
+        let mut adc_pins = (
+            system
+                .gpio
+                .daisy22
+                .take()
+                .expect("daisy22 unavailable")
+                .into_analog(),
+            system
+                .gpio
+                .daisy23
+                .take()
+                .expect("daisy23 unavailable")
+                .into_analog(),
+            system
+                .gpio
+                .daisy24
+                .take()
+                .expect("daisy24 unavailable")
+                .into_analog(),
+            system
+                .gpio
+                .daisy25
+                .take()
+                .expect("daisy25 unavailable")
+                .into_analog(),
+            system
+                .gpio
+                .daisy28
+                .take()
+                .expect("daisy28 unavailable")
+                .into_analog(),
+        );
+
         let mut adc = system.adc1.enable();
         adc.set_resolution(ADC_RESOLUTION);
         adc.set_sample_time(ADC_SAMPLE_TIME);
 
-        cortex_m::asm::delay(480 * 50_000); // 50ms startup delay
+        cortex_m::asm::delay(480 * 50_000); // 50 ms startup
 
-        // ── Baseline calibration ─────────────────────────────────────
-        let mut baselines = [0u16; NUM_KEYS];
-        let mut filters = [ChannelFilter::new(); NUM_KEYS];
+        // ── Calibration ──────────────────────────────────────────────
+        let mut slot_sum = [[0u32; MUX_CHANNELS]; NUM_MUXES];
+        let mut slot_count = [[0u32; MUX_CHANNELS]; NUM_MUXES];
 
-        for ch in 0..NUM_ACTIVE_KEYS {
+        for ch in 0..MUX_CHANNELS {
             set_mux_channel(ch, &mut s0, &mut s1, &mut s2);
-            cortex_m::asm::delay(480 * 200); // 200µs settle
+            cortex_m::asm::delay(480 * 200);
 
-            let mut accumulator: u32 = 0;
-            let mut sample_count = 0u32;
-            for i in 0..CALIBRATION_SAMPLES {
-                let result: Result<u32, _> = adc.read(&mut adc_pin);
-                if let Ok(raw) = result {
-                    accumulator += raw;
-                    sample_count += 1;
-                    if ch == 0 && i < 5 {
-                        info!("calibration ch=0 sample {} raw={}", i, raw);
-                    }
+            for _ in 0..CALIBRATION_SAMPLES {
+                let readings = read_all_adcs(&mut adc, &mut adc_pins);
+                for mux in 0..NUM_MUXES {
+                    slot_sum[mux][ch] += readings[mux] as u32;
+                    slot_count[mux][ch] += 1;
                 }
                 cortex_m::asm::delay(480 * 10);
             }
-            let avg = if sample_count > 0 {
-                accumulator / sample_count
+        }
+
+        let mut baselines = [0u16; NUM_KEYS];
+        let mut filters = [ChannelFilter::new(); NUM_KEYS];
+
+        for (key_idx, &(mux, ch)) in KEY_MAP.iter().enumerate() {
+            let m = mux as usize;
+            let c = ch as usize;
+            let avg = if slot_count[m][c] > 0 {
+                (slot_sum[m][c] / slot_count[m][c]) as u16
             } else {
                 0
             };
-            baselines[ch] = avg as u16;
-            filters[ch].prime(avg as u16);
-
-            info!(
-                "baseline ch={} value={} (from {} samples)",
-                ch, baselines[ch], sample_count
-            );
+            baselines[key_idx] = avg;
+            filters[key_idx].prime(avg);
+            info!("baseline key={} mux={} ch={} val={}", key_idx, mux, ch, avg);
         }
 
-        // ── MIDI UART (USART1 @ 31250 baud) ─────────────────────────
+        // ── MIDI UART ─────────────────────────────────────────────────
         let midi_tx_pin = system
             .gpio
             .daisy13
             .take()
-            .expect("Failed to get daisy13 for MIDI TX")
+            .expect("daisy13 unavailable")
             .into_alternate::<7>();
-
         let midi_rx_pin = system
             .gpio
             .daisy14
             .take()
-            .expect("Failed to get daisy14 for MIDI RX")
+            .expect("daisy14 unavailable")
             .into_alternate::<7>();
-
         let mut midi_config = SerialConfig::default();
         midi_config.baudrate = 31_250_u32.bps();
-
         let midi_serial = device
             .USART1
             .serial(
@@ -340,7 +486,6 @@ mod app {
                 &ccdr.clocks,
             )
             .unwrap();
-
         let (midi_tx, _midi_rx) = midi_serial.split();
         let midi_sender = MidiSender::new(midi_tx, 0);
 
@@ -355,7 +500,10 @@ mod app {
 
         set_mux_channel(0, &mut s0, &mut s1, &mut s2);
 
-        info!("Hall effect keyboard startup done! (adaptive baseline enabled)");
+        info!(
+            "keyboard_keyboard ready: {} keys across {} muxes",
+            NUM_KEYS, NUM_MUXES
+        );
 
         (
             Shared {
@@ -367,12 +515,12 @@ mod app {
             Local {
                 audio: system.audio,
                 adc,
-                adc_pin,
+                adc_pins,
                 s0,
                 s1,
                 s2,
                 timer2,
-                adc_buffer: [0; NUM_KEYS],
+                mux_raw: [[0u16; MUX_CHANNELS]; NUM_MUXES],
                 midi_sender,
                 filters,
             },
@@ -380,7 +528,7 @@ mod app {
         )
     }
 
-    // ── idle ────────────────────────────────────────────────────────────────────
+    // ── idle ──────────────────────────────────────────────────────────────────
     #[idle]
     fn idle(_ctx: idle::Context) -> ! {
         loop {
@@ -388,16 +536,16 @@ mod app {
         }
     }
 
-    // ── Audio ──────────────────────────────────────────────────────────────────
+    // ── Audio ─────────────────────────────────────────────────────────────────
     #[task(binds = DMA1_STR1, priority = 8, local = [audio])]
     fn audio_handler(ctx: audio_handler::Context) {
         ctx.local.audio.for_each(|left, right| (left, right));
     }
 
-    // ── Timer @ 1 kHz ─────────────────────────────────────────────────────────
+    // ── 1 kHz scan ───────────────────────────────────────────────────────────
     #[task(
         binds = TIM2,
-        local  = [timer2, adc, adc_pin, s0, s1, s2, adc_buffer, filters],
+        local  = [timer2, adc, adc_pins, s0, s1, s2, mux_raw, filters],
         shared = [tick_ms, key_states, baselines, event_queue],
         priority = 15
     )]
@@ -409,71 +557,132 @@ mod app {
             *t
         });
 
-        let mut pending: heapless::Vec<(usize, KeyEvent), 8> = heapless::Vec::new();
+        // Phase 1: sweep channels, fill mux_raw.
+        //
+        // Winner-takes-all per channel: after reading all mux outputs for a
+        // given channel address, we find whichever mux has the largest delta
+        // above its calibrated baseline. Only that mux keeps its reading;
+        // every other mux on the same channel is clamped back to its own
+        // baseline so it cannot trigger a phantom key event.
+        //
+        // This eliminates crosstalk where selecting channel C on all muxes
+        // simultaneously causes a pressed sensor on one mux to raise the
+        // apparent reading on the same channel of other muxes.
+        //
+        // Limitation: two keys on the same channel address but different mux
+        // chips cannot both register at the same moment; only the harder press
+        // wins. Given the physical keyboard layout this is acceptable.
+        let baselines_snap = ctx.shared.baselines.lock(|b| *b);
 
-        // Take a mutable copy of baselines so we can adapt them.
-        let mut baselines = ctx.shared.baselines.lock(|b| *b);
-
-        for ch in 0..NUM_ACTIVE_KEYS {
+        for ch in 0..MUX_CHANNELS {
             set_mux_channel(ch, ctx.local.s0, ctx.local.s1, ctx.local.s2);
-            cortex_m::asm::delay(480 * 10); // 10µs settle
+            cortex_m::asm::delay(480 * 10);
+            let readings = read_all_adcs(ctx.local.adc, ctx.local.adc_pins);
 
-            let result: Result<u32, _> = ctx.local.adc.read(ctx.local.adc_pin);
-            if let Ok(raw) = result {
-                ctx.local.adc_buffer[ch] = raw;
-                let filtered = ctx.local.filters[ch].feed(raw as u16);
+            // Winner-takes-all: find which mux has the largest delta on
+            // this channel, then clamp all others back to their baseline.
+            let mut winner_mux: usize = NUM_MUXES; // sentinel = no winner yet
+            let mut winner_delta: u16 = 0;
 
-                ctx.shared.key_states.lock(|states| {
-                    // ── Adaptive baseline ────────────────────────────
-                    // Only adapt when the key is idle AND the current
-                    // reading is close to the baseline (within guard).
-                    // This prevents a pressed key from pulling the
-                    // baseline up, but lets it track thermal drift,
-                    // sensor settling, and magnetic interference.
-                    if states[ch].is_idle() {
-                        let delta = filtered.saturating_sub(baselines[ch]);
-                        let neg_delta = baselines[ch].saturating_sub(filtered);
+            for mux in 0..NUM_MUXES {
+                let ki = SLOT_TO_KEY[mux][ch] as usize;
+                if ki == 0xFF {
+                    continue;
+                } // unused slot
+                let delta = readings[mux].saturating_sub(baselines_snap[ki]);
+                if delta > winner_delta {
+                    winner_delta = delta;
+                    winner_mux = mux;
+                }
+            }
 
-                        if delta < BASELINE_GUARD || neg_delta > 0 {
-                            // Exponential moving average:
-                            //   baseline += (filtered - baseline) / ALPHA
-                            // Using i32 to handle both directions.
-                            let diff = filtered as i32 - baselines[ch] as i32;
-                            let adjustment = diff / BASELINE_ALPHA as i32;
-                            // Nudge by at least ±1 if there's any difference,
-                            // so the baseline doesn't get stuck.
-                            let nudge = if diff > 0 {
-                                adjustment.max(1)
-                            } else if diff < 0 {
-                                adjustment.min(-1)
-                            } else {
-                                0
-                            };
-                            baselines[ch] = (baselines[ch] as i32 + nudge).max(0).min(4095) as u16;
-                        }
-                    }
-
-                    if let Some(event) = states[ch].update(filtered, baselines[ch], now, ch) {
-                        pending.push((ch, event)).ok();
-                    }
-                });
+            for mux in 0..NUM_MUXES {
+                let ki = SLOT_TO_KEY[mux][ch] as usize;
+                ctx.local.mux_raw[mux][ch] = if mux == winner_mux {
+                    readings[mux]
+                } else if ki != 0xFF {
+                    baselines_snap[ki] // clamp non-winner to its baseline
+                } else {
+                    readings[mux] // unused slot, value doesn't matter
+                };
             }
         }
 
-        // Write adapted baselines back.
+        // Phase 2: filter + baseline + state machine
+        let mut pending: heapless::Vec<(usize, KeyEvent), 16> = heapless::Vec::new();
+        let mut baselines = baselines_snap;
+
+        ctx.shared.key_states.lock(|states| {
+            for (key_idx, &(mux, ch)) in KEY_MAP.iter().enumerate() {
+                let raw = ctx.local.mux_raw[mux as usize][ch as usize];
+                let filtered = ctx.local.filters[key_idx].feed(raw);
+
+                if states[key_idx].is_idle() {
+                    // During warmup use a much wider guard so the baseline
+                    // chases floating-pin noise all the way to its resting
+                    // level. After warmup the guard tightens to prevent a
+                    // pressed key from dragging the baseline up.
+                    let guard = if now < WARMUP_MS {
+                        4095
+                    } else {
+                        BASELINE_GUARD
+                    };
+                    let delta = filtered.saturating_sub(baselines[key_idx]);
+                    let neg_delta = baselines[key_idx].saturating_sub(filtered);
+                    if delta < guard || neg_delta > 0 {
+                        let diff = filtered as i32 - baselines[key_idx] as i32;
+                        let nudge = if diff > 0 {
+                            (diff / BASELINE_ALPHA as i32).max(1)
+                        } else if diff < 0 {
+                            (diff / BASELINE_ALPHA as i32).min(-1)
+                        } else {
+                            0
+                        };
+                        baselines[key_idx] =
+                            (baselines[key_idx] as i32 + nudge).max(0).min(4095) as u16;
+                    }
+                }
+
+                // Suppress events during warmup — baseline is still settling
+                if now >= WARMUP_MS {
+                    if let Some(event) =
+                        states[key_idx].update(filtered, baselines[key_idx], now, key_idx)
+                    {
+                        pending.push((key_idx, event)).ok();
+                    }
+                } else {
+                    // Still in warmup: keep state machine reset so no
+                    // phantom presses are queued the moment warmup ends.
+                    states[key_idx] = KeyState::new();
+                }
+            }
+        });
+
         ctx.shared.baselines.lock(|b| *b = baselines);
 
-        // ── Diagnostic logging ───────────────────────────────────────
+        // Phase 3: diagnostics
+        if now == WARMUP_MS {
+            info!("Warmup complete — key events now active");
+        }
         if DIAG_LOGGING && now % LOG_INTERVAL_MS == 0 {
-            for ch in 0..NUM_ACTIVE_KEYS {
-                let filtered = (ctx.local.filters[ch].sum >> FILTER_SHIFT) as u16;
-                let delta = filtered.saturating_sub(baselines[ch]);
-                let raw = ctx.local.adc_buffer[ch];
-                info!(
-                    "DIAG ch={} raw={} filtered={} baseline={} delta={}",
-                    ch, raw, filtered, baselines[ch], delta
-                );
-            }
+            let (mux, ch) = KEY_MAP[LOG_KEY]; // HE1: mux=0 ch=4
+            let raw = ctx.local.mux_raw[mux as usize][ch as usize];
+            let filtered = (ctx.local.filters[LOG_KEY].sum >> FILTER_SHIFT) as u16;
+            let baseline = baselines[LOG_KEY];
+            // Also log raw channel 4 on ALL muxes so we can see if the
+            // ADC is reading anything at all when the key is pressed
+            info!(
+                "HE1 raw={} filt={} base={} delta={} | ch4: m0={} m1={} m2={} m3={} m4={}",
+                raw,
+                filtered,
+                baseline,
+                filtered.saturating_sub(baseline),
+                ctx.local.mux_raw[0][4],
+                ctx.local.mux_raw[1][4],
+                ctx.local.mux_raw[2][4],
+                ctx.local.mux_raw[3][4],
+                ctx.local.mux_raw[4][4],
+            );
         }
 
         if !pending.is_empty() {
@@ -482,25 +691,23 @@ mod app {
                     queue.enqueue(item).ok();
                 }
             });
+            process_events::spawn().ok();
         }
-
-        process_events::spawn().ok();
     }
 
-    // ── Process events → send MIDI ────────────────────────────────────────────
+    // ── MIDI output ───────────────────────────────────────────────────────────
     #[task(shared = [event_queue], local = [midi_sender], priority = 1, capacity = 32)]
     fn process_events(mut ctx: process_events::Context) {
         ctx.shared.event_queue.lock(|queue| {
             while let Some((key_idx, event)) = queue.dequeue() {
                 let note = KEY_TO_NOTE[key_idx];
-
                 match event {
                     KeyEvent::NoteOn { velocity } => {
-                        info!("TX NoteOn  key={} note={} vel={}", key_idx, note, velocity);
+                        info!("NoteOn  key={} note={} vel={}", key_idx, note, velocity);
                         ctx.local.midi_sender.note_on(note, velocity);
                     }
                     KeyEvent::NoteOff => {
-                        info!("TX NoteOff key={} note={}", key_idx, note);
+                        info!("NoteOff key={} note={}", key_idx, note);
                         ctx.local.midi_sender.note_off(note, 0);
                     }
                 }
@@ -509,12 +716,13 @@ mod app {
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
+
     #[inline(always)]
     fn set_mux_channel(
         ch: usize,
-        s0: &mut Daisy0<Output<PushPull>>,
-        s1: &mut Daisy1<Output<PushPull>>,
-        s2: &mut Daisy2<Output<PushPull>>,
+        s0: &mut Daisy8<Output<PushPull>>,
+        s1: &mut Daisy9<Output<PushPull>>,
+        s2: &mut Daisy10<Output<PushPull>>,
     ) {
         if ch & 0b001 != 0 {
             s0.set_high()
@@ -531,5 +739,28 @@ mod app {
         } else {
             s2.set_low()
         }
+    }
+
+    /// Sample all 5 ADC pins. Returns [u16; 5] indexed by compact mux index.
+    /// Compact index: 0=AM1 1=AM2 2=AM3 3=AM4 4=AM7
+    #[inline(always)]
+    fn read_all_adcs(
+        adc: &mut Adc<stm32::ADC1, adc::Enabled>,
+        pins: &mut (
+            Daisy22<Analog>,
+            Daisy23<Analog>,
+            Daisy24<Analog>,
+            Daisy25<Analog>,
+            Daisy28<Analog>,
+        ),
+    ) -> [u16; NUM_ADC_PINS] {
+        let r = |res: Result<u32, _>| res.unwrap_or(0) as u16;
+        [
+            r(adc.read(&mut pins.0)), // AM1
+            r(adc.read(&mut pins.1)), // AM2
+            r(adc.read(&mut pins.2)), // AM3
+            r(adc.read(&mut pins.3)), // AM4
+            r(adc.read(&mut pins.4)), // AM7
+        ]
     }
 }
