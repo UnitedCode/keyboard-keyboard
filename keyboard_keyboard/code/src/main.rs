@@ -1,17 +1,19 @@
 //! hall_effect_keyboard — Daisy Seed + SN74LV4051A × 5 + MT9102ET × 40
 //! MIDI output over USART1 at 31250 baud
 //!
-//! ## Pin mapping (corrected)
+//! ## Correct pin mapping from schematic:
+//!
+//! Select lines:
+//!   Daisy7  (D6) → MUX_SELECT_0 (A / bit 0)
+//!   Daisy8  (D7) → MUX_SELECT_1 (B / bit 1)
+//!   Daisy9  (D8) → MUX_SELECT_2 (C / bit 2)
+//!
+//! Mux outputs:
 //!   Daisy15 (PC0) → AM1
 //!   Daisy16 (PA3) → AM2
 //!   Daisy17 (PB1) → AM3
 //!   Daisy18 (PA7) → AM4
 //!   Daisy19 (PA6) → AM7
-//!
-//! Select lines:
-//!   Daisy8  → MUX_SELECT_0 (A / bit 0)
-//!   Daisy9  → MUX_SELECT_1 (B / bit 1)
-//!   Daisy10 → MUX_SELECT_2 (C / bit 2)
 
 #![no_main]
 #![no_std]
@@ -34,26 +36,20 @@ mod app {
     const MUX_CHANNELS: usize = 8;
 
     // ── Thresholds ────────────────────────────────────────────────────────────
-    // Signal RISES on press. Swing is ~1000+ counts.
-    const FIRST_DELTA: u16 = 200;
-    const SECOND_DELTA: u16 = 600;
-    const RELEASE_DELTA: u16 = 150;
+    const FIRST_DELTA: u16 = 150;
+    const SECOND_DELTA: u16 = 250;
+    const RELEASE_DELTA: u16 = 100;
     const DEBOUNCE_TICKS: u8 = 3;
 
-    // ── Filter ────────────────────────────────────────────────────────────────
     const FILTER_SIZE: usize = 4;
     const FILTER_SHIFT: u32 = 2;
 
-    // ── Velocity ──────────────────────────────────────────────────────────────
     const VELOCITY_WINDOW_MS: u32 = 80;
-
-    // ── Calibration ───────────────────────────────────────────────────────────
     const CALIBRATION_SAMPLES: usize = 64;
 
-    // ── Diagnostics ───────────────────────────────────────────────────────────
     const DIAG_LOGGING: bool = true;
     const LOG_INTERVAL_MS: u32 = 200;
-    const LOG_KEY: usize = 9; // HE10 = AM2 ch6
+    const LOG_KEY: usize = 9; // HE10
 
     // ── Key map ───────────────────────────────────────────────────────────────
     #[rustfmt::skip]
@@ -196,7 +192,6 @@ mod app {
             key_idx: usize,
         ) -> Option<KeyEvent> {
             self.last_adc = adc_value;
-            // Signal rises on press
             let delta = adc_value.saturating_sub(baseline);
 
             match self.phase {
@@ -302,9 +297,9 @@ mod app {
             Daisy18<Analog>, // AM4
             Daisy19<Analog>, // AM7
         ),
-        s0: Daisy8<Output<PushPull>>,
-        s1: Daisy9<Output<PushPull>>,
-        s2: Daisy10<Output<PushPull>>,
+        s0: Daisy7<Output<PushPull>>, // MUX_SELECT_0
+        s1: Daisy8<Output<PushPull>>, // MUX_SELECT_1
+        s2: Daisy9<Output<PushPull>>, // MUX_SELECT_2
         timer2: timer::Timer<stm32::TIM2>,
         mux_raw: MuxRaw,
         midi_sender: MidiSender,
@@ -324,21 +319,21 @@ mod app {
 
         let mut s0 = system
             .gpio
+            .daisy7
+            .take()
+            .expect("daisy7")
+            .into_push_pull_output();
+        let mut s1 = system
+            .gpio
             .daisy8
             .take()
             .expect("daisy8")
             .into_push_pull_output();
-        let mut s1 = system
+        let mut s2 = system
             .gpio
             .daisy9
             .take()
             .expect("daisy9")
-            .into_push_pull_output();
-        let mut s2 = system
-            .gpio
-            .daisy10
-            .take()
-            .expect("daisy10")
             .into_push_pull_output();
 
         let mut adc_pins = (
@@ -353,7 +348,7 @@ mod app {
         adc.set_resolution(ADC_RESOLUTION);
         adc.set_sample_time(ADC_SAMPLE_TIME);
 
-        cortex_m::asm::delay(480 * 50_000); // 50ms startup
+        cortex_m::asm::delay(480 * 50_000);
 
         // ── Boot calibration ──────────────────────────────────────────────────
         let mut slot_sum = [[0u32; MUX_CHANNELS]; NUM_MUXES];
@@ -479,7 +474,7 @@ mod app {
 
         for ch in 0..MUX_CHANNELS {
             set_mux_channel(ch, ctx.local.s0, ctx.local.s1, ctx.local.s2);
-            cortex_m::asm::delay(480 * 50);
+            cortex_m::asm::delay(480 * 10);
             let readings = read_all_adcs(ctx.local.adc, ctx.local.adc_pins);
             for mux in 0..NUM_MUXES {
                 ctx.local.mux_raw[mux][ch] = readings[mux];
@@ -498,6 +493,13 @@ mod app {
                 }
             }
         });
+
+        if DIAG_LOGGING && now % LOG_INTERVAL_MS == 0 {
+            let (mux, ch) = KEY_MAP[LOG_KEY];
+            let raw = ctx.local.mux_raw[mux as usize][ch as usize];
+            let filtered = (ctx.local.filters[LOG_KEY].sum >> FILTER_SHIFT) as u16;
+            let baseline = baselines[LOG_KEY];
+        }
 
         if !pending.is_empty() {
             ctx.shared.event_queue.lock(|queue| {
@@ -531,9 +533,9 @@ mod app {
     #[inline(always)]
     fn set_mux_channel(
         ch: usize,
-        s0: &mut Daisy8<Output<PushPull>>,
-        s1: &mut Daisy9<Output<PushPull>>,
-        s2: &mut Daisy10<Output<PushPull>>,
+        s0: &mut Daisy7<Output<PushPull>>,
+        s1: &mut Daisy8<Output<PushPull>>,
+        s2: &mut Daisy9<Output<PushPull>>,
     ) {
         if ch & 0b001 != 0 {
             s0.set_high()
