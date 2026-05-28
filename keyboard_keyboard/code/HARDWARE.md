@@ -4,9 +4,21 @@
 
 Hall-effect MIDI keyboard controller on Electrosmith Daisy Seed (STM32H750V).
 PCB hosts up to 15 analog muxes (AM1–AM15) feeding hall-effect sensors into Daisy ADC pins.
-Firmware drives 5 muxes (40 keys). PCB supports 15 muxes (~80–120 sensors depending on population).
+Firmware currently drives 9 muxes (70 keys, HE1–HE70). PCB supports 15 muxes, 100 hall-effect sensors (HE1–HE100).
 
 KiCad schematic: `keyboard_keyboard/kicad/keyboard_keyboard.kicad_sch`
+
+---
+
+## Component Part Numbers
+
+| Reference | Part Number | Description |
+|-----------|-------------|-------------|
+| A1 | Electrosmith Daisy Seed Rev4 | STM32H750V microcontroller module |
+| AM1–AM15 | SN74LV4051APWR | 8-channel single-ended analog mux (TI, TSSOP-16) |
+| HE1–HE100 | MT9105ET | Hall-effect sensor |
+| U1 | 74HC138D | 3-to-8 line decoder / demultiplexer (NXP, SOIC-16) |
+| U2 | 6N138 | Optocoupler — MIDI RX input isolation |
 
 ---
 
@@ -121,9 +133,23 @@ Driven by D2 (A2), D3 (A1), D4 (A0). Outputs active-low `ENABLE_10`–`ENABLE_15
 3. Scan AM10/AM11 alternately per mux-channel by toggling the U1 address
 4. Increase `NUM_MUXES`, `NUM_ADC_PINS`, `NUM_KEYS` and update `KEY_MAP`
 
-> **⚠ Schematic note:** Netlist shows U1 pin 5 (~E1/G2B, active-low enable) tied to +3.3VA.
-> If this reflects the actual PCB, the 74HC138 decoder is permanently disabled and
-> AM10–AM15 will be non-functional. Verify the physical board before implementing.
+> **⚠ PCB errata — requires hardware fix before AM10–AM13 will work:**
+>
+> On the 74HC138D (SO16 / D package), **pin 5 = E2~ (active-LOW enable)** is routed to +3.3VA
+> instead of GND. This permanently disables the decoder regardless of firmware.
+>
+> Pin 6 (E3, active-HIGH) at 3.3V is correct. Only pin 5 is wrong.
+>
+> **Fix:** Cut the trace on pad 5 and bridge pad 5 → pad 4 (GND) with a bodge wire.
+> Pads 4 and 5 are adjacent on the SO16 package; a short solder bridge works.
+>
+> ```
+> Before:  GND[4]  [5]+3.3V   (broken)
+> After:   GND[4]--[5]        (fixed)
+> ```
+>
+> After this fix the firmware decoder logic (Daisy2/3/4 → U1 A2/A1/A0) drives AM10–AM13
+> and HE71–HE100 should work without any firmware changes.
 
 > Note: AM14/AM15 mux outputs are connected to trim pots (RV1–RV12), not hall-effect
 > sensors. AM15 X0–X3 are tied to GND. AM14/AM15 Inh pins are tied to GND via U1 Y6/Y7

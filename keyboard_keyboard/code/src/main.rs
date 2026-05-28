@@ -33,8 +33,8 @@ mod midi_sender;
 mod app {
     const BLOCK_SIZE: usize = 128;
 
-    const NUM_KEYS: usize = 70;
-    const NUM_MUXES: usize = 9;
+    const NUM_KEYS: usize = 100;
+    const NUM_MUXES: usize = 13;
     const NUM_ADC_PINS: usize = 9;
     const MUX_CHANNELS: usize = 8;
 
@@ -131,6 +131,27 @@ mod app {
         (8, 4), (8, 6), (8, 7), (8, 5), (8, 2), (8, 1), (8, 0), (8, 3),
         // AM8 continued — HE67–HE70
         (7, 7), (7, 5), (7, 2), (7, 1),
+        // AM10 (mux 9, Daisy24) — HE71–HE73, HE81–HE84 (X3=GND)
+        (9, 4),  // HE71 → AM10 X4
+        (9, 6),  // HE72 → AM10 X6
+        (9, 7),  // HE73 → AM10 X7
+        // AM11 (mux 10, Daisy24) — HE74–HE80 (X3=GND)
+        (10, 4), // HE74 → AM11 X4
+        (10, 6), // HE75 → AM11 X6
+        (10, 7), // HE76 → AM11 X7
+        (10, 5), // HE77 → AM11 X5
+        (10, 2), // HE78 → AM11 X2
+        (10, 1), // HE79 → AM11 X1
+        (10, 0), // HE80 → AM11 X0
+        // AM10 continued — HE81–HE84
+        (9, 5),  // HE81 → AM10 X5
+        (9, 2),  // HE82 → AM10 X2
+        (9, 1),  // HE83 → AM10 X1
+        (9, 0),  // HE84 → AM10 X0
+        // AM12 (mux 11, Daisy25) — HE85–HE92
+        (11, 4), (11, 6), (11, 7), (11, 5), (11, 2), (11, 1), (11, 0), (11, 3),
+        // AM13 (mux 12, Daisy25) — HE93–HE100
+        (12, 4), (12, 6), (12, 7), (12, 5), (12, 2), (12, 1), (12, 0), (12, 3),
     ];
 
     const KEY_TO_NOTE: [u8; NUM_KEYS] = {
@@ -160,6 +181,11 @@ mod app {
         52, 53,                           // key 56–57 : HE52–HE53 (AM8)
         59, 60, 61, 62, 63, 64, 65, 66,  // key 58–65 : HE59–HE66 (AM9)
         67, 68, 69, 70,                   // key 66–69 : HE67–HE70 (AM8)
+        71, 72, 73,                       // key 70–72 : HE71–HE73  (AM10 part 1)
+        74, 75, 76, 77, 78, 79, 80,       // key 73–79 : HE74–HE80  (AM11)
+        81, 82, 83, 84,                   // key 80–83 : HE81–HE84  (AM10 part 2)
+        85, 86, 87, 88, 89, 90, 91, 92,   // key 84–91 : HE85–HE92  (AM12)
+        93, 94, 95, 96, 97, 98, 99, 100,  // key 92–99 : HE93–HE100 (AM13)
     ];
 
     use crate::midi_sender::MidiSender;
@@ -383,12 +409,17 @@ mod app {
             Daisy22<Analog>, // AM8 → A7 (ADC_7 / PA5,  ch 19)
             Daisy23<Analog>, // AM9 → A8 (ADC_8 / PA4,  ch 18)
         ),
-        s0: Daisy7<Output<PushPull>>,   // MUX_SELECT_0
-        s1: Daisy8<Output<PushPull>>,   // MUX_SELECT_1
-        s2: Daisy9<Output<PushPull>>,   // MUX_SELECT_2
-        led1: Daisy6<Output<PushPull>>, // active-low
-        led2: Daisy5<Output<PushPull>>, // active-low
-        led3: Daisy1<Output<PushPull>>, // active-low
+        enb_a: Daisy4<Output<PushPull>>, // U1 A0 (ENB_A, D4)
+        enb_b: Daisy3<Output<PushPull>>, // U1 A1 (ENB_B, D3)
+        enb_c: Daisy2<Output<PushPull>>, // U1 A2 (ENB_C, D2)
+        adc_pin_a9: Daisy24<Analog>,     // AM10+AM11 shared (PA1 ch17)
+        adc_pin_a10: Daisy25<Analog>,    // AM12+AM13 shared (PA0 ch16)
+        s0: Daisy7<Output<PushPull>>,    // MUX_SELECT_0
+        s1: Daisy8<Output<PushPull>>,    // MUX_SELECT_1
+        s2: Daisy9<Output<PushPull>>,    // MUX_SELECT_2
+        led1: Daisy6<Output<PushPull>>,  // active-low
+        led2: Daisy5<Output<PushPull>>,  // active-low
+        led3: Daisy1<Output<PushPull>>,  // active-low
         timer2: timer::Timer<stm32::TIM2>,
         mux_raw: MuxRaw,
         midi_sender: MidiSender,
@@ -438,6 +469,30 @@ mod app {
             system.gpio.daisy23.take().expect("daisy23").into_analog(), // AM9 A8
         );
 
+        let mut enb_a = system
+            .gpio
+            .daisy4
+            .take()
+            .expect("daisy4")
+            .into_push_pull_output();
+        let mut enb_b = system
+            .gpio
+            .daisy3
+            .take()
+            .expect("daisy3")
+            .into_push_pull_output();
+        let mut enb_c = system
+            .gpio
+            .daisy2
+            .take()
+            .expect("daisy2")
+            .into_push_pull_output();
+        let mut adc_pin_a9 = system.gpio.daisy24.take().expect("daisy24").into_analog();
+        let mut adc_pin_a10 = system.gpio.daisy25.take().expect("daisy25").into_analog();
+        enb_a.set_low();
+        enb_b.set_low();
+        enb_c.set_low(); // select AM10
+
         let mut adc = system.adc1.enable();
         adc.set_resolution(ADC_RESOLUTION);
         adc.set_sample_time(ADC_SAMPLE_TIME);
@@ -459,6 +514,19 @@ mod app {
                     slot_count[mux][ch] += 1;
                 }
                 cortex_m::asm::delay(480 * 10);
+                // AM10–AM13 via decoder
+                for decoder_idx in 0..4u8 {
+                    set_decoder(decoder_idx, &mut enb_a, &mut enb_b, &mut enb_c);
+                    cortex_m::asm::delay(480 * 5);
+                    let mux_idx = 9 + decoder_idx as usize;
+                    let r = if decoder_idx < 2 {
+                        adc.read(&mut adc_pin_a9).unwrap_or(0u32) as u16
+                    } else {
+                        adc.read(&mut adc_pin_a10).unwrap_or(0u32) as u16
+                    };
+                    slot_sum[mux_idx][ch] += r as u32;
+                    slot_count[mux_idx][ch] += 1;
+                }
             }
         }
 
@@ -611,6 +679,11 @@ mod app {
                 audio: system.audio,
                 adc,
                 adc_pins,
+                enb_a,
+                enb_b,
+                enb_c,
+                adc_pin_a9,
+                adc_pin_a10,
                 s0,
                 s1,
                 s2,
@@ -669,7 +742,7 @@ mod app {
 
     #[task(
         binds = TIM2,
-        local  = [timer2, adc, adc_pins, s0, s1, s2, mux_raw, filters, led1, led2, led3],
+        local  = [timer2, adc, adc_pins, enb_a, enb_b, enb_c, adc_pin_a9, adc_pin_a10, s0, s1, s2, mux_raw, filters, led1, led2, led3],
         shared = [tick_ms, key_states, baselines, event_queue],
         priority = 15
     )]
@@ -695,6 +768,22 @@ mod app {
             let readings = read_all_adcs(ctx.local.adc, ctx.local.adc_pins);
             for mux in 0..NUM_ADC_PINS {
                 ctx.local.mux_raw[mux][ch] = readings[mux];
+            }
+            // AM10–AM13 via U1 decoder
+            for decoder_idx in 0..4u8 {
+                set_decoder(
+                    decoder_idx,
+                    ctx.local.enb_a,
+                    ctx.local.enb_b,
+                    ctx.local.enb_c,
+                );
+                cortex_m::asm::delay(480 * 5);
+                let mux_idx = 9 + decoder_idx as usize;
+                ctx.local.mux_raw[mux_idx][ch] = if decoder_idx < 2 {
+                    ctx.local.adc.read(ctx.local.adc_pin_a9).unwrap_or(0u32) as u16
+                } else {
+                    ctx.local.adc.read(ctx.local.adc_pin_a10).unwrap_or(0u32) as u16
+                };
             }
         }
 
@@ -806,6 +895,26 @@ mod app {
         } else {
             s2.set_low()
         }
+    }
+
+    #[inline(always)]
+    fn set_decoder(
+        idx: u8, // 0=AM10, 1=AM11, 2=AM12, 3=AM13
+        enb_a: &mut Daisy4<Output<PushPull>>,
+        enb_b: &mut Daisy3<Output<PushPull>>,
+        enb_c: &mut Daisy2<Output<PushPull>>,
+    ) {
+        if idx & 0b001 != 0 {
+            enb_a.set_high()
+        } else {
+            enb_a.set_low()
+        }
+        if idx & 0b010 != 0 {
+            enb_b.set_high()
+        } else {
+            enb_b.set_low()
+        }
+        enb_c.set_low(); // A2 always 0 — only Y0–Y3 used for keys
     }
 
     #[inline(always)]
