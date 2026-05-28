@@ -47,7 +47,7 @@ mod app {
     const VELOCITY_WINDOW_MS: u32 = 80;
     const CALIBRATION_SAMPLES: usize = 64;
 
-    const DIAG_LOGGING: bool = true;
+    const DIAG_LOGGING: bool = false;
     const LOG_INTERVAL_MS: u32 = 200;
     const LOG_KEY: usize = 9; // HE10
 
@@ -123,7 +123,23 @@ mod app {
         time::U32Ext,
         timer,
     };
-    use log::info;
+    use log::{info, warn};
+
+    use embedded_graphics::{
+        mono_font::{ascii::FONT_10X20, MonoTextStyleBuilder},
+        pixelcolor::BinaryColor,
+        prelude::*,
+        text::{Baseline, Text},
+    };
+    use fugit::RateExtU32;
+    use ssd1306::{mode::BufferedGraphicsMode, prelude::*, I2CDisplayInterface, Ssd1306};
+    use stm32h7xx_hal::i2c::{I2c, I2cExt};
+
+    type LcdDisplay = Ssd1306<
+        ssd1306::prelude::I2CInterface<I2c<stm32::I2C1>>,
+        ssd1306::prelude::DisplaySize128x32,
+        BufferedGraphicsMode<ssd1306::prelude::DisplaySize128x32>,
+    >;
 
     const ADC_SAMPLE_TIME: AdcSampleTime = AdcSampleTime::T_16;
     const ADC_RESOLUTION: Resolution = Resolution::TwelveBit;
@@ -297,13 +313,17 @@ mod app {
             Daisy18<Analog>, // AM4
             Daisy19<Analog>, // AM7
         ),
-        s0: Daisy7<Output<PushPull>>, // MUX_SELECT_0
-        s1: Daisy8<Output<PushPull>>, // MUX_SELECT_1
-        s2: Daisy9<Output<PushPull>>, // MUX_SELECT_2
+        s0: Daisy7<Output<PushPull>>,   // MUX_SELECT_0
+        s1: Daisy8<Output<PushPull>>,   // MUX_SELECT_1
+        s2: Daisy9<Output<PushPull>>,   // MUX_SELECT_2
+        led1: Daisy6<Output<PushPull>>, // active-low
+        led2: Daisy5<Output<PushPull>>, // active-low
+        led3: Daisy1<Output<PushPull>>, // active-low
         timer2: timer::Timer<stm32::TIM2>,
         mux_raw: MuxRaw,
         midi_sender: MidiSender,
         filters: [ChannelFilter; NUM_KEYS],
+        display: Option<LcdDisplay>,
     }
 
     // ── init ──────────────────────────────────────────────────────────────────
@@ -379,7 +399,9 @@ mod app {
             };
             baselines[key_idx] = avg;
             filters[key_idx].prime(avg);
-            info!("baseline key={} mux={} ch={} val={}", key_idx, mux, ch, avg);
+            if DIAG_LOGGING {
+                info!("baseline key={} mux={} ch={} val={}", key_idx, mux, ch, avg);
+            }
         }
 
         // ── MIDI UART ─────────────────────────────────────────────────────────
@@ -418,6 +440,86 @@ mod app {
         );
         timer2.listen(timer::Event::TimeOut);
 
+        let mut led1 = system
+            .gpio
+            .daisy6
+            .take()
+            .expect("daisy6")
+            .into_push_pull_output();
+        let mut led2 = system
+            .gpio
+            .daisy5
+            .take()
+            .expect("daisy5")
+            .into_push_pull_output();
+        let mut led3 = system
+            .gpio
+            .daisy1
+            .take()
+            .expect("daisy1")
+            .into_push_pull_output();
+
+        // All LEDs off initially (active-low)
+        led1.set_high();
+        led2.set_high();
+        led3.set_high();
+
+        // ── I2C bus recovery ───────────────────────────────────────────────────
+        // Pulse SCL 9× as GPIO to release any device holding SDA low after reset.
+        let mut scl = system
+            .gpio
+            .daisy11
+            .take()
+            .expect("daisy11")
+            .into_push_pull_output();
+        let mut sda = system
+            .gpio
+            .daisy12
+            .take()
+            .expect("daisy12")
+            .into_push_pull_output();
+        scl.set_high();
+        sda.set_high();
+        cortex_m::asm::delay(480 * 10);
+        for _ in 0..9 {
+            scl.set_low();
+            cortex_m::asm::delay(480 * 5);
+            scl.set_high();
+            cortex_m::asm::delay(480 * 5);
+        }
+        // STOP condition: SDA rises while SCL high
+        scl.set_low();
+        cortex_m::asm::delay(480 * 5);
+        sda.set_low();
+        cortex_m::asm::delay(480 * 5);
+        scl.set_high();
+        cortex_m::asm::delay(480 * 5);
+        sda.set_high();
+        cortex_m::asm::delay(480 * 10);
+
+        // ── I2C + SSD1306 display ─────────────────────────────────────────────
+        let scl = scl
+            .into_alternate::<4>()
+            .internal_pull_up(true)
+            .set_open_drain();
+        let sda = sda
+            .into_alternate::<4>()
+            .internal_pull_up(true)
+            .set_open_drain();
+        let i2c = device.I2C1.i2c(
+            (scl, sda),
+            100_u32.kHz(),
+            ccdr.peripheral.I2C1,
+            &ccdr.clocks,
+        );
+        let i2c_interface = I2CDisplayInterface::new_custom_address(i2c, 0x3C);
+        // Only construct the driver here — no I2C bus traffic until display_init task runs.
+        let display = Some(
+            Ssd1306::new(i2c_interface, DisplaySize128x32, DisplayRotation::Rotate0)
+                .into_buffered_graphics_mode(),
+        );
+        display_init::spawn().ok();
+
         set_mux_channel(0, &mut s0, &mut s1, &mut s2);
         info!("keyboard_keyboard ready: {} keys", NUM_KEYS);
 
@@ -435,10 +537,14 @@ mod app {
                 s0,
                 s1,
                 s2,
+                led1,
+                led2,
+                led3,
                 timer2,
                 mux_raw: [[0u16; MUX_CHANNELS]; NUM_MUXES],
                 midi_sender,
                 filters,
+                display,
             },
             init::Monotonics(),
         )
@@ -451,6 +557,31 @@ mod app {
         }
     }
 
+    // Runs once after boot at low priority — I2C bus traffic here, not in init().
+    // If the display hangs or is absent, only this task is affected; timer/LEDs/audio run fine.
+    #[task(local = [display], priority = 1)]
+    fn display_init(ctx: display_init::Context) {
+        let Some(disp) = ctx.local.display.as_mut() else {
+            return;
+        };
+        match disp.init() {
+            Ok(()) => {
+                disp.clear();
+                let style = MonoTextStyleBuilder::new()
+                    .font(&FONT_10X20)
+                    .text_color(BinaryColor::On)
+                    .build();
+                // "key*key" @ FONT_10X20 = 70 px wide, 20 px tall — centered on 128x32
+                Text::with_baseline("key*key", Point::new(29, 6), style, Baseline::Top)
+                    .draw(disp)
+                    .ok();
+                disp.flush().ok();
+                info!("display ok");
+            }
+            Err(_) => warn!("display not found"),
+        }
+    }
+
     #[task(binds = DMA1_STR1, priority = 8, local = [audio])]
     fn audio_handler(ctx: audio_handler::Context) {
         ctx.local.audio.for_each(|left, right| (left, right));
@@ -458,7 +589,7 @@ mod app {
 
     #[task(
         binds = TIM2,
-        local  = [timer2, adc, adc_pins, s0, s1, s2, mux_raw, filters],
+        local  = [timer2, adc, adc_pins, s0, s1, s2, mux_raw, filters, led1, led2, led3],
         shared = [tick_ms, key_states, baselines, event_queue],
         priority = 15
     )]
@@ -499,6 +630,22 @@ mod app {
             let raw = ctx.local.mux_raw[mux as usize][ch as usize];
             let filtered = (ctx.local.filters[LOG_KEY].sum >> FILTER_SHIFT) as u16;
             let baseline = baselines[LOG_KEY];
+        }
+
+        // Sequential LED chase: 500 ms per LED (active-low)
+        let phase = now % 1500;
+        if phase < 500 {
+            ctx.local.led1.set_low();
+            ctx.local.led2.set_high();
+            ctx.local.led3.set_high();
+        } else if phase < 1000 {
+            ctx.local.led1.set_high();
+            ctx.local.led2.set_low();
+            ctx.local.led3.set_high();
+        } else {
+            ctx.local.led1.set_high();
+            ctx.local.led2.set_high();
+            ctx.local.led3.set_low();
         }
 
         if !pending.is_empty() {

@@ -28,3 +28,6 @@ fp-info-cache
 *.xml
 *.csv
 keyboard_keyboard/code/.DS_Store
+keyboard_keyboard/kicad/.DS_Store
+keyboard_keyboard/kicad/~keyboard_keyboard.kicad_pcb.lck
+keyboard_keyboard/kicad/~keyboard_keyboard.kicad_sch.lck
