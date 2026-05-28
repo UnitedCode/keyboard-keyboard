@@ -33,9 +33,9 @@ mod midi_sender;
 mod app {
     const BLOCK_SIZE: usize = 128;
 
-    const NUM_KEYS: usize = 56;
-    const NUM_MUXES: usize = 7;
-    const NUM_ADC_PINS: usize = 7;
+    const NUM_KEYS: usize = 70;
+    const NUM_MUXES: usize = 9;
+    const NUM_ADC_PINS: usize = 9;
     const MUX_CHANNELS: usize = 8;
 
     // ── Thresholds ────────────────────────────────────────────────────────────
@@ -124,6 +124,13 @@ mod app {
         (6, 1),  // HE49 → AM7 X1
         (6, 0),  // HE50 → AM7 X0
         (6, 3),  // HE51 → AM7 X3
+        // AM8 (mux 7, Daisy22) — HE52–HE53, HE67–HE70
+        (7, 4),  // HE52
+        (7, 6),  // HE53
+        // AM9 (mux 8, Daisy23) — HE59–HE66
+        (8, 4), (8, 6), (8, 7), (8, 5), (8, 2), (8, 1), (8, 0), (8, 3),
+        // AM8 continued — HE67–HE70
+        (7, 7), (7, 5), (7, 2), (7, 1),
     ];
 
     const KEY_TO_NOTE: [u8; NUM_KEYS] = {
@@ -150,6 +157,9 @@ mod app {
         41, 42, 43,                      // key 37–39 : HE41–HE43 (AM4)
         38, 39, 40, 54, 55, 56, 57, 58,  // key 40–47 : HE38–40+HE54–58 (AM6)
         44, 45, 46, 47, 48, 49, 50, 51,  // key 48–55 : HE44–HE51 (AM7)
+        52, 53,                           // key 56–57 : HE52–HE53 (AM8)
+        59, 60, 61, 62, 63, 64, 65, 66,  // key 58–65 : HE59–HE66 (AM9)
+        67, 68, 69, 70,                   // key 66–69 : HE67–HE70 (AM8)
     ];
 
     use crate::midi_sender::MidiSender;
@@ -185,7 +195,10 @@ mod app {
         BufferedGraphicsMode<ssd1306::prelude::DisplaySize128x32>,
     >;
 
-    const ADC_SAMPLE_TIME: AdcSampleTime = AdcSampleTime::T_16;
+    // T_1: 1+7.5=8.5 ADC cycles — sufficient for HE sensor push-pull outputs
+    // (<<1ns RC constant through 60Ω mux + 5pF ADC cap).
+    // T_16 (23.5 cycles) was too slow for 9 muxes within a 1ms TIM2 period.
+    const ADC_SAMPLE_TIME: AdcSampleTime = AdcSampleTime::T_1;
     const ADC_RESOLUTION: Resolution = Resolution::TwelveBit;
 
     // ── Filter ────────────────────────────────────────────────────────────────
@@ -367,6 +380,8 @@ mod app {
             Daisy19<Analog>, // AM5 → A4 (ADC_4 / PA6,  ch  3)
             Daisy20<Analog>, // AM6 → A5 (ADC_5 / PC4,  ch  4)
             Daisy21<Analog>, // AM7 → A6 (ADC_6 / PC1,  ch 11)
+            Daisy22<Analog>, // AM8 → A7 (ADC_7 / PA5,  ch 19)
+            Daisy23<Analog>, // AM9 → A8 (ADC_8 / PA4,  ch 18)
         ),
         s0: Daisy7<Output<PushPull>>,   // MUX_SELECT_0
         s1: Daisy8<Output<PushPull>>,   // MUX_SELECT_1
@@ -419,6 +434,8 @@ mod app {
             system.gpio.daisy19.take().expect("daisy19").into_analog(), // AM5 A4
             system.gpio.daisy20.take().expect("daisy20").into_analog(), // AM6 A5
             system.gpio.daisy21.take().expect("daisy21").into_analog(), // AM7 A6
+            system.gpio.daisy22.take().expect("daisy22").into_analog(), // AM8 A7
+            system.gpio.daisy23.take().expect("daisy23").into_analog(), // AM9 A8
         );
 
         let mut adc = system.adc1.enable();
@@ -437,7 +454,7 @@ mod app {
 
             for _ in 0..CALIBRATION_SAMPLES {
                 let readings = read_all_adcs(&mut adc, &mut adc_pins);
-                for mux in 0..NUM_MUXES {
+                for mux in 0..NUM_ADC_PINS {
                     slot_sum[mux][ch] += readings[mux] as u32;
                     slot_count[mux][ch] += 1;
                 }
@@ -676,7 +693,7 @@ mod app {
             set_mux_channel(ch, ctx.local.s0, ctx.local.s1, ctx.local.s2);
             cortex_m::asm::delay(480 * 10);
             let readings = read_all_adcs(ctx.local.adc, ctx.local.adc_pins);
-            for mux in 0..NUM_MUXES {
+            for mux in 0..NUM_ADC_PINS {
                 ctx.local.mux_raw[mux][ch] = readings[mux];
             }
         }
@@ -802,6 +819,8 @@ mod app {
             Daisy19<Analog>, // AM5 → ADC ch  3
             Daisy20<Analog>, // AM6 → ADC ch  4
             Daisy21<Analog>, // AM7 → ADC ch 11
+            Daisy22<Analog>, // AM8 → ADC ch 19
+            Daisy23<Analog>, // AM9 → ADC ch 18
         ),
     ) -> [u16; NUM_ADC_PINS] {
         let r = |res: Result<u32, _>| res.unwrap_or(0) as u16;
@@ -813,6 +832,8 @@ mod app {
             r(adc.read(&mut pins.4)),
             r(adc.read(&mut pins.5)),
             r(adc.read(&mut pins.6)),
+            r(adc.read(&mut pins.7)),
+            r(adc.read(&mut pins.8)),
         ]
     }
 }
