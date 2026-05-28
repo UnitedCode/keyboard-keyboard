@@ -95,16 +95,39 @@ Driven by D2 (A2), D3 (A1), D4 (A0). Outputs active-low `ENABLE_10`–`ENABLE_15
 
 | | Firmware (`src/main.rs`) | PCB (netlist) |
 |-|--------------------------|---------------|
-| Muxes | 5 (AM1–AM5) | 15 (AM1–AM15) |
-| Keys | 40 | ~80+ (HE nets to HE80+) |
-| ADC pins | A0–A4 | A0–A11 |
+| Muxes | 9 (AM1–AM9) | 15 (AM1–AM15) |
+| Keys | 70 (HE1–HE70) | 100 (HE1–HE100) |
+| ADC pins | A0–A8 | A0–A11 |
 | Pair-enable logic | not implemented | needs U1 + D2/D3/D4 |
 
-Expand to full key count:
-1. Add ADC channels A5–A11
-2. Implement U1 enable sequencing for AM10–AM15 pairs
-3. Increase `NUM_MUXES` and `NUM_ADC_PINS`
-4. Update `KEY_MAP`
+### Current pin assignments (AM1–AM9)
+
+| Mux | Daisy Pin | ADC | Sensors |
+|-----|-----------|-----|---------|
+| AM1 | Daisy15 | A0 | HE1–HE8 |
+| AM2 | Daisy16 | A1 | HE9–HE14, HE28–HE29 |
+| AM3 | Daisy17 | A2 | HE15–HE22 |
+| AM4 | Daisy18 | A3 | HE23–HE27, HE41–HE43 |
+| AM5 | Daisy19 | A4 | HE30–HE37 |
+| AM6 | Daisy20 | A5 | HE38–HE40, HE54–HE58 |
+| AM7 | Daisy21 | A6 | HE44–HE51 |
+| AM8 | Daisy22 | A7 | HE52–HE53, HE67–HE70 (X0/X3 unused) |
+| AM9 | Daisy23 | A8 | HE59–HE66 |
+
+### To expand to HE71–HE100 (AM10–AM13)
+
+1. Implement U1 decoder enable sequencing with Daisy2 (ENB_C/A2), Daisy3 (ENB_B/A1), Daisy4 (ENB_A/A0)
+2. Add ADC pins Daisy24 (A9) for AM10/AM11 and Daisy25 (A10) for AM12/AM13
+3. Scan AM10/AM11 alternately per mux-channel by toggling the U1 address
+4. Increase `NUM_MUXES`, `NUM_ADC_PINS`, `NUM_KEYS` and update `KEY_MAP`
+
+> **⚠ Schematic note:** Netlist shows U1 pin 5 (~E1/G2B, active-low enable) tied to +3.3VA.
+> If this reflects the actual PCB, the 74HC138 decoder is permanently disabled and
+> AM10–AM15 will be non-functional. Verify the physical board before implementing.
+
+> Note: AM14/AM15 mux outputs are connected to trim pots (RV1–RV12), not hall-effect
+> sensors. AM15 X0–X3 are tied to GND. AM14/AM15 Inh pins are tied to GND via U1 Y6/Y7
+> (which are also grounded), so these muxes are always enabled on the shared A11 line.
 
 ---
 
