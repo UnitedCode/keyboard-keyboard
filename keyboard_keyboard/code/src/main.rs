@@ -1,26 +1,22 @@
-//! hall_effect_keyboard — Daisy Seed + SN74LV4051A × 9 + MT9102ET × 70
+//! hall_effect_keyboard — Daisy Seed + SN74LV4051A × 5 + MT9102ET × 40
 //! MIDI output over USART1 at 31250 baud
 //!
 //! ## Pin mapping (see HARDWARE.md for full reference):
 //!
-//! Select lines (shared by all 15 muxes):
+//! Select lines (shared by all muxes):
 //!   Daisy7  (SPI1_CS)   → MUX_SELECT_0 (A / bit 0)
 //!   Daisy8  (SPI1_SCK)  → MUX_SELECT_1 (B / bit 1)
 //!   Daisy9  (SPI1_POCI) → MUX_SELECT_2 (C / bit 2)
 //!
-//! Mux outputs (ADC_0–ADC_6 = dedicated; A7/A8 = DAC pins repurposed as ADC):
+//! Mux outputs (Daisy15–19 = ADC_0–ADC_4):
 //!   Daisy15 (ADC_0 / PC0) → AM1  (HE1–HE8)
 //!   Daisy16 (ADC_1 / PA3) → AM2  (HE9–HE14, HE28–HE29)
 //!   Daisy17 (ADC_2 / PB1) → AM3  (HE15–HE22)
 //!   Daisy18 (ADC_3 / PA7) → AM4  (HE23–HE27, HE41–HE43)
 //!   Daisy19 (ADC_4 / PA6) → AM5  (HE30–HE37)
-//!   Daisy20 (ADC_5 / PC4) → AM6  (HE38–HE40, HE54–HE58)
-//!   Daisy21 (ADC_6 / PC1) → AM7  (HE44–HE51)
-//!   Daisy22 (A7  / PA5)   → AM8  (HE52–HE53, HE67–HE70; X0/X3 unused)
-//!   Daisy23 (A8  / PA4)   → AM9  (HE59–HE66)
 //!
-//! AM10–AM13 (HE71–HE100) share ADC pins A9/A10 and need the 74HC138 (U1)
-//! decoder driven by Daisy2/3/4 — not yet implemented (see HARDWARE.md).
+//! To expand: add Daisy20 (AM6), Daisy21 (AM7), then confirm those ADC channels
+//! work before adding Daisy22/23 (ADC channels 18/19 — verify HAL support first).
 
 #![no_main]
 #![no_std]
@@ -37,9 +33,9 @@ mod midi_sender;
 mod app {
     const BLOCK_SIZE: usize = 128;
 
-    const NUM_KEYS: usize = 70;
-    const NUM_MUXES: usize = 9;
-    const NUM_ADC_PINS: usize = 9;
+    const NUM_KEYS: usize = 56;
+    const NUM_MUXES: usize = 7;
+    const NUM_ADC_PINS: usize = 7;
     const MUX_CHANNELS: usize = 8;
 
     // ── Thresholds ────────────────────────────────────────────────────────────
@@ -54,13 +50,13 @@ mod app {
     const VELOCITY_WINDOW_MS: u32 = 80;
     const CALIBRATION_SAMPLES: usize = 64;
 
-    const DIAG_LOGGING: bool = false;
-    const LOG_INTERVAL_MS: u32 = 200;
-    const LOG_KEY: usize = 9; // HE10 (AM2 X6)
+    const DIAG_LOGGING: bool = false; // set true to see raw ADC / calibration logs
+    const LOG_INTERVAL_MS: u32 = 500;
+    const LOG_KEY: usize = 0; // HE1 (AM1 X4) — first key
 
     // ── Key map ───────────────────────────────────────────────────────────────
-    // (mux_index, channel) ordered by HE sensor number.
-    // mux_index maps to: 0=AM1 1=AM2 2=AM3 3=AM4 4=AM5 5=AM6 6=AM7 7=AM8 8=AM9
+    // (mux_index, channel) in HE sensor order.
+    // mux_index 0=AM1 1=AM2 2=AM3 3=AM4 4=AM5 5=AM6 6=AM7  (Daisy15–21 / A0–A6)
     #[rustfmt::skip]
     const KEY_MAP: [(u8, u8); NUM_KEYS] = [
         // AM1 (mux 0, Daisy15/A0) — HE1–HE8
@@ -106,14 +102,19 @@ mod app {
         (4, 1),  // HE35 → AM5 X1
         (4, 0),  // HE36 → AM5 X0
         (4, 3),  // HE37 → AM5 X3
-        // AM6 (mux 5, Daisy20/A5) — HE38–HE40
-        (5, 4),  // HE38 → AM6 X4
-        (5, 6),  // HE39 → AM6 X6
-        (5, 7),  // HE40 → AM6 X7
         // AM4 continued — HE41–HE43
         (3, 1),  // HE41 → AM4 X1
         (3, 0),  // HE42 → AM4 X0
         (3, 3),  // HE43 → AM4 X3
+        // AM6 (mux 5, Daisy20/A5) — HE38–HE40, HE54–HE58
+        (5, 4),  // HE38 → AM6 X4
+        (5, 6),  // HE39 → AM6 X6
+        (5, 7),  // HE40 → AM6 X7
+        (5, 5),  // HE54 → AM6 X5
+        (5, 2),  // HE55 → AM6 X2
+        (5, 1),  // HE56 → AM6 X1
+        (5, 0),  // HE57 → AM6 X0
+        (5, 3),  // HE58 → AM6 X3
         // AM7 (mux 6, Daisy21/A6) — HE44–HE51
         (6, 4),  // HE44 → AM7 X4
         (6, 6),  // HE45 → AM7 X6
@@ -123,29 +124,6 @@ mod app {
         (6, 1),  // HE49 → AM7 X1
         (6, 0),  // HE50 → AM7 X0
         (6, 3),  // HE51 → AM7 X3
-        // AM8 (mux 7, Daisy22/A7) — HE52–HE53 (X0/X3 tied to GND)
-        (7, 4),  // HE52 → AM8 X4
-        (7, 6),  // HE53 → AM8 X6
-        // AM6 continued — HE54–HE58
-        (5, 5),  // HE54 → AM6 X5
-        (5, 2),  // HE55 → AM6 X2
-        (5, 1),  // HE56 → AM6 X1
-        (5, 0),  // HE57 → AM6 X0
-        (5, 3),  // HE58 → AM6 X3
-        // AM9 (mux 8, Daisy23/A8) — HE59–HE66
-        (8, 4),  // HE59 → AM9 X4
-        (8, 6),  // HE60 → AM9 X6
-        (8, 7),  // HE61 → AM9 X7
-        (8, 5),  // HE62 → AM9 X5
-        (8, 2),  // HE63 → AM9 X2
-        (8, 1),  // HE64 → AM9 X1
-        (8, 0),  // HE65 → AM9 X0
-        (8, 3),  // HE66 → AM9 X3
-        // AM8 continued — HE67–HE70 (X0/X3 tied to GND)
-        (7, 7),  // HE67 → AM8 X7
-        (7, 5),  // HE68 → AM8 X5
-        (7, 2),  // HE69 → AM8 X2
-        (7, 1),  // HE70 → AM8 X1
     ];
 
     const KEY_TO_NOTE: [u8; NUM_KEYS] = {
@@ -169,13 +147,9 @@ mod app {
         23, 24, 25, 26, 27,              // key 22–26 : HE23–HE27 (AM4)
         28, 29,                          // key 27–28 : HE28–HE29 (AM2)
         30, 31, 32, 33, 34, 35, 36, 37, // key 29–36 : HE30–HE37 (AM5)
-        38, 39, 40,                      // key 37–39 : HE38–HE40 (AM6)
-        41, 42, 43,                      // key 40–42 : HE41–HE43 (AM4)
-        44, 45, 46, 47, 48, 49, 50, 51, // key 43–50 : HE44–HE51 (AM7)
-        52, 53,                          // key 51–52 : HE52–HE53 (AM8)
-        54, 55, 56, 57, 58,              // key 53–57 : HE54–HE58 (AM6)
-        59, 60, 61, 62, 63, 64, 65, 66, // key 58–65 : HE59–HE66 (AM9)
-        67, 68, 69, 70,                  // key 66–69 : HE67–HE70 (AM8)
+        41, 42, 43,                      // key 37–39 : HE41–HE43 (AM4)
+        38, 39, 40, 54, 55, 56, 57, 58,  // key 40–47 : HE38–40+HE54–58 (AM6)
+        44, 45, 46, 47, 48, 49, 50, 51,  // key 48–55 : HE44–HE51 (AM7)
     ];
 
     use crate::midi_sender::MidiSender;
@@ -278,7 +252,12 @@ mod app {
             key_idx: usize,
         ) -> Option<KeyEvent> {
             self.last_adc = adc_value;
-            let delta = adc_value.saturating_sub(baseline);
+            // Absolute delta — detects press in either direction (north or south pole).
+            let delta = if adc_value >= baseline {
+                adc_value - baseline
+            } else {
+                baseline - adc_value
+            };
 
             match self.phase {
                 KeyPhase::Idle => {
@@ -381,15 +360,13 @@ mod app {
         audio: audio::Audio,
         adc: Adc<stm32::ADC1, adc::Enabled>,
         adc_pins: (
-            Daisy15<Analog>, // AM1 → A0
-            Daisy16<Analog>, // AM2 → A1
-            Daisy17<Analog>, // AM3 → A2
-            Daisy18<Analog>, // AM4 → A3
-            Daisy19<Analog>, // AM5 → A4
-            Daisy20<Analog>, // AM6 → A5
-            Daisy21<Analog>, // AM7 → A6
-            Daisy22<Analog>, // AM8 → A7 (DAC_OUT2 repurposed)
-            Daisy23<Analog>, // AM9 → A8 (DAC_OUT1 repurposed)
+            Daisy15<Analog>, // AM1 → A0 (ADC_0 / PC0,  ch 10)
+            Daisy16<Analog>, // AM2 → A1 (ADC_1 / PA3,  ch 15)
+            Daisy17<Analog>, // AM3 → A2 (ADC_2 / PB1,  ch  5)
+            Daisy18<Analog>, // AM4 → A3 (ADC_3 / PA7,  ch  7)
+            Daisy19<Analog>, // AM5 → A4 (ADC_4 / PA6,  ch  3)
+            Daisy20<Analog>, // AM6 → A5 (ADC_5 / PC4,  ch  4)
+            Daisy21<Analog>, // AM7 → A6 (ADC_6 / PC1,  ch 11)
         ),
         s0: Daisy7<Output<PushPull>>,   // MUX_SELECT_0
         s1: Daisy8<Output<PushPull>>,   // MUX_SELECT_1
@@ -442,8 +419,6 @@ mod app {
             system.gpio.daisy19.take().expect("daisy19").into_analog(), // AM5 A4
             system.gpio.daisy20.take().expect("daisy20").into_analog(), // AM6 A5
             system.gpio.daisy21.take().expect("daisy21").into_analog(), // AM7 A6
-            system.gpio.daisy22.take().expect("daisy22").into_analog(), // AM8 A7
-            system.gpio.daisy23.take().expect("daisy23").into_analog(), // AM9 A8
         );
 
         let mut adc = system.adc1.enable();
@@ -604,8 +579,8 @@ mod app {
 
         set_mux_channel(0, &mut s0, &mut s1, &mut s2);
         info!(
-            "keyboard_keyboard ready: {} keys on {} muxes (AM1–AM9)",
-            NUM_KEYS, NUM_MUXES
+            "keyboard_keyboard ready: {} keys on {} muxes (DIAG_LOGGING={})",
+            NUM_KEYS, NUM_MUXES, DIAG_LOGGING
         );
 
         (
@@ -642,13 +617,16 @@ mod app {
         }
     }
 
-    // Runs once after boot at low priority — I2C bus traffic here, not in init().
-    // If the display hangs or is absent, only this task is affected; timer/LEDs/audio run fine.
+    // Runs once after boot at priority 1. display_init is intentionally below
+    // process_events (priority 2) so a slow/absent display never blocks key events.
     #[task(local = [display], priority = 1)]
     fn display_init(ctx: display_init::Context) {
+        info!("display_init start");
         let Some(disp) = ctx.local.display.as_mut() else {
+            warn!("display resource is None");
             return;
         };
+        info!("display calling init");
         match disp.init() {
             Ok(()) => {
                 disp.clear();
@@ -685,6 +663,12 @@ mod app {
             *t = t.wrapping_add(1);
             *t
         });
+
+        // Heartbeat BEFORE scan — confirms timer is alive even if ADC scan hangs.
+        if now % 2000 == 0 {
+            info!("tick={}", now);
+        }
+
         let baselines = ctx.shared.baselines.lock(|b| *b);
         let mut pending: heapless::Vec<(usize, KeyEvent), 32> = heapless::Vec::new();
 
@@ -711,13 +695,26 @@ mod app {
         });
 
         if DIAG_LOGGING && now % LOG_INTERVAL_MS == 0 {
-            let (mux, ch) = KEY_MAP[LOG_KEY];
-            let raw = ctx.local.mux_raw[mux as usize][ch as usize];
-            let filtered = (ctx.local.filters[LOG_KEY].sum >> FILTER_SHIFT) as u16;
-            let baseline = baselines[LOG_KEY];
+            // Print raw ADC for all 5 mux outputs at the current mux channel state.
+            // Row format: AM1..AM5 raw values + signed delta from baseline for LOG_KEY.
+            let (lk_mux, lk_ch) = KEY_MAP[LOG_KEY];
+            let lk_raw = ctx.local.mux_raw[lk_mux as usize][lk_ch as usize];
+            let lk_filt = (ctx.local.filters[LOG_KEY].sum >> FILTER_SHIFT) as u16;
+            let lk_base = baselines[LOG_KEY];
+            let lk_delta: i32 = lk_filt as i32 - lk_base as i32;
             info!(
-                "DIAG key={} HE{} raw={} filt={} base={}",
-                LOG_KEY, HE_NUM[LOG_KEY], raw, filtered, baseline
+                "DIAG HE{} raw={} filt={} base={} delta={:+}",
+                HE_NUM[LOG_KEY], lk_raw, lk_filt, lk_base, lk_delta
+            );
+            // Also show a snapshot of all 5 mux outputs for the X4 channel
+            // so you can see which mux is responding to presses.
+            info!(
+                "ADC_X4: AM1={} AM2={} AM3={} AM4={} AM5={}",
+                ctx.local.mux_raw[0][4],
+                ctx.local.mux_raw[1][4],
+                ctx.local.mux_raw[2][4],
+                ctx.local.mux_raw[3][4],
+                ctx.local.mux_raw[4][4],
             );
         }
 
@@ -747,7 +744,7 @@ mod app {
         }
     }
 
-    #[task(shared = [event_queue], local = [midi_sender], priority = 1, capacity = 32)]
+    #[task(shared = [event_queue], local = [midi_sender], priority = 2, capacity = 32)]
     fn process_events(mut ctx: process_events::Context) {
         ctx.shared.event_queue.lock(|queue| {
             while let Some((key_idx, event)) = queue.dequeue() {
@@ -798,15 +795,13 @@ mod app {
     fn read_all_adcs(
         adc: &mut Adc<stm32::ADC1, adc::Enabled>,
         pins: &mut (
-            Daisy15<Analog>, // AM1
-            Daisy16<Analog>, // AM2
-            Daisy17<Analog>, // AM3
-            Daisy18<Analog>, // AM4
-            Daisy19<Analog>, // AM5
-            Daisy20<Analog>, // AM6
-            Daisy21<Analog>, // AM7
-            Daisy22<Analog>, // AM8
-            Daisy23<Analog>, // AM9
+            Daisy15<Analog>, // AM1 → ADC ch 10
+            Daisy16<Analog>, // AM2 → ADC ch 15
+            Daisy17<Analog>, // AM3 → ADC ch  5
+            Daisy18<Analog>, // AM4 → ADC ch  7
+            Daisy19<Analog>, // AM5 → ADC ch  3
+            Daisy20<Analog>, // AM6 → ADC ch  4
+            Daisy21<Analog>, // AM7 → ADC ch 11
         ),
     ) -> [u16; NUM_ADC_PINS] {
         let r = |res: Result<u32, _>| res.unwrap_or(0) as u16;
@@ -818,8 +813,6 @@ mod app {
             r(adc.read(&mut pins.4)),
             r(adc.read(&mut pins.5)),
             r(adc.read(&mut pins.6)),
-            r(adc.read(&mut pins.7)),
-            r(adc.read(&mut pins.8)),
         ]
     }
 }
