@@ -63,7 +63,24 @@
           "width": 0.3
         }
       ],
-      "drc_exclusions": [],
+      "drc_exclusions": [
+        [
+          "courtyards_overlap|181987442|-188880000|298b8b3c-9ed4-411b-81d4-be4f2cad6b67|6bced42f-a322-41d7-93f5-f1bd8de67007",
+          ""
+        ],
+        [
+          "courtyards_overlap|239142768|-188885000|d767d13d-8bd1-419e-a9d5-ba388547efb5|ed637a57-1c23-49d2-a71e-ea4ce9e9dcb8",
+          ""
+        ],
+        [
+          "courtyards_overlap|48639437|-188880000|c2b8f434-1a1a-4aab-b1d8-b66fe2175f61|e0740bb1-0cfe-4c08-9b31-b4b4e71606cd",
+          ""
+        ],
+        [
+          "courtyards_overlap|96274581|-188905000|0ecdaa15-3a76-4be0-a792-046289b44091|663596bb-c794-4807-8ce0-82f4761e23e7",
+          ""
+        ]
+      ],
       "meta": {
         "version": 2
       },
@@ -477,7 +494,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "HE60.kicad_pro",
+    "filename": "keyboard_keyboard.kicad_pro",
     "version": 3
   },
   "net_settings": {
@@ -513,7 +530,7 @@
       "gencad": "",
       "idf": "",
       "netlist": "",
-      "plot": "",
+      "plot": "output/",
       "pos_files": "",
       "specctra_dsn": "",
       "step": "",
@@ -586,14 +603,44 @@
           "label": "Datasheet",
           "name": "Datasheet",
           "show": true
+        },
+        {
+          "group_by": false,
+          "label": "Sim.Device",
+          "name": "Sim.Device",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "Sim.Pins",
+          "name": "Sim.Pins",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "LCSC",
+          "name": "LCSC",
+          "show": true
+        },
+        {
+          "group_by": false,
+          "label": "Description",
+          "name": "Description",
+          "show": false
+        },
+        {
+          "group_by": false,
+          "label": "#",
+          "name": "${ITEM_NUMBER}",
+          "show": false
         }
       ],
       "filter_string": "",
       "group_symbols": true,
       "include_excluded_from_bom": true,
-      "name": "Default Editing",
-      "sort_asc": true,
-      "sort_field": "Reference"
+      "name": "",
+      "sort_asc": false,
+      "sort_field": "LCSC"
     },
     "connection_grid_size": 50.0,
     "drawing": {
@@ -622,7 +669,7 @@
     "meta": {
       "version": 1
     },
-    "net_format_name": "",
+    "net_format_name": "KiCad",
     "page_layout_descr_file": "",
     "plot_directory": "",
     "space_save_all_events": true,

@@ -185,4 +185,15 @@
 		(uuid "c02f17a7-4261-4454-8957-a9a183f2f9cf")
 	)
 	(embedded_fonts no)
+	(model "/Users/nathanbradshaw/Documents/KiCad/9.0/3dmodels/MX1A11NN--3DModel-STEP-510211.STEP"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz -90 -0 -0)
+		)
+	)
 )
