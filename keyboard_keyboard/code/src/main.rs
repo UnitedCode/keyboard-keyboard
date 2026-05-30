@@ -54,6 +54,28 @@ mod app {
     const LOG_INTERVAL_MS: u32 = 500;
     const LOG_KEY: usize = 0; // HE1 (AM1 X4) — first key
 
+    // ── Potentiometers ───────────────────────────────────────────────────────────
+    const NUM_POTS: usize = 12;
+    const POT_SCAN_MS: u32 = 10; // scan pots at 100 Hz
+    const POT_CC_HYSTERESIS: u8 = 2; // min CC change to send
+                                     // (decoder_idx, mux_channel, CC_number)
+                                     // decoder_idx 4 = AM14 (Y4), 5 = AM15 (Y5) — both read via Daisy26 / A11
+    #[rustfmt::skip]
+    const POT_MAP: [(u8, u8, u8); NUM_POTS] = [
+        (4, 4, 20), // RV1  AM14 X4 → CC20
+        (4, 6, 21), // RV2  AM14 X6 → CC21
+        (4, 7, 22), // RV3  AM14 X7 → CC22
+        (4, 5, 23), // RV4  AM14 X5 → CC23
+        (4, 2, 24), // RV5  AM14 X2 → CC24
+        (4, 1, 25), // RV6  AM14 X1 → CC25
+        (4, 0, 26), // RV7  AM14 X0 → CC26
+        (4, 3, 27), // RV8  AM14 X3 → CC27
+        (5, 4, 28), // RV9  AM15 X4 → CC28
+        (5, 6, 29), // RV10 AM15 X6 → CC29
+        (5, 7, 30), // RV11 AM15 X7 → CC30
+        (5, 5, 31), // RV12 AM15 X5 → CC31
+    ];
+
     // ── Key map ───────────────────────────────────────────────────────────────
     // (mux_index, channel) in HE sensor order.
     // mux_index 0=AM1 1=AM2 2=AM3 3=AM4 4=AM5 5=AM6 6=AM7  (Daisy15–21 / A0–A6)
@@ -381,6 +403,7 @@ mod app {
     pub enum KeyEvent {
         NoteOn { velocity: u8 },
         NoteOff,
+        PotChange { cc: u8, value: u8 },
     }
 
     type MuxRaw = [[u16; MUX_CHANNELS]; NUM_MUXES];
@@ -414,12 +437,17 @@ mod app {
         enb_c: Daisy2<Output<PushPull>>, // U1 A2 (ENB_C, D2)
         adc_pin_a9: Daisy24<Analog>,     // AM10+AM11 shared (PA1 ch17)
         adc_pin_a10: Daisy25<Analog>,    // AM12+AM13 shared (PA0 ch16)
-        s0: Daisy7<Output<PushPull>>,    // MUX_SELECT_0
-        s1: Daisy8<Output<PushPull>>,    // MUX_SELECT_1
-        s2: Daisy9<Output<PushPull>>,    // MUX_SELECT_2
-        led1: Daisy6<Output<PushPull>>,  // active-low
-        led2: Daisy5<Output<PushPull>>,  // active-low
-        led3: Daisy1<Output<PushPull>>,  // active-low
+        // Pad 33 (D26/PD11) has no ADC. Fix: solder a wire pad 33 → pad 35,
+        // then leave Daisy26 unconfigured (floating/high-Z, no firmware code).
+        // Pad 35 = A11 / D28 / ADC11 — readable via ADC1.
+        adc_pin_a11: Daisy28<Analog>, // AM14+AM15 pots via pad 35 (A11 / ADC11)
+        pot_last_cc: [u8; NUM_POTS],  // last transmitted CC value per pot
+        s0: Daisy7<Output<PushPull>>, // MUX_SELECT_0
+        s1: Daisy8<Output<PushPull>>, // MUX_SELECT_1
+        s2: Daisy9<Output<PushPull>>, // MUX_SELECT_2
+        led1: Daisy6<Output<PushPull>>, // active-low
+        led2: Daisy5<Output<PushPull>>, // active-low
+        led3: Daisy1<Output<PushPull>>, // active-low
         timer2: timer::Timer<stm32::TIM2>,
         mux_raw: MuxRaw,
         midi_sender: MidiSender,
@@ -489,6 +517,9 @@ mod app {
             .into_push_pull_output();
         let mut adc_pin_a9 = system.gpio.daisy24.take().expect("daisy24").into_analog();
         let mut adc_pin_a10 = system.gpio.daisy25.take().expect("daisy25").into_analog();
+        // Pad 35 (D28 / A11 / ADC11) reads AM14+AM15 pots.
+        // Requires a wire from pad 33 → pad 35 on the Daisy Seed; leave D26 unconfigured.
+        let mut adc_pin_a11 = system.gpio.daisy28.take().expect("daisy28").into_analog();
         enb_a.set_low();
         enb_b.set_low();
         enb_c.set_low(); // select AM10
@@ -684,6 +715,8 @@ mod app {
                 enb_c,
                 adc_pin_a9,
                 adc_pin_a10,
+                adc_pin_a11,
+                pot_last_cc: [255u8; NUM_POTS], // 255 forces CC send on first scan
                 s0,
                 s1,
                 s2,
@@ -742,7 +775,7 @@ mod app {
 
     #[task(
         binds = TIM2,
-        local  = [timer2, adc, adc_pins, enb_a, enb_b, enb_c, adc_pin_a9, adc_pin_a10, s0, s1, s2, mux_raw, filters, led1, led2, led3],
+        local  = [timer2, adc, adc_pins, enb_a, enb_b, enb_c, adc_pin_a9, adc_pin_a10, adc_pin_a11, pot_last_cc, s0, s1, s2, mux_raw, filters, led1, led2, led3],
         shared = [tick_ms, key_states, baselines, event_queue],
         priority = 15
     )]
@@ -824,7 +857,33 @@ mod app {
             );
         }
 
-        // Sequential LED chase: 500 ms per LED (active-low)
+        // ── Pot scan (100 Hz) ─────────────────────────────────────────────────────────
+        // Reads via Daisy28 (pad 35 / A11 / ADC11). Needs wire: pad 33 → pad 35.
+        if now % POT_SCAN_MS == 0 {
+            for (pot_idx, &(dec_idx, mux_ch, cc)) in POT_MAP.iter().enumerate() {
+                set_mux_channel(mux_ch as usize, ctx.local.s0, ctx.local.s1, ctx.local.s2);
+                set_decoder(dec_idx, ctx.local.enb_a, ctx.local.enb_b, ctx.local.enb_c);
+                cortex_m::asm::delay(480 * 5);
+                let raw = ctx.local.adc.read(ctx.local.adc_pin_a11).unwrap_or(0u32) as u16;
+                let cc_val = (raw >> 5) as u8; // 12-bit → 7-bit CC
+                let prev = ctx.local.pot_last_cc[pot_idx];
+                let delta = if cc_val >= prev {
+                    cc_val - prev
+                } else {
+                    prev - cc_val
+                };
+                if delta >= POT_CC_HYSTERESIS {
+                    ctx.local.pot_last_cc[pot_idx] = cc_val;
+                    pending
+                        .push((0, KeyEvent::PotChange { cc, value: cc_val }))
+                        .ok();
+                }
+            }
+            // Restore decoder to key-scan state (AM10 = idx 0, A2 = 0)
+            set_decoder(0, ctx.local.enb_a, ctx.local.enb_b, ctx.local.enb_c);
+        }
+
+        // ── Sequential LED chase: 500 ms per LED (active-low)
         let phase = now % 1500;
         if phase < 500 {
             ctx.local.led1.set_low();
@@ -867,6 +926,10 @@ mod app {
                     KeyEvent::NoteOff => {
                         info!("NoteOff HE{} key={} note={}", he, key_idx, note);
                         ctx.local.midi_sender.note_off(note, 0);
+                    }
+                    KeyEvent::PotChange { cc, value } => {
+                        info!("CC{} = {}", cc, value);
+                        ctx.local.midi_sender.control_change(cc, value);
                     }
                 }
             }
@@ -914,7 +977,12 @@ mod app {
         } else {
             enb_b.set_low()
         }
-        enb_c.set_low(); // A2 always 0 — only Y0–Y3 used for keys
+        // A2 bit: 0 = AM10–13 (keys), 1 = AM14–15 (pots)
+        if idx & 0b100 != 0 {
+            enb_c.set_high()
+        } else {
+            enb_c.set_low()
+        }
     }
 
     #[inline(always)]
