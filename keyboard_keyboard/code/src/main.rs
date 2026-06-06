@@ -33,7 +33,7 @@ mod midi_sender;
 mod app {
     const BLOCK_SIZE: usize = 128;
 
-    const NUM_KEYS: usize = 100;
+    const NUM_SWITCHES: usize = 100;
     const NUM_MUXES: usize = 13;
     const NUM_ADC_PINS: usize = 9;
     const MUX_CHANNELS: usize = 8;
@@ -52,7 +52,16 @@ mod app {
 
     const DIAG_LOGGING: bool = false; // set true to see raw ADC / calibration logs
     const LOG_INTERVAL_MS: u32 = 500;
-    const LOG_KEY: usize = 0; // HE1 (AM1 X4) — first key
+    const LOG_SWITCH: usize = 0; // HE1 (AM1 X4) — first switch
+
+    // ── Drum pad (switches 81–100, MIDI ch 3) ────────────────────────────────────
+    const DRUM_CHANNEL: u8 = 9; // MIDI channel 10 (0-indexed)
+    const DRUM_SWITCH_START: usize = 80; // switch index of first drum pad (HE81)
+    #[rustfmt::skip]
+    const DRUM_NOTE: [u8; 20] = [
+        36, 37, 38, 39, 40, 41, 42, 43, 44, 45, // GM Bass Drum → Pedal Hi-Hat
+        46, 47, 48, 49, 50, 51, 52, 53, 54, 55, // GM Open Hi-Hat → Splash Cymbal
+    ];
 
     // ── Potentiometers ───────────────────────────────────────────────────────────
     const NUM_POTS: usize = 12;
@@ -76,11 +85,11 @@ mod app {
         (5, 5, 31), // RV12 AM15 X5 → CC31
     ];
 
-    // ── Key map ───────────────────────────────────────────────────────────────
+    // ── Switch map ───────────────────────────────────────────────────────────────
     // (mux_index, channel) in HE sensor order.
     // mux_index 0=AM1 1=AM2 2=AM3 3=AM4 4=AM5 5=AM6 6=AM7  (Daisy15–21 / A0–A6)
     #[rustfmt::skip]
-    const KEY_MAP: [(u8, u8); NUM_KEYS] = [
+    const SWITCH_MAP: [(u8, u8); NUM_SWITCHES] = [
         // AM1 (mux 0, Daisy15/A0) — HE1–HE8
         (0, 4),  // HE1  → AM1 X4
         (0, 6),  // HE2  → AM1 X6
@@ -124,19 +133,14 @@ mod app {
         (4, 1),  // HE35 → AM5 X1
         (4, 0),  // HE36 → AM5 X0
         (4, 3),  // HE37 → AM5 X3
+        // AM6 (mux 5, Daisy20/A5) — HE38–HE40
+        (5, 4),  // HE38 → AM6 X4
+        (5, 6),  // HE39 → AM6 X6
+        (5, 7),  // HE40 → AM6 X7
         // AM4 continued — HE41–HE43
         (3, 1),  // HE41 → AM4 X1
         (3, 0),  // HE42 → AM4 X0
         (3, 3),  // HE43 → AM4 X3
-        // AM6 (mux 5, Daisy20/A5) — HE38–HE40, HE54–HE58
-        (5, 4),  // HE38 → AM6 X4
-        (5, 6),  // HE39 → AM6 X6
-        (5, 7),  // HE40 → AM6 X7
-        (5, 5),  // HE54 → AM6 X5
-        (5, 2),  // HE55 → AM6 X2
-        (5, 1),  // HE56 → AM6 X1
-        (5, 0),  // HE57 → AM6 X0
-        (5, 3),  // HE58 → AM6 X3
         // AM7 (mux 6, Daisy21/A6) — HE44–HE51
         (6, 4),  // HE44 → AM7 X4
         (6, 6),  // HE45 → AM7 X6
@@ -149,6 +153,12 @@ mod app {
         // AM8 (mux 7, Daisy22) — HE52–HE53, HE67–HE70
         (7, 4),  // HE52
         (7, 6),  // HE53
+        // AM6 continued — HE54–HE58
+        (5, 5),  // HE54 → AM6 X5
+        (5, 2),  // HE55 → AM6 X2
+        (5, 1),  // HE56 → AM6 X1
+        (5, 0),  // HE57 → AM6 X0
+        (5, 3),  // HE58 → AM6 X3
         // AM9 (mux 8, Daisy23) — HE59–HE66
         (8, 4), (8, 6), (8, 7), (8, 5), (8, 2), (8, 1), (8, 0), (8, 3),
         // AM8 continued — HE67–HE70
@@ -176,38 +186,50 @@ mod app {
         (12, 4), (12, 6), (12, 7), (12, 5), (12, 2), (12, 1), (12, 0), (12, 3),
     ];
 
-    const KEY_TO_NOTE: [u8; NUM_KEYS] = {
-        let pattern = [48u8, 50, 52, 55, 57, 60, 62, 64, 67, 69];
-        let mut notes = [0u8; NUM_KEYS];
-        let mut i = 0;
-        while i < NUM_KEYS {
-            let octave = (i / pattern.len()) as u8;
-            notes[i] = pattern[i % pattern.len()].saturating_add(octave * 12);
-            i += 1;
-        }
-        notes
-    };
+    // Wicki-Hayden layout, derived from HE sensor number at each switch index.
+    // Rows alternate between two whole-tone scales a perfect fourth apart:
+    //   Odd rows  (1,3,5): Gb Ab Bb C D E F# G# A# … (MIDI base 66/78/90)
+    //   Even rows (2,4):   B  C# D# F  G  A  B  C# … (MIDI base 71/83)
+    // Within each row every step right = +2 semitones (whole step).
+    // Row 1 (top/highest) → HE1–14 base 90, row 2 → HE15–29 base 83,
+    // row 3 → HE30–43 base 78, row 4 → HE44–58 base 71,
+    // row 5 (bottom/lowest) → HE59–70 base 66.  Switches 70–99 unused (note 0).
+    const SWITCH_TO_NOTE: [u8; NUM_SWITCHES] = [
+        // Row 1 — HE 1–14  (base 78, whole-tone steps)
+        78, 80, 82, 84, 86, 88, 90, 92, 94, 96, 98, 100, 102, 104,
+        // Row 2 — HE 15–29 (base 71)
+        71, 73, 75, 77, 79, 81, 83, 85, 87, 89, 91, 93, 95, 97, 99,
+        // Row 3 — HE 30–43 (base 66)
+        66, 68, 70, 72, 74, 76, 78, 80, 82, 84, 86, 88, 90, 92,
+        // Row 4 — HE 44–58 (base 59)
+        59, 61, 63, 65, 67, 69, 71, 73, 75, 77, 79, 81, 83, 85, 87,
+        // Row 5 — HE 59–70 (base 54)
+        54, 58, 60, 62, 64, 66, 68, 70, 72, 74, 76,
+        80, // Skip 56 and 78 becuase those keys don't exist on the board
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    ];
 
-    // HE sensor number for each key index — used in log messages.
+    // HE sensor number for each switch index — used in log messages.
     #[rustfmt::skip]
-    const HE_NUM: [u8; NUM_KEYS] = [
-         1,  2,  3,  4,  5,  6,  7,  8, // key  0–7  : HE1–HE8   (AM1)
-         9, 10, 11, 12, 13, 14,          // key  8–13 : HE9–HE14  (AM2)
-        15, 16, 17, 18, 19, 20, 21, 22,  // key 14–21 : HE15–HE22 (AM3)
-        23, 24, 25, 26, 27,              // key 22–26 : HE23–HE27 (AM4)
-        28, 29,                          // key 27–28 : HE28–HE29 (AM2)
-        30, 31, 32, 33, 34, 35, 36, 37, // key 29–36 : HE30–HE37 (AM5)
-        41, 42, 43,                      // key 37–39 : HE41–HE43 (AM4)
-        38, 39, 40, 54, 55, 56, 57, 58,  // key 40–47 : HE38–40+HE54–58 (AM6)
-        44, 45, 46, 47, 48, 49, 50, 51,  // key 48–55 : HE44–HE51 (AM7)
-        52, 53,                           // key 56–57 : HE52–HE53 (AM8)
-        59, 60, 61, 62, 63, 64, 65, 66,  // key 58–65 : HE59–HE66 (AM9)
-        67, 68, 69, 70,                   // key 66–69 : HE67–HE70 (AM8)
-        71, 72, 73,                       // key 70–72 : HE71–HE73  (AM10 part 1)
-        74, 75, 76, 77, 78, 79, 80,       // key 73–79 : HE74–HE80  (AM11)
-        81, 82, 83, 84,                   // key 80–83 : HE81–HE84  (AM10 part 2)
-        85, 86, 87, 88, 89, 90, 91, 92,   // key 84–91 : HE85–HE92  (AM12)
-        93, 94, 95, 96, 97, 98, 99, 100,  // key 92–99 : HE93–HE100 (AM13)
+    const HE_NUM: [u8; NUM_SWITCHES] = [
+         1,  2,  3,  4,  5,  6,  7,  8, // switch  0–7  : HE1–HE8   (AM1)
+         9, 10, 11, 12, 13, 14,          // switch  8–13 : HE9–HE14  (AM2)
+        15, 16, 17, 18, 19, 20, 21, 22,  // switch 14–21 : HE15–HE22 (AM3)
+        23, 24, 25, 26, 27,              // switch 22–26 : HE23–HE27 (AM4)
+        28, 29,                          // switch 27–28 : HE28–HE29 (AM2)
+        30, 31, 32, 33, 34, 35, 36, 37, // switch 29–36 : HE30–HE37 (AM5)
+        38, 39, 40,                      // switch 37–39 : HE38–HE40 (AM6)
+        41, 42, 43,                      // switch 40–42 : HE41–HE43 (AM4)
+        44, 45, 46, 47, 48, 49, 50, 51,  // switch 43–50 : HE44–HE51 (AM7)
+        52, 53,                           // switch 51–52 : HE52–HE53 (AM8)
+        54, 55, 56, 57, 58,               // switch 53–57 : HE54–HE58 (AM6)
+        59, 60, 61, 62, 63, 64, 65, 66,  // switch 58–65 : HE59–HE66 (AM9)
+        67, 68, 69, 70,                   // switch 66–69 : HE67–HE70 (AM8)
+        71, 72, 73,                       // switch 70–72 : HE71–HE73  (AM10 part 1)
+        74, 75, 76, 77, 78, 79, 80,       // switch 73–79 : HE74–HE80  (AM11)
+        81, 82, 83, 84,                   // switch 80–83 : HE81–HE84  (AM10 part 2)
+        85, 86, 87, 88, 89, 90, 91, 92,   // switch 84–91 : HE85–HE92  (AM12)
+        93, 94, 95, 96, 97, 98, 99, 100,  // switch 92–99 : HE93–HE100 (AM13)
     ];
 
     use crate::midi_sender::MidiSender;
@@ -283,23 +305,23 @@ mod app {
 
     // ── State machine ─────────────────────────────────────────────────────────
     #[derive(Clone, Copy, Debug)]
-    pub enum KeyPhase {
+    pub enum SwitchPhase {
         Idle,
         FirstActuated { tick: u32 },
         FullyActuated { velocity: u8 },
     }
 
     #[derive(Clone, Copy)]
-    pub struct KeyState {
-        phase: KeyPhase,
+    pub struct SwitchState {
+        phase: SwitchPhase,
         pub last_adc: u16,
         debounce_count: u8,
     }
 
-    impl KeyState {
+    impl SwitchState {
         const fn new() -> Self {
             Self {
-                phase: KeyPhase::Idle,
+                phase: SwitchPhase::Idle,
                 last_adc: 0,
                 debounce_count: 0,
             }
@@ -310,8 +332,8 @@ mod app {
             adc_value: u16,
             baseline: u16,
             tick: u32,
-            key_idx: usize,
-        ) -> Option<KeyEvent> {
+            switch_idx: usize,
+        ) -> Option<SwitchEvent> {
             self.last_adc = adc_value;
             // Absolute delta — detects press in either direction (north or south pole).
             let delta = if adc_value >= baseline {
@@ -321,17 +343,17 @@ mod app {
             };
 
             match self.phase {
-                KeyPhase::Idle => {
+                SwitchPhase::Idle => {
                     if delta >= FIRST_DELTA {
                         self.debounce_count = self.debounce_count.saturating_add(1);
                         if self.debounce_count >= DEBOUNCE_TICKS {
                             if DIAG_LOGGING {
                                 info!(
-                                    "key={} FirstActuated delta={} adc={} base={}",
-                                    key_idx, delta, adc_value, baseline
+                                    "switch={} FirstActuated delta={} adc={} base={}",
+                                    switch_idx, delta, adc_value, baseline
                                 );
                             }
-                            self.phase = KeyPhase::FirstActuated { tick };
+                            self.phase = SwitchPhase::FirstActuated { tick };
                             self.debounce_count = 0;
                         }
                     } else {
@@ -339,7 +361,7 @@ mod app {
                     }
                     None
                 }
-                KeyPhase::FirstActuated { tick: t1 } => {
+                SwitchPhase::FirstActuated { tick: t1 } => {
                     if delta >= SECOND_DELTA {
                         self.debounce_count = self.debounce_count.saturating_add(1);
                         if self.debounce_count >= DEBOUNCE_TICKS {
@@ -354,20 +376,20 @@ mod app {
                             };
                             if DIAG_LOGGING {
                                 info!(
-                                    "key={} FullyActuated elapsed={}ms vel={}",
-                                    key_idx, elapsed, velocity
+                                    "switch={} FullyActuated elapsed={}ms vel={}",
+                                    switch_idx, elapsed, velocity
                                 );
                             }
-                            self.phase = KeyPhase::FullyActuated { velocity };
+                            self.phase = SwitchPhase::FullyActuated { velocity };
                             self.debounce_count = 0;
-                            Some(KeyEvent::NoteOn { velocity })
+                            Some(SwitchEvent::NoteOn { velocity })
                         } else {
                             None
                         }
                     } else if delta < RELEASE_DELTA {
                         self.debounce_count = self.debounce_count.saturating_add(1);
                         if self.debounce_count >= DEBOUNCE_TICKS {
-                            self.phase = KeyPhase::Idle;
+                            self.phase = SwitchPhase::Idle;
                             self.debounce_count = 0;
                         }
                         None
@@ -376,13 +398,13 @@ mod app {
                         None
                     }
                 }
-                KeyPhase::FullyActuated { .. } => {
+                SwitchPhase::FullyActuated { .. } => {
                     if delta < RELEASE_DELTA {
                         self.debounce_count = self.debounce_count.saturating_add(1);
                         if self.debounce_count >= DEBOUNCE_TICKS {
-                            self.phase = KeyPhase::Idle;
+                            self.phase = SwitchPhase::Idle;
                             self.debounce_count = 0;
-                            Some(KeyEvent::NoteOff)
+                            Some(SwitchEvent::NoteOff)
                         } else {
                             None
                         }
@@ -395,12 +417,12 @@ mod app {
         }
 
         fn is_idle(&self) -> bool {
-            matches!(self.phase, KeyPhase::Idle)
+            matches!(self.phase, SwitchPhase::Idle)
         }
     }
 
     #[derive(Debug)]
-    pub enum KeyEvent {
+    pub enum SwitchEvent {
         NoteOn { velocity: u8 },
         NoteOff,
         PotChange { cc: u8, value: u8 },
@@ -412,9 +434,9 @@ mod app {
     #[shared]
     struct Shared {
         tick_ms: u32,
-        key_states: [KeyState; NUM_KEYS],
-        baselines: [u16; NUM_KEYS],
-        event_queue: heapless::spsc::Queue<(usize, KeyEvent), 64>,
+        switch_states: [SwitchState; NUM_SWITCHES],
+        baselines: [u16; NUM_SWITCHES],
+        event_queue: heapless::spsc::Queue<(usize, SwitchEvent), 64>,
     }
 
     #[local]
@@ -451,7 +473,7 @@ mod app {
         timer2: timer::Timer<stm32::TIM2>,
         mux_raw: MuxRaw,
         midi_sender: MidiSender,
-        filters: [ChannelFilter; NUM_KEYS],
+        filters: [ChannelFilter; NUM_SWITCHES],
         display: Option<LcdDisplay>,
     }
 
@@ -561,19 +583,22 @@ mod app {
             }
         }
 
-        let mut baselines = [0u16; NUM_KEYS];
-        let mut filters = [ChannelFilter::new(); NUM_KEYS];
+        let mut baselines = [0u16; NUM_SWITCHES];
+        let mut filters = [ChannelFilter::new(); NUM_SWITCHES];
 
-        for (key_idx, &(mux, ch)) in KEY_MAP.iter().enumerate() {
+        for (switch_idx, &(mux, ch)) in SWITCH_MAP.iter().enumerate() {
             let avg = if slot_count[mux as usize][ch as usize] > 0 {
                 (slot_sum[mux as usize][ch as usize] / slot_count[mux as usize][ch as usize]) as u16
             } else {
                 0
             };
-            baselines[key_idx] = avg;
-            filters[key_idx].prime(avg);
+            baselines[switch_idx] = avg;
+            filters[switch_idx].prime(avg);
             if DIAG_LOGGING {
-                info!("baseline key={} mux={} ch={} val={}", key_idx, mux, ch, avg);
+                info!(
+                    "baseline switch={} mux={} ch={} val={}",
+                    switch_idx, mux, ch, avg
+                );
             }
         }
 
@@ -695,14 +720,14 @@ mod app {
 
         set_mux_channel(0, &mut s0, &mut s1, &mut s2);
         info!(
-            "keyboard_keyboard ready: {} keys on {} muxes (DIAG_LOGGING={})",
-            NUM_KEYS, NUM_MUXES, DIAG_LOGGING
+            "keyboard_keyboard ready: {} switches on {} muxes (DIAG_LOGGING={})",
+            NUM_SWITCHES, NUM_MUXES, DIAG_LOGGING
         );
 
         (
             Shared {
                 tick_ms: 0,
-                key_states: [KeyState::new(); NUM_KEYS],
+                switch_states: [SwitchState::new(); NUM_SWITCHES],
                 baselines,
                 event_queue: heapless::spsc::Queue::new(),
             },
@@ -776,7 +801,7 @@ mod app {
     #[task(
         binds = TIM2,
         local  = [timer2, adc, adc_pins, enb_a, enb_b, enb_c, adc_pin_a9, adc_pin_a10, adc_pin_a11, pot_last_cc, s0, s1, s2, mux_raw, filters, led1, led2, led3],
-        shared = [tick_ms, key_states, baselines, event_queue],
+        shared = [tick_ms, switch_states, baselines, event_queue],
         priority = 15
     )]
     fn timer_handler(mut ctx: timer_handler::Context) {
@@ -793,7 +818,7 @@ mod app {
         }
 
         let baselines = ctx.shared.baselines.lock(|b| *b);
-        let mut pending: heapless::Vec<(usize, KeyEvent), 32> = heapless::Vec::new();
+        let mut pending: heapless::Vec<(usize, SwitchEvent), 32> = heapless::Vec::new();
 
         for ch in 0..MUX_CHANNELS {
             set_mux_channel(ch, ctx.local.s0, ctx.local.s1, ctx.local.s2);
@@ -820,30 +845,30 @@ mod app {
             }
         }
 
-        ctx.shared.key_states.lock(|states| {
-            for (key_idx, &(mux, ch)) in KEY_MAP.iter().enumerate() {
+        ctx.shared.switch_states.lock(|states| {
+            for (switch_idx, &(mux, ch)) in SWITCH_MAP.iter().enumerate() {
                 let raw = ctx.local.mux_raw[mux as usize][ch as usize];
-                let filtered = ctx.local.filters[key_idx].feed(raw);
+                let filtered = ctx.local.filters[switch_idx].feed(raw);
 
                 if let Some(event) =
-                    states[key_idx].update(filtered, baselines[key_idx], now, key_idx)
+                    states[switch_idx].update(filtered, baselines[switch_idx], now, switch_idx)
                 {
-                    pending.push((key_idx, event)).ok();
+                    pending.push((switch_idx, event)).ok();
                 }
             }
         });
 
         if DIAG_LOGGING && now % LOG_INTERVAL_MS == 0 {
             // Print raw ADC for all 5 mux outputs at the current mux channel state.
-            // Row format: AM1..AM5 raw values + signed delta from baseline for LOG_KEY.
-            let (lk_mux, lk_ch) = KEY_MAP[LOG_KEY];
+            // Row format: AM1..AM5 raw values + signed delta from baseline for LOG_SWITCH.
+            let (lk_mux, lk_ch) = SWITCH_MAP[LOG_SWITCH];
             let lk_raw = ctx.local.mux_raw[lk_mux as usize][lk_ch as usize];
-            let lk_filt = (ctx.local.filters[LOG_KEY].sum >> FILTER_SHIFT) as u16;
-            let lk_base = baselines[LOG_KEY];
+            let lk_filt = (ctx.local.filters[LOG_SWITCH].sum >> FILTER_SHIFT) as u16;
+            let lk_base = baselines[LOG_SWITCH];
             let lk_delta: i32 = lk_filt as i32 - lk_base as i32;
             info!(
                 "DIAG HE{} raw={} filt={} base={} delta={:+}",
-                HE_NUM[LOG_KEY], lk_raw, lk_filt, lk_base, lk_delta
+                HE_NUM[LOG_SWITCH], lk_raw, lk_filt, lk_base, lk_delta
             );
             // Also show a snapshot of all 5 mux outputs for the X4 channel
             // so you can see which mux is responding to presses.
@@ -875,11 +900,11 @@ mod app {
                 if delta >= POT_CC_HYSTERESIS {
                     ctx.local.pot_last_cc[pot_idx] = cc_val;
                     pending
-                        .push((0, KeyEvent::PotChange { cc, value: cc_val }))
+                        .push((0, SwitchEvent::PotChange { cc, value: cc_val }))
                         .ok();
                 }
             }
-            // Restore decoder to key-scan state (AM10 = idx 0, A2 = 0)
+            // Restore decoder to switch-scan state (AM10 = idx 0, A2 = 0)
             set_decoder(0, ctx.local.enb_a, ctx.local.enb_b, ctx.local.enb_c);
         }
 
@@ -912,22 +937,32 @@ mod app {
     #[task(shared = [event_queue], local = [midi_sender], priority = 2, capacity = 32)]
     fn process_events(mut ctx: process_events::Context) {
         ctx.shared.event_queue.lock(|queue| {
-            while let Some((key_idx, event)) = queue.dequeue() {
-                let note = KEY_TO_NOTE[key_idx];
-                let he = HE_NUM[key_idx];
+            while let Some((switch_idx, event)) = queue.dequeue() {
+                let he = HE_NUM[switch_idx];
+                let is_drum = switch_idx >= DRUM_SWITCH_START
+                    && switch_idx < DRUM_SWITCH_START + DRUM_NOTE.len();
+                let (note, channel) = if is_drum {
+                    (DRUM_NOTE[switch_idx - DRUM_SWITCH_START], DRUM_CHANNEL)
+                } else {
+                    (SWITCH_TO_NOTE[switch_idx], 0u8)
+                };
+                if note == 0 {
+                    continue;
+                }
+                ctx.local.midi_sender.set_channel(channel);
                 match event {
-                    KeyEvent::NoteOn { velocity } => {
+                    SwitchEvent::NoteOn { velocity } => {
                         info!(
-                            "NoteOn  HE{} key={} note={} vel={}",
-                            he, key_idx, note, velocity
+                            "NoteOn  HE{} switch={} ch={} note={} vel={}",
+                            he, switch_idx, channel + 1, note, velocity
                         );
                         ctx.local.midi_sender.note_on(note, velocity);
                     }
-                    KeyEvent::NoteOff => {
-                        info!("NoteOff HE{} key={} note={}", he, key_idx, note);
+                    SwitchEvent::NoteOff => {
+                        info!("NoteOff HE{} switch={} ch={} note={}", he, switch_idx, channel + 1, note);
                         ctx.local.midi_sender.note_off(note, 0);
                     }
-                    KeyEvent::PotChange { cc, value } => {
+                    SwitchEvent::PotChange { cc, value } => {
                         info!("CC{} = {}", cc, value);
                         ctx.local.midi_sender.control_change(cc, value);
                     }
@@ -977,7 +1012,7 @@ mod app {
         } else {
             enb_b.set_low()
         }
-        // A2 bit: 0 = AM10–13 (keys), 1 = AM14–15 (pots)
+        // A2 bit: 0 = AM10–13 (switches), 1 = AM14–15 (pots)
         if idx & 0b100 != 0 {
             enb_c.set_high()
         } else {
