@@ -65,7 +65,7 @@ mod app {
 
     // ── Pitch bend sensors (left/right arrow keys) ───────────────────────────────
     const PITCH_BEND_DOWN: usize = 77; // HE78 (left arrow)  → bends pitch down
-    const PITCH_BEND_UP: usize = 79;   // HE80 (right arrow) → bends pitch up
+    const PITCH_BEND_UP: usize = 79; // HE80 (right arrow) → bends pitch up
     const PITCH_BEND_MAX_DELTA: u16 = 400; // ADC counts for full bend travel
     const PITCH_BEND_HYSTERESIS: u16 = 32; // min 14-bit change to send a message
     const PITCH_BEND_INTERVAL_MS: u32 = 5; // send at most every 5 ms (200 Hz)
@@ -74,7 +74,7 @@ mod app {
     const VIBRATO_A: usize = 76; // HE77 (up arrow)   → vibrato depth
     const VIBRATO_B: usize = 78; // HE79 (down arrow) → vibrato depth
     const VIBRATO_MAX_DELTA: u16 = 300; // ADC counts for full vibrato depth
-    const VIBRATO_HYSTERESIS: u8 = 2;   // min CC change to send
+    const VIBRATO_HYSTERESIS: u8 = 2; // min CC change to send
     const VIBRATO_INTERVAL_MS: u32 = 10; // send at most every 10 ms (100 Hz)
 
     // ── Potentiometers ───────────────────────────────────────────────────────────
@@ -902,7 +902,9 @@ mod app {
             let prev_pb = *ctx.local.last_pitch_bend;
             if pb_value.abs_diff(prev_pb) >= PITCH_BEND_HYSTERESIS {
                 *ctx.local.last_pitch_bend = pb_value;
-                pending.push((0, SwitchEvent::PitchBend { value: pb_value })).ok();
+                pending
+                    .push((0, SwitchEvent::PitchBend { value: pb_value }))
+                    .ok();
             }
         }
 
@@ -935,14 +937,20 @@ mod app {
             let delta_a = vib_filt_a.abs_diff(baselines[VIBRATO_A]);
             let delta_b = vib_filt_b.abs_diff(baselines[VIBRATO_B]);
             let max_delta = delta_a.max(delta_b);
-            let cc_val = ((max_delta.min(VIBRATO_MAX_DELTA) as u32 * 127
-                / VIBRATO_MAX_DELTA as u32) as u8)
-                .min(127);
+            let cc_val =
+                ((max_delta.min(VIBRATO_MAX_DELTA) as u32 * 127 / VIBRATO_MAX_DELTA as u32) as u8)
+                    .min(127);
             let prev_vib = *ctx.local.last_vibrato_cc;
             if cc_val.abs_diff(prev_vib) >= VIBRATO_HYSTERESIS {
                 *ctx.local.last_vibrato_cc = cc_val;
                 pending
-                    .push((0, SwitchEvent::PotChange { cc: 1, value: cc_val }))
+                    .push((
+                        0,
+                        SwitchEvent::PotChange {
+                            cc: 1,
+                            value: cc_val,
+                        },
+                    ))
                     .ok();
             }
         }
