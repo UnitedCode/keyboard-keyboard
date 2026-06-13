@@ -271,6 +271,18 @@ mod app {
     const ADC_SAMPLE_TIME: AdcSampleTime = AdcSampleTime::T_1;
     const ADC_RESOLUTION: Resolution = Resolution::TwelveBit;
 
+    type AdcPins = (
+        Daisy15<Analog>,
+        Daisy16<Analog>,
+        Daisy17<Analog>,
+        Daisy18<Analog>,
+        Daisy19<Analog>,
+        Daisy20<Analog>,
+        Daisy21<Analog>,
+        Daisy22<Analog>,
+        Daisy23<Analog>,
+    );
+
     // ── Filter ────────────────────────────────────────────────────────────────
     #[derive(Clone, Copy)]
     pub struct ChannelFilter {
@@ -336,11 +348,7 @@ mod app {
         ) -> Option<SwitchEvent> {
             self.last_adc = adc_value;
             // Absolute delta — detects press in either direction (north or south pole).
-            let delta = if adc_value >= baseline {
-                adc_value - baseline
-            } else {
-                baseline - adc_value
-            };
+            let delta = adc_value.abs_diff(baseline);
 
             match self.phase {
                 SwitchPhase::Idle => {
@@ -416,9 +424,6 @@ mod app {
             }
         }
 
-        fn is_idle(&self) -> bool {
-            matches!(self.phase, SwitchPhase::Idle)
-        }
     }
 
     #[derive(Debug)]
@@ -443,17 +448,7 @@ mod app {
     struct Local {
         audio: audio::Audio,
         adc: Adc<stm32::ADC1, adc::Enabled>,
-        adc_pins: (
-            Daisy15<Analog>, // AM1 → A0 (ADC_0 / PC0,  ch 10)
-            Daisy16<Analog>, // AM2 → A1 (ADC_1 / PA3,  ch 15)
-            Daisy17<Analog>, // AM3 → A2 (ADC_2 / PB1,  ch  5)
-            Daisy18<Analog>, // AM4 → A3 (ADC_3 / PA7,  ch  7)
-            Daisy19<Analog>, // AM5 → A4 (ADC_4 / PA6,  ch  3)
-            Daisy20<Analog>, // AM6 → A5 (ADC_5 / PC4,  ch  4)
-            Daisy21<Analog>, // AM7 → A6 (ADC_6 / PC1,  ch 11)
-            Daisy22<Analog>, // AM8 → A7 (ADC_7 / PA5,  ch 19)
-            Daisy23<Analog>, // AM9 → A8 (ADC_8 / PA4,  ch 18)
-        ),
+        adc_pins: AdcPins,
         enb_a: Daisy4<Output<PushPull>>, // U1 A0 (ENB_A, D4)
         enb_b: Daisy3<Output<PushPull>>, // U1 A1 (ENB_B, D3)
         enb_c: Daisy2<Output<PushPull>>, // U1 A2 (ENB_C, D2)
@@ -541,7 +536,7 @@ mod app {
         let mut adc_pin_a10 = system.gpio.daisy25.take().expect("daisy25").into_analog();
         // Pad 35 (D28 / A11 / ADC11) reads AM14+AM15 pots.
         // Requires a wire from pad 33 → pad 35 on the Daisy Seed; leave D26 unconfigured.
-        let mut adc_pin_a11 = system.gpio.daisy28.take().expect("daisy28").into_analog();
+        let adc_pin_a11 = system.gpio.daisy28.take().expect("daisy28").into_analog();
         enb_a.set_low();
         enb_b.set_low();
         enb_c.set_low(); // select AM10
@@ -615,8 +610,7 @@ mod app {
             .take()
             .expect("daisy14")
             .into_alternate::<7>();
-        let mut midi_config = SerialConfig::default();
-        midi_config.baudrate = 31_250_u32.bps();
+        let midi_config = SerialConfig { baudrate: 31_250_u32.bps(), ..SerialConfig::default() };
         let midi_serial = device
             .USART1
             .serial(
@@ -824,8 +818,8 @@ mod app {
             set_mux_channel(ch, ctx.local.s0, ctx.local.s1, ctx.local.s2);
             cortex_m::asm::delay(480 * 10);
             let readings = read_all_adcs(ctx.local.adc, ctx.local.adc_pins);
-            for mux in 0..NUM_ADC_PINS {
-                ctx.local.mux_raw[mux][ch] = readings[mux];
+            for (mux, &val) in readings.iter().enumerate() {
+                ctx.local.mux_raw[mux][ch] = val;
             }
             // AM10–AM13 via U1 decoder
             for decoder_idx in 0..4u8 {
@@ -892,11 +886,7 @@ mod app {
                 let raw = ctx.local.adc.read(ctx.local.adc_pin_a11).unwrap_or(0u32) as u16;
                 let cc_val = (raw >> 5) as u8; // 12-bit → 7-bit CC
                 let prev = ctx.local.pot_last_cc[pot_idx];
-                let delta = if cc_val >= prev {
-                    cc_val - prev
-                } else {
-                    prev - cc_val
-                };
+                let delta = cc_val.abs_diff(prev);
                 if delta >= POT_CC_HYSTERESIS {
                     ctx.local.pot_last_cc[pot_idx] = cc_val;
                     pending
@@ -1023,17 +1013,7 @@ mod app {
     #[inline(always)]
     fn read_all_adcs(
         adc: &mut Adc<stm32::ADC1, adc::Enabled>,
-        pins: &mut (
-            Daisy15<Analog>, // AM1 → ADC ch 10
-            Daisy16<Analog>, // AM2 → ADC ch 15
-            Daisy17<Analog>, // AM3 → ADC ch  5
-            Daisy18<Analog>, // AM4 → ADC ch  7
-            Daisy19<Analog>, // AM5 → ADC ch  3
-            Daisy20<Analog>, // AM6 → ADC ch  4
-            Daisy21<Analog>, // AM7 → ADC ch 11
-            Daisy22<Analog>, // AM8 → ADC ch 19
-            Daisy23<Analog>, // AM9 → ADC ch 18
-        ),
+        pins: &mut AdcPins,
     ) -> [u16; NUM_ADC_PINS] {
         let r = |res: Result<u32, _>| res.unwrap_or(0) as u16;
         [

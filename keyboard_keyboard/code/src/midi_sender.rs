@@ -6,9 +6,6 @@
 
 use stm32h7xx_hal::{nb, prelude::*, serial::Tx, stm32};
 
-/// MIDI channel (0–15). Channel 1 in musician-speak is 0 here.
-pub const DEFAULT_CHANNEL: u8 = 0;
-
 /// Encodes and sends MIDI messages over UART at 31250 baud.
 pub struct MidiSender {
     tx: Tx<stm32::USART1>,
