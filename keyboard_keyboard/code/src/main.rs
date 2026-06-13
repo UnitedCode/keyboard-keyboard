@@ -423,7 +423,6 @@ mod app {
                 }
             }
         }
-
     }
 
     #[derive(Debug)]
@@ -582,11 +581,9 @@ mod app {
         let mut filters = [ChannelFilter::new(); NUM_SWITCHES];
 
         for (switch_idx, &(mux, ch)) in SWITCH_MAP.iter().enumerate() {
-            let avg = if slot_count[mux as usize][ch as usize] > 0 {
-                (slot_sum[mux as usize][ch as usize] / slot_count[mux as usize][ch as usize]) as u16
-            } else {
-                0
-            };
+            let avg = slot_sum[mux as usize][ch as usize]
+                .checked_div(slot_count[mux as usize][ch as usize])
+                .unwrap_or(0) as u16;
             baselines[switch_idx] = avg;
             filters[switch_idx].prime(avg);
             if DIAG_LOGGING {
@@ -610,7 +607,10 @@ mod app {
             .take()
             .expect("daisy14")
             .into_alternate::<7>();
-        let midi_config = SerialConfig { baudrate: 31_250_u32.bps(), ..SerialConfig::default() };
+        let midi_config = SerialConfig {
+            baudrate: 31_250_u32.bps(),
+            ..SerialConfig::default()
+        };
         let midi_serial = device
             .USART1
             .serial(
@@ -944,12 +944,22 @@ mod app {
                     SwitchEvent::NoteOn { velocity } => {
                         info!(
                             "NoteOn  HE{} switch={} ch={} note={} vel={}",
-                            he, switch_idx, channel + 1, note, velocity
+                            he,
+                            switch_idx,
+                            channel + 1,
+                            note,
+                            velocity
                         );
                         ctx.local.midi_sender.note_on(note, velocity);
                     }
                     SwitchEvent::NoteOff => {
-                        info!("NoteOff HE{} switch={} ch={} note={}", he, switch_idx, channel + 1, note);
+                        info!(
+                            "NoteOff HE{} switch={} ch={} note={}",
+                            he,
+                            switch_idx,
+                            channel + 1,
+                            note
+                        );
                         ctx.local.midi_sender.note_off(note, 0);
                     }
                     SwitchEvent::PotChange { cc, value } => {
