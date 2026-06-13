@@ -63,6 +63,20 @@ mod app {
         46, 47, 48, 49, 50, 51, 52, 53, 54, 55, // GM Open Hi-Hat → Splash Cymbal
     ];
 
+    // ── Pitch bend sensors (left/right arrow keys) ───────────────────────────────
+    const PITCH_BEND_DOWN: usize = 77; // HE78 (left arrow)  → bends pitch down
+    const PITCH_BEND_UP: usize = 79; // HE80 (right arrow) → bends pitch up
+    const PITCH_BEND_MAX_DELTA: u16 = 400; // ADC counts for full bend travel
+    const PITCH_BEND_HYSTERESIS: u16 = 32; // min 14-bit change to send a message
+    const PITCH_BEND_INTERVAL_MS: u32 = 5; // send at most every 5 ms (200 Hz)
+
+    // ── Vibrato sensors (up/down arrow keys) → CC1 (mod wheel) ──────────────────
+    const VIBRATO_A: usize = 76; // HE77 (up arrow)   → vibrato depth
+    const VIBRATO_B: usize = 78; // HE79 (down arrow) → vibrato depth
+    const VIBRATO_MAX_DELTA: u16 = 300; // ADC counts for full vibrato depth
+    const VIBRATO_HYSTERESIS: u8 = 2; // min CC change to send
+    const VIBRATO_INTERVAL_MS: u32 = 10; // send at most every 10 ms (100 Hz)
+
     // ── Potentiometers ───────────────────────────────────────────────────────────
     const NUM_POTS: usize = 12;
     const POT_SCAN_MS: u32 = 10; // scan pots at 100 Hz
@@ -430,6 +444,7 @@ mod app {
         NoteOn { velocity: u8 },
         NoteOff,
         PotChange { cc: u8, value: u8 },
+        PitchBend { value: u16 },
     }
 
     type MuxRaw = [[u16; MUX_CHANNELS]; NUM_MUXES];
@@ -468,6 +483,8 @@ mod app {
         mux_raw: MuxRaw,
         midi_sender: MidiSender,
         filters: [ChannelFilter; NUM_SWITCHES],
+        last_pitch_bend: u16,
+        last_vibrato_cc: u8,
         display: Option<LcdDisplay>,
     }
 
@@ -746,6 +763,8 @@ mod app {
                 mux_raw: [[0u16; MUX_CHANNELS]; NUM_MUXES],
                 midi_sender,
                 filters,
+                last_pitch_bend: 0x2000,
+                last_vibrato_cc: 0,
                 display,
             },
             init::Monotonics(),
@@ -794,7 +813,7 @@ mod app {
 
     #[task(
         binds = TIM2,
-        local  = [timer2, adc, adc_pins, enb_a, enb_b, enb_c, adc_pin_a9, adc_pin_a10, adc_pin_a11, pot_last_cc, s0, s1, s2, mux_raw, filters, led1, led2, led3],
+        local  = [timer2, adc, adc_pins, enb_a, enb_b, enb_c, adc_pin_a9, adc_pin_a10, adc_pin_a11, pot_last_cc, s0, s1, s2, mux_raw, filters, last_pitch_bend, last_vibrato_cc, led1, led2, led3],
         shared = [tick_ms, switch_states, baselines, event_queue],
         priority = 15
     )]
@@ -839,18 +858,55 @@ mod app {
             }
         }
 
+        let mut pb_filt_down = baselines[PITCH_BEND_DOWN];
+        let mut pb_filt_up = baselines[PITCH_BEND_UP];
+        let mut vib_filt_a = baselines[VIBRATO_A];
+        let mut vib_filt_b = baselines[VIBRATO_B];
+
         ctx.shared.switch_states.lock(|states| {
             for (switch_idx, &(mux, ch)) in SWITCH_MAP.iter().enumerate() {
                 let raw = ctx.local.mux_raw[mux as usize][ch as usize];
                 let filtered = ctx.local.filters[switch_idx].feed(raw);
 
-                if let Some(event) =
+                if switch_idx == PITCH_BEND_DOWN {
+                    pb_filt_down = filtered;
+                } else if switch_idx == PITCH_BEND_UP {
+                    pb_filt_up = filtered;
+                } else if switch_idx == VIBRATO_A {
+                    vib_filt_a = filtered;
+                } else if switch_idx == VIBRATO_B {
+                    vib_filt_b = filtered;
+                } else if let Some(event) =
                     states[switch_idx].update(filtered, baselines[switch_idx], now, switch_idx)
                 {
                     pending.push((switch_idx, event)).ok();
                 }
             }
         });
+
+        // Pitch bend from HE71 (bend down) and HE73 (bend up), rate-limited.
+        if now % PITCH_BEND_INTERVAL_MS == 0 {
+            let delta_down = pb_filt_down.abs_diff(baselines[PITCH_BEND_DOWN]);
+            let delta_up = pb_filt_up.abs_diff(baselines[PITCH_BEND_UP]);
+            let pb_value = if delta_down < RELEASE_DELTA && delta_up < RELEASE_DELTA {
+                0x2000u16 // snap to center when both sensors at rest
+            } else {
+                let d_down = delta_down.min(PITCH_BEND_MAX_DELTA);
+                let d_up = delta_up.min(PITCH_BEND_MAX_DELTA);
+                let bend_down = (d_down as u32 * 0x2000 / PITCH_BEND_MAX_DELTA as u32) as u16;
+                let bend_up = (d_up as u32 * 0x1FFF / PITCH_BEND_MAX_DELTA as u32) as u16;
+                (0x2000u16.saturating_sub(bend_down))
+                    .saturating_add(bend_up)
+                    .min(0x3FFF)
+            };
+            let prev_pb = *ctx.local.last_pitch_bend;
+            if pb_value.abs_diff(prev_pb) >= PITCH_BEND_HYSTERESIS {
+                *ctx.local.last_pitch_bend = pb_value;
+                pending
+                    .push((0, SwitchEvent::PitchBend { value: pb_value }))
+                    .ok();
+            }
+        }
 
         if DIAG_LOGGING && now % LOG_INTERVAL_MS == 0 {
             // Print raw ADC for all 5 mux outputs at the current mux channel state.
@@ -874,6 +930,29 @@ mod app {
                 ctx.local.mux_raw[3][4],
                 ctx.local.mux_raw[4][4],
             );
+        }
+
+        // Vibrato depth from HE77/HE79 (up/down arrows) → CC1, rate-limited.
+        if now % VIBRATO_INTERVAL_MS == 0 {
+            let delta_a = vib_filt_a.abs_diff(baselines[VIBRATO_A]);
+            let delta_b = vib_filt_b.abs_diff(baselines[VIBRATO_B]);
+            let max_delta = delta_a.max(delta_b);
+            let cc_val =
+                ((max_delta.min(VIBRATO_MAX_DELTA) as u32 * 127 / VIBRATO_MAX_DELTA as u32) as u8)
+                    .min(127);
+            let prev_vib = *ctx.local.last_vibrato_cc;
+            if cc_val.abs_diff(prev_vib) >= VIBRATO_HYSTERESIS {
+                *ctx.local.last_vibrato_cc = cc_val;
+                pending
+                    .push((
+                        0,
+                        SwitchEvent::PotChange {
+                            cc: 1,
+                            value: cc_val,
+                        },
+                    ))
+                    .ok();
+            }
         }
 
         // ── Pot scan (100 Hz) ─────────────────────────────────────────────────────────
@@ -965,6 +1044,10 @@ mod app {
                     SwitchEvent::PotChange { cc, value } => {
                         info!("CC{} = {}", cc, value);
                         ctx.local.midi_sender.control_change(cc, value);
+                    }
+                    SwitchEvent::PitchBend { value } => {
+                        info!("PitchBend value={}", value);
+                        ctx.local.midi_sender.pitch_bend(value);
                     }
                 }
             }
