@@ -54,6 +54,10 @@ mod app {
     const LOG_INTERVAL_MS: u32 = 500;
     const LOG_SWITCH: usize = 0; // HE1 (AM1 X4) — first switch
 
+    // ── Settings buttons ─────────────────────────────────────────────────────────
+    const SETTINGS_CHAN1: usize = 72; // HE73 → set melody channel to MIDI ch 1
+    const SETTINGS_CHAN2: usize = 75; // HE76 → set melody channel to MIDI ch 2
+
     // ── Drum pad (switches 81–100, MIDI ch 3) ────────────────────────────────────
     const DRUM_CHANNEL: u8 = 9; // MIDI channel 10 (0-indexed)
     const DRUM_SWITCH_START: usize = 80; // switch index of first drum pad (HE81)
@@ -485,6 +489,7 @@ mod app {
         filters: [ChannelFilter; NUM_SWITCHES],
         last_pitch_bend: u16,
         last_vibrato_cc: u8,
+        melody_channel: u8,
         display: Option<LcdDisplay>,
     }
 
@@ -765,6 +770,7 @@ mod app {
                 filters,
                 last_pitch_bend: 0x2000,
                 last_vibrato_cc: 0,
+                melody_channel: 0,
                 display,
             },
             init::Monotonics(),
@@ -1003,17 +1009,25 @@ mod app {
         }
     }
 
-    #[task(shared = [event_queue], local = [midi_sender], priority = 2, capacity = 32)]
+    #[task(shared = [event_queue], local = [midi_sender, melody_channel], priority = 2, capacity = 32)]
     fn process_events(mut ctx: process_events::Context) {
         ctx.shared.event_queue.lock(|queue| {
             while let Some((switch_idx, event)) = queue.dequeue() {
+                if switch_idx == SETTINGS_CHAN1 || switch_idx == SETTINGS_CHAN2 {
+                    if let SwitchEvent::NoteOn { .. } = event {
+                        *ctx.local.melody_channel =
+                            if switch_idx == SETTINGS_CHAN1 { 0 } else { 1 };
+                        info!("melody ch → {}", *ctx.local.melody_channel + 1);
+                    }
+                    continue;
+                }
                 let he = HE_NUM[switch_idx];
                 let is_drum = switch_idx >= DRUM_SWITCH_START
                     && switch_idx < DRUM_SWITCH_START + DRUM_NOTE.len();
                 let (note, channel) = if is_drum {
                     (DRUM_NOTE[switch_idx - DRUM_SWITCH_START], DRUM_CHANNEL)
                 } else {
-                    (SWITCH_TO_NOTE[switch_idx], 0u8)
+                    (SWITCH_TO_NOTE[switch_idx], *ctx.local.melody_channel)
                 };
                 if note == 0 {
                     continue;
