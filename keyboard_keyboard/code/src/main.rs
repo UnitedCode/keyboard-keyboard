@@ -78,6 +78,7 @@ mod app {
     const VIBRATO_A: usize = 76; // HE77 (up arrow)   → vibrato depth
     const VIBRATO_B: usize = 78; // HE79 (down arrow) → vibrato depth
     const VIBRATO_MAX_DELTA: u16 = 300; // ADC counts for full vibrato depth
+    const VIBRATO_DEAD_ZONE: u16 = 30; // ADC counts of noise floor — below this = zero
     const VIBRATO_HYSTERESIS: u8 = 2; // min CC change to send
     const VIBRATO_INTERVAL_MS: u32 = 10; // send at most every 10 ms (100 Hz)
 
@@ -260,7 +261,7 @@ mod app {
         adc::{self, Adc, AdcSampleTime, Resolution},
         gpio::{Analog, Output, PushPull},
         prelude::*,
-        serial::{config::Config as SerialConfig, SerialExt},
+        serial::{config::Config as SerialConfig, Rx, SerialExt},
         stm32,
         time::U32Ext,
         timer,
@@ -460,6 +461,7 @@ mod app {
         switch_states: [SwitchState; NUM_SWITCHES],
         baselines: [u16; NUM_SWITCHES],
         event_queue: heapless::spsc::Queue<(usize, SwitchEvent), 64>,
+        midi_tx_flag: bool,
     }
 
     #[local]
@@ -490,6 +492,9 @@ mod app {
         last_pitch_bend: u16,
         last_vibrato_cc: u8,
         melody_channel: u8,
+        midi_rx: Rx<stm32::USART1>,
+        led1_off_at: u32,
+        led2_off_at: u32,
         display: Option<LcdDisplay>,
     }
 
@@ -642,7 +647,7 @@ mod app {
                 &ccdr.clocks,
             )
             .unwrap();
-        let (midi_tx, _) = midi_serial.split();
+        let (midi_tx, midi_rx) = midi_serial.split();
         let midi_sender = MidiSender::new(midi_tx, 0);
 
         // ── Timer2 @ 1 kHz ────────────────────────────────────────────────────
@@ -746,6 +751,7 @@ mod app {
                 switch_states: [SwitchState::new(); NUM_SWITCHES],
                 baselines,
                 event_queue: heapless::spsc::Queue::new(),
+                midi_tx_flag: false,
             },
             Local {
                 audio: system.audio,
@@ -771,6 +777,9 @@ mod app {
                 last_pitch_bend: 0x2000,
                 last_vibrato_cc: 0,
                 melody_channel: 0,
+                midi_rx,
+                led1_off_at: 0,
+                led2_off_at: 0,
                 display,
             },
             init::Monotonics(),
@@ -819,8 +828,8 @@ mod app {
 
     #[task(
         binds = TIM2,
-        local  = [timer2, adc, adc_pins, enb_a, enb_b, enb_c, adc_pin_a9, adc_pin_a10, adc_pin_a11, pot_last_cc, s0, s1, s2, mux_raw, filters, last_pitch_bend, last_vibrato_cc, led1, led2, led3],
-        shared = [tick_ms, switch_states, baselines, event_queue],
+        local  = [timer2, adc, adc_pins, enb_a, enb_b, enb_c, adc_pin_a9, adc_pin_a10, adc_pin_a11, pot_last_cc, s0, s1, s2, mux_raw, filters, last_pitch_bend, last_vibrato_cc, led1, led2, led3, midi_rx, led1_off_at, led2_off_at],
+        shared = [tick_ms, switch_states, baselines, event_queue, midi_tx_flag],
         priority = 15
     )]
     fn timer_handler(mut ctx: timer_handler::Context) {
@@ -942,7 +951,7 @@ mod app {
         if now % VIBRATO_INTERVAL_MS == 0 {
             let delta_a = vib_filt_a.abs_diff(baselines[VIBRATO_A]);
             let delta_b = vib_filt_b.abs_diff(baselines[VIBRATO_B]);
-            let max_delta = delta_a.max(delta_b);
+            let max_delta = delta_a.max(delta_b).saturating_sub(VIBRATO_DEAD_ZONE);
             let cc_val =
                 ((max_delta.min(VIBRATO_MAX_DELTA) as u32 * 127 / VIBRATO_MAX_DELTA as u32) as u8)
                     .min(127);
@@ -983,20 +992,32 @@ mod app {
             set_decoder(0, ctx.local.enb_a, ctx.local.enb_b, ctx.local.enb_c);
         }
 
-        // ── Sequential LED chase: 500 ms per LED (active-low)
-        let phase = now % 1500;
-        if phase < 500 {
+        // D1: flash on MIDI TX (active-low, 50 ms pulse)
+        let tx_fired = ctx.shared.midi_tx_flag.lock(|f| core::mem::replace(f, false));
+        if tx_fired {
+            *ctx.local.led1_off_at = now.wrapping_add(50);
+        }
+        if now.wrapping_sub(*ctx.local.led1_off_at) > 0x8000_0000u32 {
             ctx.local.led1.set_low();
-            ctx.local.led2.set_high();
-            ctx.local.led3.set_high();
-        } else if phase < 1000 {
-            ctx.local.led1.set_high();
-            ctx.local.led2.set_low();
-            ctx.local.led3.set_high();
         } else {
             ctx.local.led1.set_high();
+        }
+
+        // D2: flash on MIDI RX (active-low, 50 ms pulse)
+        while let Ok(_) = ctx.local.midi_rx.read() {
+            *ctx.local.led2_off_at = now.wrapping_add(50);
+        }
+        if now.wrapping_sub(*ctx.local.led2_off_at) > 0x8000_0000u32 {
+            ctx.local.led2.set_low();
+        } else {
             ctx.local.led2.set_high();
+        }
+
+        // D3: heartbeat blink at 1 Hz (active-low)
+        if now % 1000 < 500 {
             ctx.local.led3.set_low();
+        } else {
+            ctx.local.led3.set_high();
         }
 
         if !pending.is_empty() {
@@ -1009,8 +1030,9 @@ mod app {
         }
     }
 
-    #[task(shared = [event_queue], local = [midi_sender, melody_channel], priority = 2, capacity = 32)]
+    #[task(shared = [event_queue, midi_tx_flag], local = [midi_sender, melody_channel], priority = 2, capacity = 32)]
     fn process_events(mut ctx: process_events::Context) {
+        let mut did_send = false;
         ctx.shared.event_queue.lock(|queue| {
             while let Some((switch_idx, event)) = queue.dequeue() {
                 if switch_idx == SETTINGS_CHAN1 || switch_idx == SETTINGS_CHAN2 {
@@ -1064,8 +1086,12 @@ mod app {
                         ctx.local.midi_sender.pitch_bend(value);
                     }
                 }
+                did_send = true;
             }
         });
+        if did_send {
+            ctx.shared.midi_tx_flag.lock(|f| *f = true);
+        }
     }
 
     #[inline(always)]
