@@ -17,6 +17,8 @@ pub const FILTER_SHIFT: u32 = 2;
 pub const VELOCITY_WINDOW_MS: u32 = 80;
 pub const CALIBRATION_SAMPLES: usize = 64;
 
+pub const SPLASH_DURATION_MS: u32 = 3000;
+
 pub const DIAG_LOGGING: bool = false; // set true to see raw ADC / calibration logs
 pub const LOG_INTERVAL_MS: u32 = 500;
 pub const LOG_SWITCH: usize = 0; // HE1 — first switch
@@ -53,22 +55,23 @@ pub const VIBRATO_INTERVAL_MS: u32 = 10;
 pub const NUM_POTS: usize = 12;
 pub const POT_SCAN_MS: u32 = 10;
 pub const POT_CC_HYSTERESIS: u8 = 2;
-// (decoder_idx, mux_channel, CC_number)
-// decoder_idx 4 = AM14 (Y4), 5 = AM15 (Y5) — both read via Daisy28 / A11
+pub const POT_ADC_MAX: u32 = 3776; // physical ceiling — pots don't reach full ADC range
+                                   // (decoder_idx, mux_channel, CC_number)
+                                   // decoder_idx 4 = AM14 (Y4), 5 = AM15 (Y5) — both read via Daisy28 / A11
 #[rustfmt::skip]
 pub const POT_MAP: [(u8, u8, u8); NUM_POTS] = [
-    (4, 4, 20), // RV1  AM14 X4 → CC20
-    (4, 6, 21), // RV2  AM14 X6 → CC21
-    (4, 7, 22), // RV3  AM14 X7 → CC22
-    (4, 5, 23), // RV4  AM14 X5 → CC23
-    (4, 2, 24), // RV5  AM14 X2 → CC24
-    (4, 1, 25), // RV6  AM14 X1 → CC25
-    (4, 0, 26), // RV7  AM14 X0 → CC26
-    (4, 3, 27), // RV8  AM14 X3 → CC27
-    (5, 4, 28), // RV9  AM15 X4 → CC28
-    (5, 6, 29), // RV10 AM15 X6 → CC29
-    (5, 7, 30), // RV11 AM15 X7 → CC30
-    (5, 5, 31), // RV12 AM15 X5 → CC31
+    (4, 4,  7), // RV1  AM14 X4 → CC7  (volume)
+    (4, 6, 10), // RV2  AM14 X6 → CC10 (pan)
+    (4, 7, 11), // RV3  AM14 X7 → CC11 (expression)
+    (4, 5, 74), // RV4  AM14 X5 → CC74 (brightness)
+    (4, 2, 36), // RV5  AM14 X2 → CC36
+    (4, 1, 37), // RV6  AM14 X1 → CC37
+    (4, 0, 38), // RV7  AM14 X0 → CC38
+    (4, 3, 39), // RV8  AM14 X3 → CC39
+    (5, 4, 40), // RV9  AM15 X4 → CC40
+    (5, 6, 41), // RV10 AM15 X6 → CC41
+    (5, 7, 42), // RV11 AM15 X7 → CC42
+    (5, 5, 43), // RV12 AM15 X5 → CC43
 ];
 
 // ── Switch map: (mux_index, channel) per switch index ────────────────────────
