@@ -10,7 +10,6 @@ pub const FIRST_DELTA: u16 = 150;
 pub const SECOND_DELTA: u16 = 250;
 pub const RELEASE_DELTA: u16 = 100;
 pub const DEBOUNCE_TICKS: u8 = 3;
-pub const RETRIGGER_LOCKOUT_MS: u32 = 250; // after NoteOff, ignore re-triggers for this long
 
 pub const FILTER_SIZE: usize = 4;
 pub const FILTER_SHIFT: u32 = 2;
@@ -18,12 +17,9 @@ pub const FILTER_SHIFT: u32 = 2;
 pub const VELOCITY_WINDOW_MS: u32 = 80;
 pub const CALIBRATION_SAMPLES: usize = 64;
 
-pub const DIAG_LOGGING: bool = false;
+pub const DIAG_LOGGING: bool = false; // set true to see raw ADC / calibration logs
 pub const LOG_INTERVAL_MS: u32 = 500;
-pub const LOG_SWITCH: usize = 89; // HE90
-
-// ── Disabled switches (sensors not yet connected — floating inputs) ───────────
-pub const DISABLED_SWITCHES: &[usize] = &[89]; // HE90
+pub const LOG_SWITCH: usize = 0; // HE1 — first switch
 
 // ── Settings buttons ──────────────────────────────────────────────────────────
 pub const SETTINGS_CHAN1: usize = 72; // HE73 → melody MIDI ch 1

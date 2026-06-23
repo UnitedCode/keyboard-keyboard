@@ -521,27 +521,27 @@ mod app {
         }
 
         // ── Vibrato → CC1 (dead zone + rate-limited) ──────────────────────────
-        // if now % VIBRATO_INTERVAL_MS == 0 {
-        //     let max_delta = vib_filt_a
-        //         .abs_diff(baselines[VIBRATO_A])
-        //         .max(vib_filt_b.abs_diff(baselines[VIBRATO_B]))
-        //         .saturating_sub(VIBRATO_DEAD_ZONE);
-        //     let cc_val =
-        //         ((max_delta.min(VIBRATO_MAX_DELTA) as u32 * 127 / VIBRATO_MAX_DELTA as u32) as u8)
-        //             .min(127);
-        //     if cc_val.abs_diff(*ctx.local.last_vibrato_cc) >= VIBRATO_HYSTERESIS {
-        //         *ctx.local.last_vibrato_cc = cc_val;
-        //         pending
-        //             .push((
-        //                 0,
-        //                 SwitchEvent::PotChange {
-        //                     cc: 1,
-        //                     value: cc_val,
-        //                 },
-        //             ))
-        //             .ok();
-        //     }
-        // }
+        if now % VIBRATO_INTERVAL_MS == 0 {
+            let max_delta = vib_filt_a
+                .abs_diff(baselines[VIBRATO_A])
+                .max(vib_filt_b.abs_diff(baselines[VIBRATO_B]))
+                .saturating_sub(VIBRATO_DEAD_ZONE);
+            let cc_val =
+                ((max_delta.min(VIBRATO_MAX_DELTA) as u32 * 127 / VIBRATO_MAX_DELTA as u32) as u8)
+                    .min(127);
+            if cc_val.abs_diff(*ctx.local.last_vibrato_cc) >= VIBRATO_HYSTERESIS {
+                *ctx.local.last_vibrato_cc = cc_val;
+                pending
+                    .push((
+                        0,
+                        SwitchEvent::PotChange {
+                            cc: 1,
+                            value: cc_val,
+                        },
+                    ))
+                    .ok();
+            }
+        }
 
         // ── Pot scan (100 Hz) ─────────────────────────────────────────────────
         if now % POT_SCAN_MS == 0 {
