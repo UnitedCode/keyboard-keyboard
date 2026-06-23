@@ -25,7 +25,7 @@ mod app {
     };
     use crate::midi::MidiSender;
     use crate::switch::{ChannelFilter, SwitchEvent, SwitchState};
-    use crate::types::LcdDisplay;
+    use crate::types::{DisplayState, LastEvent, LcdDisplay};
 
     use libdaisy::gpio::*;
     use libdaisy::logger;
@@ -60,6 +60,7 @@ mod app {
         baselines: [u16; NUM_SWITCHES],
         event_queue: heapless::spsc::Queue<(usize, SwitchEvent), 64>,
         midi_tx_flag: bool,
+        display_state: DisplayState,
     }
 
     // ── Local resources ───────────────────────────────────────────────────────
@@ -310,7 +311,7 @@ mod app {
             )
             .into_buffered_graphics_mode(),
         );
-        display_init::spawn().ok();
+        display_update::spawn().ok();
 
         set_mux_channel(0, &mut s0, &mut s1, &mut s2);
         info!(
@@ -325,6 +326,7 @@ mod app {
                 baselines,
                 event_queue: heapless::spsc::Queue::new(),
                 midi_tx_flag: false,
+                display_state: DisplayState::new(),
             },
             Local {
                 audio: system.audio,
@@ -367,18 +369,25 @@ mod app {
     }
 
     // Priority 1 — below process_events so a slow display never blocks key events.
-    #[task(local = [display], priority = 1)]
-    fn display_init(ctx: display_init::Context) {
+    // First spawn: init hardware + show splash. Subsequent spawns: redraw main screen.
+    #[task(local = [display, initialized: bool = false], shared = [display_state], priority = 1, capacity = 2)]
+    fn display_update(mut ctx: display_update::Context) {
         let Some(disp) = ctx.local.display.as_mut() else {
             return;
         };
-        match disp.init() {
-            Ok(()) => {
-                crate::display::draw_startup(disp);
-                info!("display ok");
+        if !*ctx.local.initialized {
+            match disp.init() {
+                Ok(()) => {
+                    *ctx.local.initialized = true;
+                    crate::display::draw_splash(disp);
+                    info!("display ok");
+                }
+                Err(_) => warn!("display not found"),
             }
-            Err(_) => warn!("display not found"),
+            return;
         }
+        let state = ctx.shared.display_state.lock(|s| *s);
+        crate::display::draw_main(disp, &state);
     }
 
     #[task(binds = DMA1_STR1, priority = 8, local = [audio])]
@@ -443,6 +452,9 @@ mod app {
 
         ctx.shared.switch_states.lock(|states| {
             for (switch_idx, &(mux, ch)) in SWITCH_MAP.iter().enumerate() {
+                if DISABLED_SWITCHES.contains(&switch_idx) {
+                    continue;
+                }
                 let raw = ctx.local.mux_raw[mux as usize][ch as usize];
                 let filtered = ctx.local.filters[switch_idx].feed(raw);
 
@@ -509,27 +521,27 @@ mod app {
         }
 
         // ── Vibrato → CC1 (dead zone + rate-limited) ──────────────────────────
-        if now % VIBRATO_INTERVAL_MS == 0 {
-            let max_delta = vib_filt_a
-                .abs_diff(baselines[VIBRATO_A])
-                .max(vib_filt_b.abs_diff(baselines[VIBRATO_B]))
-                .saturating_sub(VIBRATO_DEAD_ZONE);
-            let cc_val =
-                ((max_delta.min(VIBRATO_MAX_DELTA) as u32 * 127 / VIBRATO_MAX_DELTA as u32) as u8)
-                    .min(127);
-            if cc_val.abs_diff(*ctx.local.last_vibrato_cc) >= VIBRATO_HYSTERESIS {
-                *ctx.local.last_vibrato_cc = cc_val;
-                pending
-                    .push((
-                        0,
-                        SwitchEvent::PotChange {
-                            cc: 1,
-                            value: cc_val,
-                        },
-                    ))
-                    .ok();
-            }
-        }
+        // if now % VIBRATO_INTERVAL_MS == 0 {
+        //     let max_delta = vib_filt_a
+        //         .abs_diff(baselines[VIBRATO_A])
+        //         .max(vib_filt_b.abs_diff(baselines[VIBRATO_B]))
+        //         .saturating_sub(VIBRATO_DEAD_ZONE);
+        //     let cc_val =
+        //         ((max_delta.min(VIBRATO_MAX_DELTA) as u32 * 127 / VIBRATO_MAX_DELTA as u32) as u8)
+        //             .min(127);
+        //     if cc_val.abs_diff(*ctx.local.last_vibrato_cc) >= VIBRATO_HYSTERESIS {
+        //         *ctx.local.last_vibrato_cc = cc_val;
+        //         pending
+        //             .push((
+        //                 0,
+        //                 SwitchEvent::PotChange {
+        //                     cc: 1,
+        //                     value: cc_val,
+        //                 },
+        //             ))
+        //             .ok();
+        //     }
+        // }
 
         // ── Pot scan (100 Hz) ─────────────────────────────────────────────────
         if now % POT_SCAN_MS == 0 {
@@ -537,7 +549,8 @@ mod app {
                 set_mux_channel(mux_ch as usize, ctx.local.s0, ctx.local.s1, ctx.local.s2);
                 set_decoder(dec_idx, ctx.local.enb_a, ctx.local.enb_b, ctx.local.enb_c);
                 cortex_m::asm::delay(480 * 5);
-                let cc_val = (ctx.local.adc.read(ctx.local.adc_pin_a11).unwrap_or(0u32) >> 5) as u8;
+                let raw = ctx.local.adc.read(ctx.local.adc_pin_a11).unwrap_or(0u32);
+                let cc_val = (POT_ADC_MAX.saturating_sub(raw) * 127 / POT_ADC_MAX).min(127) as u8;
                 if cc_val.abs_diff(ctx.local.pot_last_cc[pot_idx]) >= POT_CC_HYSTERESIS {
                     ctx.local.pot_last_cc[pot_idx] = cc_val;
                     pending
@@ -589,13 +602,16 @@ mod app {
 
     // ── MIDI output ───────────────────────────────────────────────────────────
     #[task(
-        shared = [event_queue, midi_tx_flag],
+        shared = [event_queue, midi_tx_flag, display_state],
         local  = [midi_sender, melody_channel],
         priority = 2,
         capacity = 32
     )]
     fn process_events(mut ctx: process_events::Context) {
         let mut did_send = false;
+        let mut new_display_event: Option<LastEvent> = None;
+        let mut melody_changed = false;
+
         ctx.shared.event_queue.lock(|queue| {
             while let Some((switch_idx, event)) = queue.dequeue() {
                 if switch_idx == SETTINGS_CHAN1 || switch_idx == SETTINGS_CHAN2 {
@@ -603,6 +619,7 @@ mod app {
                         *ctx.local.melody_channel =
                             if switch_idx == SETTINGS_CHAN1 { 0 } else { 1 };
                         info!("melody ch → {}", *ctx.local.melody_channel + 1);
+                        melody_changed = true;
                     }
                     continue;
                 }
@@ -630,14 +647,17 @@ mod app {
                             velocity
                         );
                         ctx.local.midi_sender.note_on(note, velocity);
+                        new_display_event = Some(LastEvent::Note { note });
                     }
                     SwitchEvent::NoteOff => {
                         info!("NoteOff HE{} ch={} note={}", he, channel + 1, note);
                         ctx.local.midi_sender.note_off(note, 0);
+                        new_display_event = Some(LastEvent::Clear);
                     }
                     SwitchEvent::PotChange { cc, value } => {
                         info!("CC{} = {}", cc, value);
                         ctx.local.midi_sender.control_change(cc, value);
+                        new_display_event = Some(LastEvent::Cc { num: cc, value });
                     }
                     SwitchEvent::PitchBend { value } => {
                         info!("PitchBend value={}", value);
@@ -647,6 +667,21 @@ mod app {
                 did_send = true;
             }
         });
+
+        if new_display_event.is_some() || melody_changed {
+            ctx.shared.display_state.lock(|s| {
+                match new_display_event {
+                    Some(LastEvent::Clear) => s.last_event = None,
+                    Some(ev) => s.last_event = Some(ev),
+                    None => {}
+                }
+                if melody_changed {
+                    s.melody_channel = *ctx.local.melody_channel;
+                }
+            });
+            display_update::spawn().ok();
+        }
+
         if did_send {
             ctx.shared.midi_tx_flag.lock(|f| *f = true);
         }
