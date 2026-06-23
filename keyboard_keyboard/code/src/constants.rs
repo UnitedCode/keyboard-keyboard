@@ -17,7 +17,7 @@ pub const FILTER_SHIFT: u32 = 2;
 pub const VELOCITY_WINDOW_MS: u32 = 80;
 pub const CALIBRATION_SAMPLES: usize = 64;
 
-pub const SPLASH_DURATION_MS: u32 = 8000;
+pub const SPLASH_DURATION_MS: u32 = 3000;
 
 pub const DIAG_LOGGING: bool = false; // set true to see raw ADC / calibration logs
 pub const LOG_INTERVAL_MS: u32 = 500;

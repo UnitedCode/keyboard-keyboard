@@ -61,6 +61,7 @@ mod app {
         event_queue: heapless::spsc::Queue<(usize, SwitchEvent), 64>,
         midi_tx_flag: bool,
         display_state: DisplayState,
+        splash_done: bool,
     }
 
     // ── Local resources ───────────────────────────────────────────────────────
@@ -327,6 +328,7 @@ mod app {
                 event_queue: heapless::spsc::Queue::new(),
                 midi_tx_flag: false,
                 display_state: DisplayState::new(),
+                splash_done: false,
             },
             Local {
                 audio: system.audio,
@@ -401,7 +403,7 @@ mod app {
         local  = [timer2, adc, adc_pins, enb_a, enb_b, enb_c, adc_pin_a9, adc_pin_a10,
                   adc_pin_a11, pot_last_cc, s0, s1, s2, mux_raw, filters, last_pitch_bend,
                   last_vibrato_cc, led1, led2, led3, midi_rx, led1_off_at, led2_off_at],
-        shared = [tick_ms, switch_states, baselines, event_queue, midi_tx_flag],
+        shared = [tick_ms, switch_states, baselines, event_queue, midi_tx_flag, splash_done],
         priority = 15
     )]
     fn timer_handler(mut ctx: timer_handler::Context) {
@@ -417,6 +419,7 @@ mod app {
         }
 
         if now == SPLASH_DURATION_MS {
+            ctx.shared.splash_done.lock(|d| *d = true);
             display_update::spawn().ok();
         }
 
@@ -456,9 +459,6 @@ mod app {
 
         ctx.shared.switch_states.lock(|states| {
             for (switch_idx, &(mux, ch)) in SWITCH_MAP.iter().enumerate() {
-                if DISABLED_SWITCHES.contains(&switch_idx) {
-                    continue;
-                }
                 let raw = ctx.local.mux_raw[mux as usize][ch as usize];
                 let filtered = ctx.local.filters[switch_idx].feed(raw);
 
@@ -606,7 +606,7 @@ mod app {
 
     // ── MIDI output ───────────────────────────────────────────────────────────
     #[task(
-        shared = [event_queue, midi_tx_flag, display_state],
+        shared = [event_queue, midi_tx_flag, display_state, splash_done],
         local  = [midi_sender, melody_channel],
         priority = 2,
         capacity = 32
@@ -672,7 +672,8 @@ mod app {
             }
         });
 
-        if new_display_event.is_some() || melody_changed {
+        let done = ctx.shared.splash_done.lock(|d| *d);
+        if (new_display_event.is_some() || melody_changed) && done {
             ctx.shared.display_state.lock(|s| {
                 match new_display_event {
                     Some(LastEvent::Clear) => s.last_event = None,
