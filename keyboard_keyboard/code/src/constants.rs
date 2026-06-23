@@ -56,8 +56,8 @@ pub const NUM_POTS: usize = 12;
 pub const POT_SCAN_MS: u32 = 10;
 pub const POT_CC_HYSTERESIS: u8 = 2;
 pub const POT_ADC_MAX: u32 = 3776; // physical ceiling — pots don't reach full ADC range
-// (decoder_idx, mux_channel, CC_number)
-// decoder_idx 4 = AM14 (Y4), 5 = AM15 (Y5) — both read via Daisy28 / A11
+                                   // (decoder_idx, mux_channel, CC_number)
+                                   // decoder_idx 4 = AM14 (Y4), 5 = AM15 (Y5) — both read via Daisy28 / A11
 #[rustfmt::skip]
 pub const POT_MAP: [(u8, u8, u8); NUM_POTS] = [
     (4, 4,  7), // RV1  AM14 X4 → CC7  (volume)

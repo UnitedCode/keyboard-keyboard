@@ -14,8 +14,7 @@ use embedded_graphics::{
 };
 use heapless::String;
 
-const SPRITE_ATLAS: &[u8] =
-    include_bytes!("../../../../images/Keyboard-Keyboard-Spritesheet.raw");
+const SPRITE_ATLAS: &[u8] = include_bytes!("../../../../images/Keyboard-Keyboard-Spritesheet.raw");
 
 pub fn draw_splash(disp: &mut LcdDisplay) {
     disp.clear();
