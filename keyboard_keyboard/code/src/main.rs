@@ -416,6 +416,10 @@ mod app {
             info!("tick={}", now);
         }
 
+        if now == SPLASH_DURATION_MS {
+            display_update::spawn().ok();
+        }
+
         let baselines = ctx.shared.baselines.lock(|b| *b);
         let mut pending: heapless::Vec<(usize, SwitchEvent), 32> = heapless::Vec::new();
 
