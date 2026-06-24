@@ -23,12 +23,14 @@ pub const DIAG_LOGGING: bool = false; // set true to see raw ADC / calibration l
 pub const LOG_INTERVAL_MS: u32 = 500;
 pub const LOG_SWITCH: usize = 0; // HE1 — first switch
 
-// ── Settings buttons ──────────────────────────────────────────────────────────
-pub const SETTINGS_CHAN1: usize = 72; // HE73 → melody MIDI ch 1
-pub const SETTINGS_CHAN2: usize = 75; // HE76 → melody MIDI ch 2
+// ── Settings screen ───────────────────────────────────────────────────────────
+pub const SETTINGS_OPEN: usize = 73;     // HE74 → open / close settings
+pub const SETTINGS_NAV_PREV: usize = 76; // HE77 → previous item
+pub const SETTINGS_VAL_DOWN: usize = 77; // HE78 → value −1
+pub const SETTINGS_NAV_NEXT: usize = 78; // HE79 → next item
+pub const SETTINGS_VAL_UP: usize = 79;   // HE80 → value +1
 
-// ── Drum pads (switches 81–100, MIDI ch 10) ───────────────────────────────────
-pub const DRUM_CHANNEL: u8 = 9; // 0-indexed
+// ── Drum pads (switches 81–100) ───────────────────────────────────────────────
 pub const DRUM_SWITCH_START: usize = 80;
 #[rustfmt::skip]
 pub const DRUM_NOTE: [u8; 20] = [

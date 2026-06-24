@@ -1,4 +1,5 @@
 use crate::display::note_name;
+use crate::settings::{Settings, SETTINGS_ITEMS, NUM_SETTINGS_ITEMS};
 use crate::types::{DisplayState, LastEvent, LcdDisplay};
 use core::fmt::Write;
 use embedded_graphics::{
@@ -9,7 +10,7 @@ use embedded_graphics::{
     },
     pixelcolor::BinaryColor,
     prelude::*,
-    primitives::Rectangle,
+    primitives::{Line, PrimitiveStyle, Rectangle},
     text::{Alignment, Text},
 };
 use heapless::String;
@@ -45,8 +46,8 @@ pub fn draw_main(disp: &mut LcdDisplay, state: &DisplayState) {
     match state.last_event {
         Some(LastEvent::Note { note }) => {
             let (name, oct) = note_name(note);
-            write!(label, "{}{}", name, oct).ok();
-            write!(number, "{}", note).ok();
+            write!(label, "{}", note).ok();
+            write!(number, "{}{}", name, oct).ok();
         }
         Some(LastEvent::Cc { num, value }) => {
             write!(label, "CC {}", num).ok();
@@ -89,15 +90,67 @@ pub fn draw_main(disp: &mut LcdDisplay, state: &DisplayState) {
     .draw(disp)
     .ok();
 
-    // Drums channel — top-right, always 10
+    // Drums channel — top-right
+    let mut drum_ch: String<4> = String::new();
+    write!(drum_ch, "{}", state.drum_channel + 1).ok();
     Text::with_alignment(
-        "10",
+        drum_ch.as_str(),
         center + Point::new(54, -9),
         MonoTextStyle::new(&FONT_6X9, off),
         Alignment::Center,
     )
     .draw(disp)
     .ok();
+
+    disp.flush().ok();
+}
+
+/// Draws the settings screen: 3 items (prev / current / next) with name left,
+/// value right. The current item has an underline under its value.
+pub fn draw_settings(disp: &mut LcdDisplay, selected: usize, settings: &Settings) {
+    disp.clear();
+
+    let style = MonoTextStyle::new(&FONT_6X9, BinaryColor::On);
+    let underline_style = PrimitiveStyle::with_stroke(BinaryColor::On, 1);
+
+    // Baseline y-coordinates for the three rows (font is 9px tall).
+    let y_rows: [i32; 3] = [9, 20, 30];
+
+    let prev = (selected + NUM_SETTINGS_ITEMS - 1) % NUM_SETTINGS_ITEMS;
+    let next = (selected + 1) % NUM_SETTINGS_ITEMS;
+    let slots = [prev, selected, next];
+
+    for (row, &item_idx) in slots.iter().enumerate() {
+        let y = y_rows[row];
+        let item = &SETTINGS_ITEMS[item_idx];
+        let value = settings.get(item_idx);
+
+        // Name: left-aligned
+        Text::new(item.name, Point::new(0, y), style).draw(disp).ok();
+
+        // Value: right-aligned
+        let mut val_str: String<8> = String::new();
+        write!(val_str, "{}", value).ok();
+        Text::with_alignment(
+            val_str.as_str(),
+            Point::new(127, y),
+            style,
+            Alignment::Right,
+        )
+        .draw(disp)
+        .ok();
+
+        // Underline under the value of the current (middle) row
+        if row == 1 {
+            let val_px_width = val_str.len() as i32 * 6;
+            let x0 = 127 - val_px_width + 1;
+            let uy = y + 1;
+            Line::new(Point::new(x0, uy), Point::new(127, uy))
+                .into_styled(underline_style)
+                .draw(disp)
+                .ok();
+        }
+    }
 
     disp.flush().ok();
 }
