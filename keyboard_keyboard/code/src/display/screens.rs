@@ -1,5 +1,5 @@
 use crate::display::note_name;
-use crate::settings::{Settings, SETTINGS_ITEMS, NUM_SETTINGS_ITEMS};
+use crate::settings::{Settings, NUM_SETTINGS_ITEMS, SETTINGS_ITEMS};
 use crate::types::{DisplayState, LastEvent, LcdDisplay};
 use core::fmt::Write;
 use embedded_graphics::{
@@ -126,7 +126,9 @@ pub fn draw_settings(disp: &mut LcdDisplay, selected: usize, settings: &Settings
         let value = settings.get(item_idx);
 
         // Name: left-aligned
-        Text::new(item.name, Point::new(0, y), style).draw(disp).ok();
+        Text::new(item.name, Point::new(0, y), style)
+            .draw(disp)
+            .ok();
 
         // Value: right-aligned
         let mut val_str: String<8> = String::new();

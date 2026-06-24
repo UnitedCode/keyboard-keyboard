@@ -7,10 +7,26 @@ pub struct SettingsItem {
 }
 
 pub const SETTINGS_ITEMS: [SettingsItem; NUM_SETTINGS_ITEMS] = [
-    SettingsItem { name: "MELODY CH", min: 1, max: 16 },
-    SettingsItem { name: "DRUM CH",   min: 1, max: 16 },
-    SettingsItem { name: "OCTAVE",    min: 2, max: 5  },
-    SettingsItem { name: "PB RANGE",  min: 1, max: 12 },
+    SettingsItem {
+        name: "MELODY CH",
+        min: 1,
+        max: 16,
+    },
+    SettingsItem {
+        name: "DRUM CH",
+        min: 1,
+        max: 16,
+    },
+    SettingsItem {
+        name: "OCTAVE",
+        min: 2,
+        max: 5,
+    },
+    SettingsItem {
+        name: "PB RANGE",
+        min: 1,
+        max: 12,
+    },
 ];
 
 #[derive(Clone, Copy, Debug)]

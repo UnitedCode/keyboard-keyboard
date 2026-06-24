@@ -483,7 +483,7 @@ mod app {
                 let raw = ctx.local.mux_raw[mux as usize][ch as usize];
                 let filtered = ctx.local.filters[switch_idx].feed(raw);
 
-                // When settings is open the four arrow keys become digital plunger switches; 
+                // When settings is open the four arrow keys become digital plunger switches;
                 let is_analog = switch_idx == PITCH_BEND_DOWN
                     || switch_idx == PITCH_BEND_UP
                     || switch_idx == VIBRATO_A
@@ -658,8 +658,14 @@ mod app {
                 // ── Settings open / close (hold HE74) ────────────────────────
                 if switch_idx == SETTINGS_OPEN {
                     match event {
-                        SwitchEvent::NoteOn { .. } => { active = true;  nav_dirty = true; }
-                        SwitchEvent::NoteOff     => { active = false; nav_dirty = true; }
+                        SwitchEvent::NoteOn { .. } => {
+                            active = true;
+                            nav_dirty = true;
+                        }
+                        SwitchEvent::NoteOff => {
+                            active = false;
+                            nav_dirty = true;
+                        }
                         _ => {}
                     }
                     continue;
@@ -670,8 +676,7 @@ mod app {
                     if matches!(event, SwitchEvent::NoteOn { .. }) {
                         match switch_idx {
                             SETTINGS_NAV_PREV => {
-                                selected =
-                                    (selected + NUM_SETTINGS_ITEMS - 1) % NUM_SETTINGS_ITEMS;
+                                selected = (selected + NUM_SETTINGS_ITEMS - 1) % NUM_SETTINGS_ITEMS;
                                 nav_dirty = true;
                             }
                             SETTINGS_NAV_NEXT => {
@@ -699,7 +704,10 @@ mod app {
                 let is_drum = switch_idx >= DRUM_SWITCH_START
                     && switch_idx < DRUM_SWITCH_START + DRUM_NOTE.len();
                 let (raw_note, channel) = if is_drum {
-                    (DRUM_NOTE[switch_idx - DRUM_SWITCH_START], settings.drum_channel)
+                    (
+                        DRUM_NOTE[switch_idx - DRUM_SWITCH_START],
+                        settings.drum_channel,
+                    )
                 } else {
                     (SWITCH_TO_NOTE[switch_idx], settings.melody_channel)
                 };
@@ -769,7 +777,9 @@ mod app {
             if !active {
                 // Settings just closed — inform the synth of the new pitch bend range.
                 ctx.local.midi_sender.set_channel(settings.melody_channel);
-                ctx.local.midi_sender.set_pitch_bend_range(settings.pitch_bend_range);
+                ctx.local
+                    .midi_sender
+                    .set_pitch_bend_range(settings.pitch_bend_range);
             }
         }
 
