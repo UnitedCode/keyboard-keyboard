@@ -22,6 +22,7 @@ pub enum LastEvent {
 pub struct DisplayState {
     pub last_event: Option<LastEvent>,
     pub melody_channel: u8,
+    pub drum_channel: u8,
 }
 
 impl DisplayState {
@@ -29,6 +30,7 @@ impl DisplayState {
         Self {
             last_event: None,
             melody_channel: 0,
+            drum_channel: 9,
         }
     }
 }

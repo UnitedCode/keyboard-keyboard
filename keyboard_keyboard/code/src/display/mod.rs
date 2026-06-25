@@ -1,5 +1,5 @@
 pub mod screens;
-pub use screens::{draw_main, draw_splash};
+pub use screens::{draw_main, draw_settings, draw_splash};
 
 const NOTE_NAMES: [&str; 12] = [
     "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B",

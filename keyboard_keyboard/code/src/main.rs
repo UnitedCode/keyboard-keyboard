@@ -10,6 +10,7 @@ mod constants;
 mod display;
 mod hardware;
 mod midi;
+mod settings;
 mod switch;
 mod types;
 
@@ -24,6 +25,7 @@ mod app {
         i2c_bus_recovery, read_all_adcs, set_decoder, set_mux_channel, AdcPins, MuxRaw,
     };
     use crate::midi::MidiSender;
+    use crate::settings::{Settings, NUM_SETTINGS_ITEMS};
     use crate::switch::{ChannelFilter, SwitchEvent, SwitchState};
     use crate::types::{DisplayState, LastEvent, LcdDisplay};
 
@@ -62,6 +64,9 @@ mod app {
         midi_tx_flag: bool,
         display_state: DisplayState,
         splash_done: bool,
+        settings: Settings,
+        settings_active: bool,
+        settings_selected: usize,
     }
 
     // ── Local resources ───────────────────────────────────────────────────────
@@ -91,7 +96,6 @@ mod app {
         filters: [ChannelFilter; NUM_SWITCHES],
         last_pitch_bend: u16,
         last_vibrato_cc: u8,
-        melody_channel: u8,
         led1_off_at: u32,
         led2_off_at: u32,
         display: Option<LcdDisplay>,
@@ -329,6 +333,9 @@ mod app {
                 midi_tx_flag: false,
                 display_state: DisplayState::new(),
                 splash_done: false,
+                settings: Settings::default(),
+                settings_active: false,
+                settings_selected: 0,
             },
             Local {
                 audio: system.audio,
@@ -354,7 +361,6 @@ mod app {
                 filters,
                 last_pitch_bend: 0x2000,
                 last_vibrato_cc: 0,
-                melody_channel: 0,
                 led1_off_at: 0,
                 led2_off_at: 0,
                 display,
@@ -371,8 +377,13 @@ mod app {
     }
 
     // Priority 1 — below process_events so a slow display never blocks key events.
-    // First spawn: init hardware + show splash. Subsequent spawns: redraw main screen.
-    #[task(local = [display, initialized: bool = false], shared = [display_state], priority = 1, capacity = 2)]
+    // First spawn: init hardware + show splash. Subsequent spawns: redraw.
+    #[task(
+        local  = [display, initialized: bool = false],
+        shared = [display_state, settings, settings_active, settings_selected],
+        priority = 1,
+        capacity = 2
+    )]
     fn display_update(mut ctx: display_update::Context) {
         let Some(disp) = ctx.local.display.as_mut() else {
             return;
@@ -388,8 +399,16 @@ mod app {
             }
             return;
         }
-        let state = ctx.shared.display_state.lock(|s| *s);
-        crate::display::draw_main(disp, &state);
+
+        let active = ctx.shared.settings_active.lock(|a| *a);
+        if active {
+            let selected = ctx.shared.settings_selected.lock(|s| *s);
+            let settings = ctx.shared.settings.lock(|s| *s);
+            crate::display::draw_settings(disp, selected, &settings);
+        } else {
+            let state = ctx.shared.display_state.lock(|s| *s);
+            crate::display::draw_main(disp, &state);
+        }
     }
 
     #[task(binds = DMA1_STR1, priority = 8, local = [audio])]
@@ -403,7 +422,8 @@ mod app {
         local  = [timer2, adc, adc_pins, enb_a, enb_b, enb_c, adc_pin_a9, adc_pin_a10,
                   adc_pin_a11, pot_last_cc, s0, s1, s2, mux_raw, filters, last_pitch_bend,
                   last_vibrato_cc, led1, led2, led3, midi_rx, led1_off_at, led2_off_at],
-        shared = [tick_ms, switch_states, baselines, event_queue, midi_tx_flag, splash_done],
+        shared = [tick_ms, switch_states, baselines, event_queue, midi_tx_flag, splash_done,
+                  settings_active],
         priority = 15
     )]
     fn timer_handler(mut ctx: timer_handler::Context) {
@@ -424,6 +444,7 @@ mod app {
         }
 
         let baselines = ctx.shared.baselines.lock(|b| *b);
+        let settings_active = ctx.shared.settings_active.lock(|a| *a);
         let mut pending: heapless::Vec<(usize, SwitchEvent), 32> = heapless::Vec::new();
 
         // ── ADC scan ──────────────────────────────────────────────────────────
@@ -462,14 +483,22 @@ mod app {
                 let raw = ctx.local.mux_raw[mux as usize][ch as usize];
                 let filtered = ctx.local.filters[switch_idx].feed(raw);
 
-                if switch_idx == PITCH_BEND_DOWN {
-                    pb_filt_down = filtered;
-                } else if switch_idx == PITCH_BEND_UP {
-                    pb_filt_up = filtered;
-                } else if switch_idx == VIBRATO_A {
-                    vib_filt_a = filtered;
-                } else if switch_idx == VIBRATO_B {
-                    vib_filt_b = filtered;
+                // When settings is open the four arrow keys become digital plunger switches;
+                let is_analog = switch_idx == PITCH_BEND_DOWN
+                    || switch_idx == PITCH_BEND_UP
+                    || switch_idx == VIBRATO_A
+                    || switch_idx == VIBRATO_B;
+
+                if is_analog && !settings_active {
+                    if switch_idx == PITCH_BEND_DOWN {
+                        pb_filt_down = filtered;
+                    } else if switch_idx == PITCH_BEND_UP {
+                        pb_filt_up = filtered;
+                    } else if switch_idx == VIBRATO_A {
+                        vib_filt_a = filtered;
+                    } else {
+                        vib_filt_b = filtered;
+                    }
                 } else if let Some(event) =
                     states[switch_idx].update(filtered, baselines[switch_idx], now, switch_idx)
                 {
@@ -478,8 +507,8 @@ mod app {
             }
         });
 
-        // ── Pitch bend (rate-limited) ─────────────────────────────────────────
-        if now % PITCH_BEND_INTERVAL_MS == 0 {
+        // ── Pitch bend (rate-limited, only when settings is closed) ───────────
+        if !settings_active && now % PITCH_BEND_INTERVAL_MS == 0 {
             let delta_down = pb_filt_down.abs_diff(baselines[PITCH_BEND_DOWN]);
             let delta_up = pb_filt_up.abs_diff(baselines[PITCH_BEND_UP]);
             let pb_value = if delta_down < RELEASE_DELTA && delta_up < RELEASE_DELTA {
@@ -524,8 +553,8 @@ mod app {
             );
         }
 
-        // ── Vibrato → CC1 (dead zone + rate-limited) ──────────────────────────
-        if now % VIBRATO_INTERVAL_MS == 0 {
+        // ── Vibrato → CC1 (dead zone + rate-limited, only when settings closed) ─
+        if !settings_active && now % VIBRATO_INTERVAL_MS == 0 {
             let max_delta = vib_filt_a
                 .abs_diff(baselines[VIBRATO_A])
                 .max(vib_filt_b.abs_diff(baselines[VIBRATO_B]))
@@ -606,39 +635,93 @@ mod app {
 
     // ── MIDI output ───────────────────────────────────────────────────────────
     #[task(
-        shared = [event_queue, midi_tx_flag, display_state, splash_done],
-        local  = [midi_sender, melody_channel],
+        shared = [event_queue, midi_tx_flag, display_state, splash_done,
+                  settings, settings_active, settings_selected],
+        local  = [midi_sender],
         priority = 2,
         capacity = 32
     )]
     fn process_events(mut ctx: process_events::Context) {
+        // Snapshot shared settings state — write back mutations after draining the queue.
+        let mut settings = ctx.shared.settings.lock(|s| *s);
+        let mut active = ctx.shared.settings_active.lock(|a| *a);
+        let mut selected = ctx.shared.settings_selected.lock(|s| *s);
+
+        let was_active = active;
+        let mut settings_dirty = false;
+        let mut nav_dirty = false;
         let mut did_send = false;
         let mut new_display_event: Option<LastEvent> = None;
-        let mut melody_changed = false;
 
         ctx.shared.event_queue.lock(|queue| {
             while let Some((switch_idx, event)) = queue.dequeue() {
-                if switch_idx == SETTINGS_CHAN1 || switch_idx == SETTINGS_CHAN2 {
-                    if let SwitchEvent::NoteOn { .. } = event {
-                        *ctx.local.melody_channel =
-                            if switch_idx == SETTINGS_CHAN1 { 0 } else { 1 };
-                        info!("melody ch → {}", *ctx.local.melody_channel + 1);
-                        melody_changed = true;
+                // ── Settings open / close (hold HE74) ────────────────────────
+                if switch_idx == SETTINGS_OPEN {
+                    match event {
+                        SwitchEvent::NoteOn { .. } => {
+                            active = true;
+                            nav_dirty = true;
+                        }
+                        SwitchEvent::NoteOff => {
+                            active = false;
+                            nav_dirty = true;
+                        }
+                        _ => {}
                     }
                     continue;
                 }
 
+                // ── Settings navigation (arrow keys hijacked) ─────────────────
+                if active {
+                    if matches!(event, SwitchEvent::NoteOn { .. }) {
+                        match switch_idx {
+                            SETTINGS_NAV_PREV => {
+                                selected = (selected + NUM_SETTINGS_ITEMS - 1) % NUM_SETTINGS_ITEMS;
+                                nav_dirty = true;
+                            }
+                            SETTINGS_NAV_NEXT => {
+                                selected = (selected + 1) % NUM_SETTINGS_ITEMS;
+                                nav_dirty = true;
+                            }
+                            SETTINGS_VAL_UP => {
+                                settings.adjust(selected, 1);
+                                settings_dirty = true;
+                                nav_dirty = true;
+                            }
+                            SETTINGS_VAL_DOWN => {
+                                settings.adjust(selected, -1);
+                                settings_dirty = true;
+                                nav_dirty = true;
+                            }
+                            _ => {}
+                        }
+                    }
+                    continue;
+                }
+
+                // ── Normal MIDI routing ────────────────────────────────────────
                 let he = HE_NUM[switch_idx];
                 let is_drum = switch_idx >= DRUM_SWITCH_START
                     && switch_idx < DRUM_SWITCH_START + DRUM_NOTE.len();
-                let (note, channel) = if is_drum {
-                    (DRUM_NOTE[switch_idx - DRUM_SWITCH_START], DRUM_CHANNEL)
+                let (raw_note, channel) = if is_drum {
+                    (
+                        DRUM_NOTE[switch_idx - DRUM_SWITCH_START],
+                        settings.drum_channel,
+                    )
                 } else {
-                    (SWITCH_TO_NOTE[switch_idx], *ctx.local.melody_channel)
+                    (SWITCH_TO_NOTE[switch_idx], settings.melody_channel)
                 };
-                if note == 0 {
+                if raw_note == 0 {
                     continue;
                 }
+
+                // Apply octave offset to melody keys; clamp to valid MIDI range.
+                let note = if is_drum {
+                    raw_note
+                } else {
+                    let offset = (settings.octave as i16 - 4) * 12;
+                    (raw_note as i16 + offset).clamp(1, 127) as u8
+                };
 
                 ctx.local.midi_sender.set_channel(channel);
                 match event {
@@ -672,16 +755,45 @@ mod app {
             }
         });
 
+        // ── Write back mutations ───────────────────────────────────────────────
+        if settings_dirty {
+            ctx.shared.settings.lock(|s| *s = settings);
+        }
+        if nav_dirty {
+            ctx.shared.settings_active.lock(|a| *a = active);
+            ctx.shared.settings_selected.lock(|s| *s = selected);
+        }
+
+        // ── Handle open / close transition ────────────────────────────────────
+        if was_active != active {
+            // Kill any held notes and reset pitch bend on both channels.
+            ctx.local.midi_sender.set_channel(settings.melody_channel);
+            ctx.local.midi_sender.all_notes_off();
+            ctx.local.midi_sender.pitch_bend(0x2000);
+            ctx.local.midi_sender.set_channel(settings.drum_channel);
+            ctx.local.midi_sender.all_notes_off();
+            did_send = true;
+
+            if !active {
+                // Settings just closed — inform the synth of the new pitch bend range.
+                ctx.local.midi_sender.set_channel(settings.melody_channel);
+                ctx.local
+                    .midi_sender
+                    .set_pitch_bend_range(settings.pitch_bend_range);
+            }
+        }
+
+        // ── Update display ─────────────────────────────────────────────────────
         let done = ctx.shared.splash_done.lock(|d| *d);
-        if (new_display_event.is_some() || melody_changed) && done {
+        if done && (new_display_event.is_some() || nav_dirty || was_active != active) {
             ctx.shared.display_state.lock(|s| {
+                // Keep main-screen channel labels in sync with settings.
+                s.melody_channel = settings.melody_channel;
+                s.drum_channel = settings.drum_channel;
                 match new_display_event {
                     Some(LastEvent::Clear) => s.last_event = None,
                     Some(ev) => s.last_event = Some(ev),
                     None => {}
-                }
-                if melody_changed {
-                    s.melody_channel = *ctx.local.melody_channel;
                 }
             });
             display_update::spawn().ok();
