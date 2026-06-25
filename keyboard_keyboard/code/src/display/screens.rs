@@ -17,6 +17,19 @@ use heapless::String;
 
 const SPRITE_ATLAS: &[u8] = include_bytes!("../../../../images/Keyboard-Keyboard-Spritesheet.raw");
 
+pub fn draw_recalibrating(disp: &mut LcdDisplay) {
+    disp.clear();
+    Text::with_alignment(
+        "RECALIBRATING",
+        Point::new(64, 20),
+        MonoTextStyle::new(&FONT_6X9, BinaryColor::On),
+        Alignment::Center,
+    )
+    .draw(disp)
+    .ok();
+    disp.flush().ok();
+}
+
 pub fn draw_splash(disp: &mut LcdDisplay) {
     disp.clear();
     let atlas = ImageRawBE::<BinaryColor>::new(SPRITE_ATLAS, 128);
@@ -101,6 +114,32 @@ pub fn draw_main(disp: &mut LcdDisplay, state: &DisplayState) {
     )
     .draw(disp)
     .ok();
+
+    // Bottom-right volume level (0–10)
+    if let Some(vol) = state.volume_level {
+        let mut vol_str: String<4> = String::new();
+        write!(vol_str, "{}", vol).ok();
+        Text::with_alignment(
+            vol_str.as_str(),
+            center + Point::new(54, 15),
+            MonoTextStyle::new(&FONT_6X9, off),
+            Alignment::Center,
+        )
+        .draw(disp)
+        .ok();
+    }
+
+    // Bottom-left waveform icon (20×8 px at display position 5,24)
+    if let Some(voice) = state.current_voice {
+        let atlas_x = match voice {
+            0 => 40, // triangle
+            1 => 20, // square
+            _ => 0,  // saw
+        };
+        let icon =
+            atlas.sub_image(&Rectangle::new(Point::new(atlas_x, 64), Size::new(20, 8)));
+        Image::new(&icon, Point::new(5, 24)).draw(disp).ok();
+    }
 
     disp.flush().ok();
 }
