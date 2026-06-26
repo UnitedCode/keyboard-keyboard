@@ -1,4 +1,4 @@
-pub const NUM_SETTINGS_ITEMS: usize = 4;
+pub const NUM_SETTINGS_ITEMS: usize = 6;
 
 pub struct SettingsItem {
     pub name: &'static str,
@@ -8,12 +8,12 @@ pub struct SettingsItem {
 
 pub const SETTINGS_ITEMS: [SettingsItem; NUM_SETTINGS_ITEMS] = [
     SettingsItem {
-        name: "MELODY CH",
+        name: "MELODY CHANNEL",
         min: 1,
         max: 16,
     },
     SettingsItem {
-        name: "DRUM CH",
+        name: "DRUM CHANNEL",
         min: 1,
         max: 16,
     },
@@ -23,9 +23,19 @@ pub const SETTINGS_ITEMS: [SettingsItem; NUM_SETTINGS_ITEMS] = [
         max: 5,
     },
     SettingsItem {
-        name: "PB RANGE",
+        name: "BEND RANGE",
         min: 1,
         max: 12,
+    },
+    SettingsItem {
+        name: "MELODY PROGRAM",
+        min: 0,
+        max: 127,
+    },
+    SettingsItem {
+        name: "DRUM PROGRAM",
+        min: 0,
+        max: 127,
     },
 ];
 
@@ -35,6 +45,8 @@ pub struct Settings {
     pub drum_channel: u8,     // 0-indexed (0–15), displayed as 1–16
     pub octave: i8,           // 0–8; offset = (octave - 4) * 12
     pub pitch_bend_range: u8, // semitones 1–12
+    pub melody_program: u8,   // 0–127, sent as PC on melody channel when settings closes
+    pub drum_program: u8,     // 0–127, sent as PC on drum channel when settings closes
 }
 
 impl Settings {
@@ -44,6 +56,8 @@ impl Settings {
             drum_channel: 9,
             octave: 2,
             pitch_bend_range: 2,
+            melody_program: 0,
+            drum_program: 0,
         }
     }
 
@@ -54,6 +68,8 @@ impl Settings {
             1 => self.drum_channel as i16 + 1,
             2 => self.octave as i16,
             3 => self.pitch_bend_range as i16,
+            4 => self.melody_program as i16,
+            5 => self.drum_program as i16,
             _ => 0,
         }
     }
@@ -67,6 +83,8 @@ impl Settings {
             1 => self.drum_channel = (v - 1) as u8,
             2 => self.octave = v as i8,
             3 => self.pitch_bend_range = v as u8,
+            4 => self.melody_program = v as u8,
+            5 => self.drum_program = v as u8,
             _ => {}
         }
     }

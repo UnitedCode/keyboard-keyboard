@@ -67,6 +67,7 @@ mod app {
         settings: Settings,
         settings_active: bool,
         settings_selected: usize,
+        recalibrate_pending: bool,
     }
 
     // ── Local resources ───────────────────────────────────────────────────────
@@ -94,6 +95,7 @@ mod app {
         midi_sender: MidiSender,
         midi_rx: Rx<stm32::USART1>,
         filters: [ChannelFilter; NUM_SWITCHES],
+        dynamic_baselines: [u16; NUM_SWITCHES],
         last_pitch_bend: u16,
         last_vibrato_cc: u8,
         led1_off_at: u32,
@@ -336,6 +338,7 @@ mod app {
                 settings: Settings::default(),
                 settings_active: false,
                 settings_selected: 0,
+                recalibrate_pending: false,
             },
             Local {
                 audio: system.audio,
@@ -359,6 +362,7 @@ mod app {
                 midi_sender,
                 midi_rx,
                 filters,
+                dynamic_baselines: baselines,
                 last_pitch_bend: 0x2000,
                 last_vibrato_cc: 0,
                 led1_off_at: 0,
@@ -400,13 +404,18 @@ mod app {
             return;
         }
 
+        let state = ctx.shared.display_state.lock(|s| *s);
+        if state.recalibrating {
+            crate::display::draw_recalibrating(disp);
+            return;
+        }
+
         let active = ctx.shared.settings_active.lock(|a| *a);
         if active {
             let selected = ctx.shared.settings_selected.lock(|s| *s);
             let settings = ctx.shared.settings.lock(|s| *s);
             crate::display::draw_settings(disp, selected, &settings);
         } else {
-            let state = ctx.shared.display_state.lock(|s| *s);
             crate::display::draw_main(disp, &state);
         }
     }
@@ -420,10 +429,13 @@ mod app {
     #[task(
         binds = TIM2,
         local  = [timer2, adc, adc_pins, enb_a, enb_b, enb_c, adc_pin_a9, adc_pin_a10,
-                  adc_pin_a11, pot_last_cc, s0, s1, s2, mux_raw, filters, last_pitch_bend,
-                  last_vibrato_cc, led1, led2, led3, midi_rx, led1_off_at, led2_off_at],
+                  adc_pin_a11, pot_last_cc, s0, s1, s2, mux_raw, filters, dynamic_baselines,
+                  last_pitch_bend, last_vibrato_cc, led1, led2, led3, midi_rx,
+                  led1_off_at, led2_off_at,
+                  recalibrate_show_until: u32 = 0,
+                  recalibrate_flashing: bool = false],
         shared = [tick_ms, switch_states, baselines, event_queue, midi_tx_flag, splash_done,
-                  settings_active],
+                  settings_active, recalibrate_pending, display_state],
         priority = 15
     )]
     fn timer_handler(mut ctx: timer_handler::Context) {
@@ -443,7 +455,6 @@ mod app {
             display_update::spawn().ok();
         }
 
-        let baselines = ctx.shared.baselines.lock(|b| *b);
         let settings_active = ctx.shared.settings_active.lock(|a| *a);
         let mut pending: heapless::Vec<(usize, SwitchEvent), 32> = heapless::Vec::new();
 
@@ -473,10 +484,10 @@ mod app {
         }
 
         // ── Switch state machine ───────────────────────────────────────────────
-        let mut pb_filt_down = baselines[PITCH_BEND_DOWN];
-        let mut pb_filt_up = baselines[PITCH_BEND_UP];
-        let mut vib_filt_a = baselines[VIBRATO_A];
-        let mut vib_filt_b = baselines[VIBRATO_B];
+        let mut pb_filt_down = ctx.local.dynamic_baselines[PITCH_BEND_DOWN];
+        let mut pb_filt_up = ctx.local.dynamic_baselines[PITCH_BEND_UP];
+        let mut vib_filt_a = ctx.local.dynamic_baselines[VIBRATO_A];
+        let mut vib_filt_b = ctx.local.dynamic_baselines[VIBRATO_B];
 
         ctx.shared.switch_states.lock(|states| {
             for (switch_idx, &(mux, ch)) in SWITCH_MAP.iter().enumerate() {
@@ -499,18 +510,34 @@ mod app {
                     } else {
                         vib_filt_b = filtered;
                     }
-                } else if let Some(event) =
-                    states[switch_idx].update(filtered, baselines[switch_idx], now, switch_idx)
-                {
+                } else if let Some(event) = states[switch_idx].update(
+                    filtered,
+                    ctx.local.dynamic_baselines[switch_idx],
+                    now,
+                    switch_idx,
+                ) {
                     pending.push((switch_idx, event)).ok();
+                }
+
+                // Idle-state baseline tracking: absorb slow drift on floating /
+                // unconnected inputs without ever corrupting an active-press baseline.
+                let at_rest = if is_analog && !settings_active {
+                    filtered.abs_diff(ctx.local.dynamic_baselines[switch_idx]) < RELEASE_DELTA
+                } else {
+                    states[switch_idx].is_idle()
+                };
+                if at_rest {
+                    let db = &mut ctx.local.dynamic_baselines[switch_idx];
+                    *db = ((*db as u32 * (BASELINE_TRACKING_ALPHA - 1) + filtered as u32)
+                        / BASELINE_TRACKING_ALPHA) as u16;
                 }
             }
         });
 
         // ── Pitch bend (rate-limited, only when settings is closed) ───────────
         if !settings_active && now % PITCH_BEND_INTERVAL_MS == 0 {
-            let delta_down = pb_filt_down.abs_diff(baselines[PITCH_BEND_DOWN]);
-            let delta_up = pb_filt_up.abs_diff(baselines[PITCH_BEND_UP]);
+            let delta_down = pb_filt_down.abs_diff(ctx.local.dynamic_baselines[PITCH_BEND_DOWN]);
+            let delta_up = pb_filt_up.abs_diff(ctx.local.dynamic_baselines[PITCH_BEND_UP]);
             let pb_value = if delta_down < RELEASE_DELTA && delta_up < RELEASE_DELTA {
                 0x2000u16
             } else {
@@ -534,7 +561,7 @@ mod app {
         if DIAG_LOGGING && now % LOG_INTERVAL_MS == 0 {
             let (lk_mux, lk_ch) = SWITCH_MAP[LOG_SWITCH];
             let lk_filt = ctx.local.filters[LOG_SWITCH].last_output();
-            let lk_base = baselines[LOG_SWITCH];
+            let lk_base = ctx.local.dynamic_baselines[LOG_SWITCH];
             info!(
                 "DIAG HE{} raw={} filt={} base={} delta={:+}",
                 HE_NUM[LOG_SWITCH],
@@ -556,8 +583,8 @@ mod app {
         // ── Vibrato → CC1 (dead zone + rate-limited, only when settings closed) ─
         if !settings_active && now % VIBRATO_INTERVAL_MS == 0 {
             let max_delta = vib_filt_a
-                .abs_diff(baselines[VIBRATO_A])
-                .max(vib_filt_b.abs_diff(baselines[VIBRATO_B]))
+                .abs_diff(ctx.local.dynamic_baselines[VIBRATO_A])
+                .max(vib_filt_b.abs_diff(ctx.local.dynamic_baselines[VIBRATO_B]))
                 .saturating_sub(VIBRATO_DEAD_ZONE);
             let cc_val =
                 ((max_delta.min(VIBRATO_MAX_DELTA) as u32 * 127 / VIBRATO_MAX_DELTA as u32) as u8)
@@ -623,6 +650,34 @@ mod app {
             ctx.local.led3.set_high();
         }
 
+        // ── Snapshot recalibration ────────────────────────────────────────────
+        let do_recal = ctx
+            .shared
+            .recalibrate_pending
+            .lock(|p| core::mem::replace(p, false));
+        if do_recal {
+            for i in 0..NUM_SWITCHES {
+                let current = ctx.local.filters[i].last_output();
+                ctx.local.dynamic_baselines[i] = current;
+                ctx.local.filters[i].prime(current);
+            }
+            ctx.shared
+                .baselines
+                .lock(|b| *b = *ctx.local.dynamic_baselines);
+            *ctx.local.recalibrate_show_until = now.wrapping_add(RECALIBRATE_FLASH_MS);
+            *ctx.local.recalibrate_flashing = true;
+            info!("recalibration done tick={}", now);
+        }
+
+        // Clear recalibrating display after timeout
+        if *ctx.local.recalibrate_flashing
+            && now.wrapping_sub(*ctx.local.recalibrate_show_until) < 0x8000_0000u32
+        {
+            *ctx.local.recalibrate_flashing = false;
+            ctx.shared.display_state.lock(|s| s.recalibrating = false);
+            display_update::spawn().ok();
+        }
+
         if !pending.is_empty() {
             ctx.shared.event_queue.lock(|queue| {
                 for item in pending {
@@ -636,7 +691,7 @@ mod app {
     // ── MIDI output ───────────────────────────────────────────────────────────
     #[task(
         shared = [event_queue, midi_tx_flag, display_state, splash_done,
-                  settings, settings_active, settings_selected],
+                  settings, settings_active, settings_selected, recalibrate_pending],
         local  = [midi_sender],
         priority = 2,
         capacity = 32
@@ -652,6 +707,7 @@ mod app {
         let mut nav_dirty = false;
         let mut did_send = false;
         let mut new_display_event: Option<LastEvent> = None;
+        let mut new_volume: Option<u8> = None;
 
         ctx.shared.event_queue.lock(|queue| {
             while let Some((switch_idx, event)) = queue.dequeue() {
@@ -667,6 +723,56 @@ mod app {
                             nav_dirty = true;
                         }
                         _ => {}
+                    }
+                    continue;
+                }
+
+                // ── HE71–73: voice select → Program Change on melody channel ──
+                if switch_idx == VOICE_KEY_A
+                    || switch_idx == VOICE_KEY_B
+                    || switch_idx == VOICE_KEY_C
+                {
+                    if matches!(event, SwitchEvent::NoteOn { .. }) {
+                        let pc = if switch_idx == VOICE_KEY_A {
+                            VOICE_PC_A
+                        } else if switch_idx == VOICE_KEY_B {
+                            VOICE_PC_B
+                        } else {
+                            VOICE_PC_C
+                        };
+                        info!("Voice select PC={} ch={}", pc, settings.melody_channel + 1);
+                        ctx.local.midi_sender.set_channel(settings.melody_channel);
+                        ctx.local.midi_sender.all_notes_off();
+                        ctx.local.midi_sender.program_change(pc);
+                        ctx.shared
+                            .display_state
+                            .lock(|s| s.current_voice = Some(pc));
+                        display_update::spawn().ok();
+                        did_send = true;
+                    }
+                    continue;
+                }
+
+                // ── HE75: snapshot recalibration ──────────────────────────────
+                if switch_idx == RECALIBRATE_KEY {
+                    if matches!(event, SwitchEvent::NoteOn { .. }) {
+                        ctx.shared.recalibrate_pending.lock(|p| *p = true);
+                        ctx.shared.display_state.lock(|s| s.recalibrating = true);
+                        display_update::spawn().ok();
+                        info!("recalibration requested");
+                    }
+                    continue;
+                }
+
+                // ── HE76: all notes off (CC 123) on all 16 channels ───────────
+                if switch_idx == ALL_NOTES_OFF_KEY {
+                    if matches!(event, SwitchEvent::NoteOn { .. }) {
+                        info!("All Notes Off — all 16 channels");
+                        for ch in 0..16u8 {
+                            ctx.local.midi_sender.set_channel(ch);
+                            ctx.local.midi_sender.all_notes_off();
+                        }
+                        did_send = true;
                     }
                     continue;
                 }
@@ -745,6 +851,9 @@ mod app {
                         info!("CC{} = {}", cc, value);
                         ctx.local.midi_sender.control_change(cc, value);
                         new_display_event = Some(LastEvent::Cc { num: cc, value });
+                        if cc == 7 {
+                            new_volume = Some((value as u32 * 10 / 127) as u8);
+                        }
                     }
                     SwitchEvent::PitchBend { value } => {
                         info!("PitchBend value={}", value);
@@ -766,20 +875,27 @@ mod app {
 
         // ── Handle open / close transition ────────────────────────────────────
         if was_active != active {
-            // Kill any held notes and reset pitch bend on both channels.
+            // Kill held notes on every channel — covers old channel, new channel, and any
+            // channel that was active before settings was opened.
+            for ch in 0..16u8 {
+                ctx.local.midi_sender.set_channel(ch);
+                ctx.local.midi_sender.all_notes_off();
+            }
             ctx.local.midi_sender.set_channel(settings.melody_channel);
-            ctx.local.midi_sender.all_notes_off();
             ctx.local.midi_sender.pitch_bend(0x2000);
-            ctx.local.midi_sender.set_channel(settings.drum_channel);
-            ctx.local.midi_sender.all_notes_off();
             did_send = true;
 
             if !active {
-                // Settings just closed — inform the synth of the new pitch bend range.
+                // Settings just closed — push updated parameters to the synth.
                 ctx.local.midi_sender.set_channel(settings.melody_channel);
                 ctx.local
                     .midi_sender
                     .set_pitch_bend_range(settings.pitch_bend_range);
+                ctx.local
+                    .midi_sender
+                    .program_change(settings.melody_program);
+                ctx.local.midi_sender.set_channel(settings.drum_channel);
+                ctx.local.midi_sender.program_change(settings.drum_program);
             }
         }
 
@@ -794,6 +910,9 @@ mod app {
                     Some(LastEvent::Clear) => s.last_event = None,
                     Some(ev) => s.last_event = Some(ev),
                     None => {}
+                }
+                if let Some(vol) = new_volume {
+                    s.volume_level = Some(vol);
                 }
             });
             display_update::spawn().ok();

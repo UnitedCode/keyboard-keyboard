@@ -21,7 +21,27 @@ pub const SPLASH_DURATION_MS: u32 = 3000;
 
 pub const DIAG_LOGGING: bool = false; // set true to see raw ADC / calibration logs
 pub const LOG_INTERVAL_MS: u32 = 500;
-pub const LOG_SWITCH: usize = 0; // HE1 — first switch
+pub const LOG_SWITCH: usize = 89; // HE90 — debugging spurious triggers
+
+// ── Baseline drift tracking ───────────────────────────────────────────────────
+// IIR: baseline += (filtered - baseline) / ALPHA each idle tick.
+// At 1 kHz this gives a ~1 s time constant — fast enough to absorb boot drift,
+// slow enough that held notes never corrupt the baseline.
+pub const BASELINE_TRACKING_ALPHA: u32 = 1024;
+
+// ── Special function keys ─────────────────────────────────────────────────────
+pub const RECALIBRATE_KEY: usize = 74; // HE75 → snapshot recalibration
+pub const ALL_NOTES_OFF_KEY: usize = 75; // HE76 → CC 123 all channels
+pub const RECALIBRATE_FLASH_MS: u32 = 1500;
+
+// ── Voice select keys (HE71–HE73, AM10 decoder) ───────────────────────────────
+// PC sent on melody_channel. Mapping: key A→triangle, B→square, C→saw.
+pub const VOICE_KEY_A: usize = 70; // HE71
+pub const VOICE_KEY_B: usize = 71; // HE72
+pub const VOICE_KEY_C: usize = 72; // HE73
+pub const VOICE_PC_A: u8 = 0; // triangle
+pub const VOICE_PC_B: u8 = 1; // square
+pub const VOICE_PC_C: u8 = 2; // saw
 
 // ── Settings screen ───────────────────────────────────────────────────────────
 pub const SETTINGS_OPEN: usize = 73; // HE74 → open / close settings
@@ -133,7 +153,7 @@ pub const SWITCH_TO_NOTE: [u8; NUM_SWITCHES] = [
     59, 61, 63, 65, 67, 69, 71, 73, 75, 77, 79, 81, 83, 85, 87,
     // Row 5 — HE59–70 (base 54)
     54, 58, 60, 62, 64, 66, 68, 70, 72, 74, 76,
-    80, // HE71 — skipped 56 and 78 (those keys don't exist on the board)
+    80, // HE70 — skipped 56 and 78 (those keys don't exist on the board)
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 ];
 

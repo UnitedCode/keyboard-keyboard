@@ -48,6 +48,12 @@ impl MidiSender {
         self.control_change(123, 0);
     }
 
+    pub fn program_change(&mut self, program: u8) {
+        let status = 0xC0 | self.channel;
+        self.send_byte(status);
+        self.send_byte(program & 0x7F);
+    }
+
     /// Sets pitch bend range on the receiving synth via Registered Parameter Number 0.
     pub fn set_pitch_bend_range(&mut self, semitones: u8) {
         // Select RPN 0 (pitch bend range): MSB then LSB both = 0.
