@@ -674,9 +674,7 @@ mod app {
             && now.wrapping_sub(*ctx.local.recalibrate_show_until) < 0x8000_0000u32
         {
             *ctx.local.recalibrate_flashing = false;
-            ctx.shared
-                .display_state
-                .lock(|s| s.recalibrating = false);
+            ctx.shared.display_state.lock(|s| s.recalibrating = false);
             display_update::spawn().ok();
         }
 
@@ -744,6 +742,7 @@ mod app {
                         };
                         info!("Voice select PC={} ch={}", pc, settings.melody_channel + 1);
                         ctx.local.midi_sender.set_channel(settings.melody_channel);
+                        ctx.local.midi_sender.all_notes_off();
                         ctx.local.midi_sender.program_change(pc);
                         ctx.shared
                             .display_state
@@ -890,7 +889,9 @@ mod app {
                 ctx.local
                     .midi_sender
                     .set_pitch_bend_range(settings.pitch_bend_range);
-                ctx.local.midi_sender.program_change(settings.melody_program);
+                ctx.local
+                    .midi_sender
+                    .program_change(settings.melody_program);
                 ctx.local.midi_sender.set_channel(settings.drum_channel);
                 ctx.local.midi_sender.program_change(settings.drum_program);
             }

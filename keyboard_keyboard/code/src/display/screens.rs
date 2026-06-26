@@ -136,8 +136,7 @@ pub fn draw_main(disp: &mut LcdDisplay, state: &DisplayState) {
             1 => 20, // square
             _ => 0,  // saw
         };
-        let icon =
-            atlas.sub_image(&Rectangle::new(Point::new(atlas_x, 64), Size::new(20, 8)));
+        let icon = atlas.sub_image(&Rectangle::new(Point::new(atlas_x, 64), Size::new(20, 8)));
         Image::new(&icon, Point::new(5, 24)).draw(disp).ok();
     }
 

@@ -30,8 +30,8 @@ pub const LOG_SWITCH: usize = 89; // HE90 — debugging spurious triggers
 pub const BASELINE_TRACKING_ALPHA: u32 = 1024;
 
 // ── Special function keys ─────────────────────────────────────────────────────
-pub const RECALIBRATE_KEY: usize = 74;    // HE75 → snapshot recalibration
-pub const ALL_NOTES_OFF_KEY: usize = 75;  // HE76 → CC 123 all channels
+pub const RECALIBRATE_KEY: usize = 74; // HE75 → snapshot recalibration
+pub const ALL_NOTES_OFF_KEY: usize = 75; // HE76 → CC 123 all channels
 pub const RECALIBRATE_FLASH_MS: u32 = 1500;
 
 // ── Voice select keys (HE71–HE73, AM10 decoder) ───────────────────────────────
