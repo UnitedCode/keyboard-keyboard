@@ -19,7 +19,7 @@ pub const CALIBRATION_SAMPLES: usize = 64;
 
 pub const SPLASH_DURATION_MS: u32 = 3000;
 
-pub const DIAG_LOGGING: bool = true; // set true to see raw ADC / calibration logs
+pub const DIAG_LOGGING: bool = false; // set true to see raw ADC / calibration logs
 pub const LOG_INTERVAL_MS: u32 = 500;
 pub const LOG_SWITCH: usize = 89; // HE90 — debugging spurious triggers
 
