@@ -875,12 +875,14 @@ mod app {
 
         // ── Handle open / close transition ────────────────────────────────────
         if was_active != active {
-            // Kill any held notes and reset pitch bend on both channels.
+            // Kill held notes on every channel — covers old channel, new channel, and any
+            // channel that was active before settings was opened.
+            for ch in 0..16u8 {
+                ctx.local.midi_sender.set_channel(ch);
+                ctx.local.midi_sender.all_notes_off();
+            }
             ctx.local.midi_sender.set_channel(settings.melody_channel);
-            ctx.local.midi_sender.all_notes_off();
             ctx.local.midi_sender.pitch_bend(0x2000);
-            ctx.local.midi_sender.set_channel(settings.drum_channel);
-            ctx.local.midi_sender.all_notes_off();
             did_send = true;
 
             if !active {
