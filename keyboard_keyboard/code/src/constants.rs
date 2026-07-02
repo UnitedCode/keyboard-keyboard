@@ -28,6 +28,11 @@ pub const LOG_SWITCH: usize = 89; // HE90 — debugging spurious triggers
 // At 1 kHz this gives a ~1 s time constant — fast enough to absorb boot drift,
 // slow enough that held notes never corrupt the baseline.
 pub const BASELINE_TRACKING_ALPHA: u32 = 1024;
+// Hard cap on how far the tracked baseline may wander from the boot-calibrated
+// value. Must stay well under RELEASE_DELTA so sustained crosstalk from a held
+// chord on neighboring switches can never, by itself, drift a baseline far
+// enough to cross FIRST_DELTA/RELEASE_DELTA once the chord releases.
+pub const BASELINE_DRIFT_MAX: u16 = 40;
 
 // ── Special function keys ─────────────────────────────────────────────────────
 pub const RECALIBRATE_KEY: usize = 74; // HE75 → snapshot recalibration

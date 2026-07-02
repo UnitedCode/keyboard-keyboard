@@ -455,6 +455,9 @@ mod app {
             display_update::spawn().ok();
         }
 
+        // Anchor for drift clamping — the last boot/recalibration snapshot, never
+        // touched by per-tick tracking.
+        let anchor_baselines = ctx.shared.baselines.lock(|b| *b);
         let settings_active = ctx.shared.settings_active.lock(|a| *a);
         let mut pending: heapless::Vec<(usize, SwitchEvent), 32> = heapless::Vec::new();
 
@@ -525,11 +528,21 @@ mod app {
                     filtered.abs_diff(ctx.local.dynamic_baselines[switch_idx]) < RELEASE_DELTA
                 } else {
                     states[switch_idx].is_idle()
+                        && filtered.abs_diff(ctx.local.dynamic_baselines[switch_idx])
+                            < RELEASE_DELTA
                 };
                 if at_rest {
                     let db = &mut ctx.local.dynamic_baselines[switch_idx];
-                    *db = ((*db as u32 * (BASELINE_TRACKING_ALPHA - 1) + filtered as u32)
+                    let tracked = ((*db as u32 * (BASELINE_TRACKING_ALPHA - 1) + filtered as u32)
                         / BASELINE_TRACKING_ALPHA) as u16;
+                    // Clamp to the boot/recalibration anchor so sustained crosstalk from a
+                    // held chord can never drift a neighboring baseline far enough to cause
+                    // a phantom trigger once the chord releases.
+                    let anchor = anchor_baselines[switch_idx];
+                    *db = tracked.clamp(
+                        anchor.saturating_sub(BASELINE_DRIFT_MAX),
+                        anchor.saturating_add(BASELINE_DRIFT_MAX),
+                    );
                 }
             }
         });
