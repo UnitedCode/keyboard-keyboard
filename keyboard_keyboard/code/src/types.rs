@@ -23,6 +23,9 @@ pub struct DisplayState {
     pub last_event: Option<LastEvent>,
     pub melody_channel: u8,
     pub drum_channel: u8,
+    pub recalibrating: bool,
+    pub current_voice: Option<u8>,
+    pub volume_level: Option<u8>, // 0–10, mapped from CC7 (0–127)
 }
 
 impl DisplayState {
@@ -31,6 +34,9 @@ impl DisplayState {
             last_event: None,
             melody_channel: 0,
             drum_channel: 9,
+            recalibrating: false,
+            current_voice: None,
+            volume_level: None,
         }
     }
 }

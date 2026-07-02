@@ -67,6 +67,10 @@ impl SwitchState {
         }
     }
 
+    pub fn is_idle(&self) -> bool {
+        matches!(self.phase, SwitchPhase::Idle)
+    }
+
     pub fn update(
         &mut self,
         adc_value: u16,
