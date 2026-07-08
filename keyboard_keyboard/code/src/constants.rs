@@ -36,7 +36,9 @@ pub const BASELINE_DRIFT_MAX: u16 = 40;
 
 // ── Special function keys ─────────────────────────────────────────────────────
 pub const RECALIBRATE_KEY: usize = 74; // HE75 → snapshot recalibration
-pub const ALL_NOTES_OFF_KEY: usize = 75; // HE76 → CC 123 all channels
+// HE76 → MIDI transport Start/Stop toggle alone; combined with HE74+HE75
+// held at the same time, sends All Notes Off (CC 123) on all 16 channels.
+pub const TRANSPORT_KEY: usize = 75;
 pub const RECALIBRATE_FLASH_MS: u32 = 1500;
 
 // ── Voice select keys (HE71–HE73, AM10 decoder) ───────────────────────────────

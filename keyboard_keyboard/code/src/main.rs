@@ -101,6 +101,13 @@ mod app {
         led1_off_at: u32,
         led2_off_at: u32,
         display: Option<LcdDisplay>,
+        // HE74+HE75+HE76 all-notes-off chord tracking.
+        he74_held: bool,
+        he75_held: bool,
+        he76_held: bool,
+        chord_fired: bool,
+        // HE76 (when not part of the chord) toggles MIDI transport Start/Stop.
+        transport_playing: bool,
     }
 
     // ── init ──────────────────────────────────────────────────────────────────
@@ -368,6 +375,11 @@ mod app {
                 led1_off_at: 0,
                 led2_off_at: 0,
                 display,
+                he74_held: false,
+                he75_held: false,
+                he76_held: false,
+                chord_fired: false,
+                transport_playing: false,
             },
             init::Monotonics(),
         )
@@ -705,7 +717,7 @@ mod app {
     #[task(
         shared = [event_queue, midi_tx_flag, display_state, splash_done,
                   settings, settings_active, settings_selected, recalibrate_pending],
-        local  = [midi_sender],
+        local  = [midi_sender, he74_held, he75_held, he76_held, chord_fired, transport_playing],
         priority = 2,
         capacity = 32
     )]
@@ -724,18 +736,77 @@ mod app {
 
         ctx.shared.event_queue.lock(|queue| {
             while let Some((switch_idx, event)) = queue.dequeue() {
-                // ── Settings open / close (hold HE74) ────────────────────────
-                if switch_idx == SETTINGS_OPEN {
-                    match event {
-                        SwitchEvent::NoteOn { .. } => {
-                            active = true;
-                            nav_dirty = true;
+                // ── HE74+HE75+HE76 chord → All Notes Off (all 16 channels) ───
+                // Held individually: HE74 opens settings, HE75 requests a
+                // recalibration snapshot, HE76 toggles MIDI transport Start/Stop.
+                if switch_idx == SETTINGS_OPEN
+                    || switch_idx == RECALIBRATE_KEY
+                    || switch_idx == TRANSPORT_KEY
+                {
+                    let held = matches!(event, SwitchEvent::NoteOn { .. });
+                    if switch_idx == SETTINGS_OPEN {
+                        *ctx.local.he74_held = held;
+                    } else if switch_idx == RECALIBRATE_KEY {
+                        *ctx.local.he75_held = held;
+                    } else {
+                        *ctx.local.he76_held = held;
+                    }
+
+                    let chord_held =
+                        *ctx.local.he74_held && *ctx.local.he75_held && *ctx.local.he76_held;
+                    if !chord_held {
+                        *ctx.local.chord_fired = false;
+                    }
+
+                    if chord_held {
+                        if !*ctx.local.chord_fired {
+                            info!("All Notes Off (HE74+HE75+HE76 chord) — all 16 channels");
+                            for ch in 0..16u8 {
+                                ctx.local.midi_sender.set_channel(ch);
+                                ctx.local.midi_sender.all_notes_off();
+                            }
+                            did_send = true;
+                            *ctx.local.chord_fired = true;
+                            // Close settings if HE74 had opened it while the chord formed.
+                            if active {
+                                active = false;
+                                nav_dirty = true;
+                            }
                         }
-                        SwitchEvent::NoteOff => {
-                            active = false;
-                            nav_dirty = true;
+                        // Suppress each key's individual action while the chord is held.
+                        continue;
+                    }
+
+                    if switch_idx == SETTINGS_OPEN {
+                        match event {
+                            SwitchEvent::NoteOn { .. } => {
+                                active = true;
+                                nav_dirty = true;
+                            }
+                            SwitchEvent::NoteOff => {
+                                active = false;
+                                nav_dirty = true;
+                            }
+                            _ => {}
                         }
-                        _ => {}
+                    } else if switch_idx == RECALIBRATE_KEY {
+                        if matches!(event, SwitchEvent::NoteOn { .. }) {
+                            ctx.shared.recalibrate_pending.lock(|p| *p = true);
+                            ctx.shared.display_state.lock(|s| s.recalibrating = true);
+                            display_update::spawn().ok();
+                            info!("recalibration requested");
+                        }
+                    } else if matches!(event, SwitchEvent::NoteOn { .. }) {
+                        // HE76: toggle MIDI transport Start/Stop.
+                        if *ctx.local.transport_playing {
+                            ctx.local.midi_sender.transport_stop();
+                            info!("MIDI transport Stop");
+                        } else {
+                            ctx.local.midi_sender.transport_start();
+                            info!("MIDI transport Start");
+                        }
+                        *ctx.local.transport_playing = !*ctx.local.transport_playing;
+                        did_send = true;
                     }
                     continue;
                 }
@@ -761,30 +832,6 @@ mod app {
                             .display_state
                             .lock(|s| s.current_voice = Some(pc));
                         display_update::spawn().ok();
-                        did_send = true;
-                    }
-                    continue;
-                }
-
-                // ── HE75: snapshot recalibration ──────────────────────────────
-                if switch_idx == RECALIBRATE_KEY {
-                    if matches!(event, SwitchEvent::NoteOn { .. }) {
-                        ctx.shared.recalibrate_pending.lock(|p| *p = true);
-                        ctx.shared.display_state.lock(|s| s.recalibrating = true);
-                        display_update::spawn().ok();
-                        info!("recalibration requested");
-                    }
-                    continue;
-                }
-
-                // ── HE76: all notes off (CC 123) on all 16 channels ───────────
-                if switch_idx == ALL_NOTES_OFF_KEY {
-                    if matches!(event, SwitchEvent::NoteOn { .. }) {
-                        info!("All Notes Off — all 16 channels");
-                        for ch in 0..16u8 {
-                            ctx.local.midi_sender.set_channel(ch);
-                            ctx.local.midi_sender.all_notes_off();
-                        }
                         did_send = true;
                     }
                     continue;

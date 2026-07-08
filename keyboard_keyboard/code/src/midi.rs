@@ -48,6 +48,16 @@ impl MidiSender {
         self.control_change(123, 0);
     }
 
+    /// System Realtime Start (0xFA). Channel-less — not affected by `set_channel`.
+    pub fn transport_start(&mut self) {
+        self.send_byte(0xFA);
+    }
+
+    /// System Realtime Stop (0xFC). Channel-less — not affected by `set_channel`.
+    pub fn transport_stop(&mut self) {
+        self.send_byte(0xFC);
+    }
+
     pub fn program_change(&mut self, program: u8) {
         let status = 0xC0 | self.channel;
         self.send_byte(status);
