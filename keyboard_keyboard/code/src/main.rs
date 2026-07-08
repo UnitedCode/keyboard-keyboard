@@ -831,27 +831,56 @@ mod app {
                     continue;
                 }
 
-                // ── HE71–73: voice select → Program Change on melody channel ──
+                // ── HE71–73: preset buttons — behavior depends on settings.preset_mode ──
                 if switch_idx == VOICE_KEY_A
                     || switch_idx == VOICE_KEY_B
                     || switch_idx == VOICE_KEY_C
                 {
                     if matches!(event, SwitchEvent::NoteOn { .. }) {
-                        let pc = if switch_idx == VOICE_KEY_A {
-                            VOICE_PC_A
-                        } else if switch_idx == VOICE_KEY_B {
-                            VOICE_PC_B
+                        if settings.preset_mode == 0 {
+                            // Waveform: Program Change, unchanged.
+                            let pc = if switch_idx == VOICE_KEY_A {
+                                VOICE_PC_A
+                            } else if switch_idx == VOICE_KEY_B {
+                                VOICE_PC_B
+                            } else {
+                                VOICE_PC_C
+                            };
+                            info!("Voice select PC={} ch={}", pc, settings.melody_channel + 1);
+                            ctx.local.midi_sender.set_channel(settings.melody_channel);
+                            ctx.local.midi_sender.all_notes_off();
+                            ctx.local.midi_sender.program_change(pc);
+                            ctx.shared
+                                .display_state
+                                .lock(|s| s.current_voice = Some(pc));
+                            display_update::spawn().ok();
                         } else {
-                            VOICE_PC_C
-                        };
-                        info!("Voice select PC={} ch={}", pc, settings.melody_channel + 1);
-                        ctx.local.midi_sender.set_channel(settings.melody_channel);
-                        ctx.local.midi_sender.all_notes_off();
-                        ctx.local.midi_sender.program_change(pc);
-                        ctx.shared
-                            .display_state
-                            .lock(|s| s.current_voice = Some(pc));
-                        display_update::spawn().ok();
+                            // Crush / Octave / Formant: one CC per mode, radio-button
+                            // style — value 0/64/127 identifies key A/B/C, fires on
+                            // press only. No all_notes_off: this is a live tweak, not
+                            // a patch change.
+                            let cc = match settings.preset_mode {
+                                1 => CRUSH_SELECT_CC,
+                                2 => OCTAVE_SELECT_CC,
+                                _ => FORMANT_SELECT_CC,
+                            };
+                            let value = if switch_idx == VOICE_KEY_A {
+                                0
+                            } else if switch_idx == VOICE_KEY_B {
+                                64
+                            } else {
+                                127
+                            };
+                            info!(
+                                "{} select CC{}={} ch={}",
+                                PRESET_MODE_NAMES[settings.preset_mode as usize],
+                                cc,
+                                value,
+                                settings.melody_channel + 1
+                            );
+                            ctx.local.midi_sender.set_channel(settings.melody_channel);
+                            ctx.local.midi_sender.control_change(cc, value);
+                        }
                         did_send = true;
                     }
                     continue;

@@ -1,3 +1,4 @@
+use crate::constants::PRESET_MODE_NAMES;
 use crate::display::note_name;
 use crate::settings::{Settings, NUM_SETTINGS_ITEMS, SETTINGS_ITEMS};
 use crate::types::{DisplayState, LastEvent, LcdDisplay};
@@ -168,9 +169,14 @@ pub fn draw_settings(disp: &mut LcdDisplay, selected: usize, settings: &Settings
             .draw(disp)
             .ok();
 
-        // Value: right-aligned
+        // Value: right-aligned. Item 6 (PRESET BUTTONS) shows a mode name instead
+        // of its raw 0–3 value.
         let mut val_str: String<8> = String::new();
-        write!(val_str, "{}", value).ok();
+        if item_idx == 6 {
+            val_str.push_str(PRESET_MODE_NAMES[value as usize]).ok();
+        } else {
+            write!(val_str, "{}", value).ok();
+        }
         Text::with_alignment(
             val_str.as_str(),
             Point::new(127, y),

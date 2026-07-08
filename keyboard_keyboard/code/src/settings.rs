@@ -1,4 +1,4 @@
-pub const NUM_SETTINGS_ITEMS: usize = 6;
+pub const NUM_SETTINGS_ITEMS: usize = 7;
 
 pub struct SettingsItem {
     pub name: &'static str,
@@ -37,6 +37,11 @@ pub const SETTINGS_ITEMS: [SettingsItem; NUM_SETTINGS_ITEMS] = [
         min: 0,
         max: 127,
     },
+    SettingsItem {
+        name: "PRESET BUTTONS",
+        min: 0,
+        max: 3,
+    },
 ];
 
 #[derive(Clone, Copy, Debug)]
@@ -47,6 +52,7 @@ pub struct Settings {
     pub pitch_bend_range: u8, // semitones 1–12
     pub melody_program: u8,   // 0–127, sent as PC on melody channel when settings closes
     pub drum_program: u8,     // 0–127, sent as PC on drum channel when settings closes
+    pub preset_mode: u8,      // 0=Waveform, 1=Crush, 2=Octave, 3=Formant — see PRESET_MODE_NAMES
 }
 
 impl Settings {
@@ -58,6 +64,7 @@ impl Settings {
             pitch_bend_range: 2,
             melody_program: 0,
             drum_program: 0,
+            preset_mode: 0,
         }
     }
 
@@ -70,6 +77,7 @@ impl Settings {
             3 => self.pitch_bend_range as i16,
             4 => self.melody_program as i16,
             5 => self.drum_program as i16,
+            6 => self.preset_mode as i16,
             _ => 0,
         }
     }
@@ -85,6 +93,7 @@ impl Settings {
             3 => self.pitch_bend_range = v as u8,
             4 => self.melody_program = v as u8,
             5 => self.drum_program = v as u8,
+            6 => self.preset_mode = v as u8,
             _ => {}
         }
     }

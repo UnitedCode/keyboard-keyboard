@@ -42,13 +42,25 @@ pub const TRANSPORT_KEY: usize = 75;
 pub const RECALIBRATE_FLASH_MS: u32 = 1500;
 
 // ── Voice select keys (HE71–HE73, AM10 decoder) ───────────────────────────────
-// PC sent on melody_channel. Mapping: key A→triangle, B→square, C→saw.
+// Behavior depends on Settings.preset_mode (see settings.rs):
+//   0 = Waveform → PC sent on melody_channel. Key A→triangle, B→square, C→saw.
+//   1 = Crush, 2 = Octave, 3 = Formant → CC sent on melody_channel, one CC per
+//       mode, value 0/64/127 for key A/B/C (radio-button style, fires on press
+//       only — see PRESET_MODE_NAMES and the *_SELECT_CC constants below).
 pub const VOICE_KEY_A: usize = 70; // HE71
 pub const VOICE_KEY_B: usize = 71; // HE72
 pub const VOICE_KEY_C: usize = 72; // HE73
 pub const VOICE_PC_A: u8 = 0; // triangle
 pub const VOICE_PC_B: u8 = 1; // square
 pub const VOICE_PC_C: u8 = 2; // saw
+
+pub const PRESET_MODE_NAMES: [&str; 4] = ["WAVEFORM", "CRUSH", "OCTAVE", "FORMANT"];
+
+// General Purpose Controllers 5–8 (CC80–83): no paired LSB controller, so by
+// convention used for switch/selector-style controls rather than continuous.
+pub const OCTAVE_SELECT_CC: u8 = 80; // 0=Down, 64=Normal, 127=Up
+pub const FORMANT_SELECT_CC: u8 = 81; // 0=Lower, 64=Neutral, 127=Higher
+pub const CRUSH_SELECT_CC: u8 = 82; // 0=Off, 64=Light, 127=Heavy
 
 // ── Settings screen ───────────────────────────────────────────────────────────
 pub const SETTINGS_OPEN: usize = 73; // HE74 → open / close settings
