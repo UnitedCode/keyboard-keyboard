@@ -72,9 +72,9 @@ pub const PITCH_BEND_MAX_DELTA: u16 = 400;
 pub const PITCH_BEND_HYSTERESIS: u16 = 32;
 pub const PITCH_BEND_INTERVAL_MS: u32 = 5;
 
-// ── Vibrato (up/down arrow keys) → CC1 ───────────────────────────────────────
-pub const VIBRATO_A: usize = 76; // HE77 → vibrato depth
-pub const VIBRATO_B: usize = 78; // HE79 → vibrato depth
+// ── Expression / Vibrato (up/down arrow keys) ────────────────────────────────
+pub const EXPRESSION_KEY: usize = 76; // HE77 → CC11 (expression)
+pub const VIBRATO_KEY: usize = 78; // HE79 → CC1 (modulation)
 pub const VIBRATO_MAX_DELTA: u16 = 300;
 pub const VIBRATO_DEAD_ZONE: u16 = 30; // noise floor below which output = 0
 pub const VIBRATO_HYSTERESIS: u8 = 2;
@@ -91,7 +91,7 @@ pub const POT_ADC_MAX: u32 = 3776; // physical ceiling — pots don't reach full
 pub const POT_MAP: [(u8, u8, u8); NUM_POTS] = [
     (4, 4,  7), // RV1  AM14 X4 → CC7  (volume)
     (4, 6, 10), // RV2  AM14 X6 → CC10 (pan)
-    (4, 7, 11), // RV3  AM14 X7 → CC11 (expression)
+    (4, 7, 12), // RV3  AM14 X7 → CC12 (effect control 1)
     (4, 5, 74), // RV4  AM14 X5 → CC74 (brightness)
     (4, 2, 36), // RV5  AM14 X2 → CC36
     (4, 1, 37), // RV6  AM14 X1 → CC37

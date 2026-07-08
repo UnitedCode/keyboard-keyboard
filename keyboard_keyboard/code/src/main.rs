@@ -98,6 +98,7 @@ mod app {
         dynamic_baselines: [u16; NUM_SWITCHES],
         last_pitch_bend: u16,
         last_vibrato_cc: u8,
+        last_expression_cc: u8,
         led1_off_at: u32,
         led2_off_at: u32,
         display: Option<LcdDisplay>,
@@ -372,6 +373,7 @@ mod app {
                 dynamic_baselines: baselines,
                 last_pitch_bend: 0x2000,
                 last_vibrato_cc: 0,
+                last_expression_cc: 0,
                 led1_off_at: 0,
                 led2_off_at: 0,
                 display,
@@ -442,7 +444,7 @@ mod app {
         binds = TIM2,
         local  = [timer2, adc, adc_pins, enb_a, enb_b, enb_c, adc_pin_a9, adc_pin_a10,
                   adc_pin_a11, pot_last_cc, s0, s1, s2, mux_raw, filters, dynamic_baselines,
-                  last_pitch_bend, last_vibrato_cc, led1, led2, led3, midi_rx,
+                  last_pitch_bend, last_vibrato_cc, last_expression_cc, led1, led2, led3, midi_rx,
                   led1_off_at, led2_off_at,
                   recalibrate_show_until: u32 = 0,
                   recalibrate_flashing: bool = false],
@@ -501,8 +503,8 @@ mod app {
         // ── Switch state machine ───────────────────────────────────────────────
         let mut pb_filt_down = ctx.local.dynamic_baselines[PITCH_BEND_DOWN];
         let mut pb_filt_up = ctx.local.dynamic_baselines[PITCH_BEND_UP];
-        let mut vib_filt_a = ctx.local.dynamic_baselines[VIBRATO_A];
-        let mut vib_filt_b = ctx.local.dynamic_baselines[VIBRATO_B];
+        let mut expr_filt = ctx.local.dynamic_baselines[EXPRESSION_KEY];
+        let mut vib_filt = ctx.local.dynamic_baselines[VIBRATO_KEY];
 
         ctx.shared.switch_states.lock(|states| {
             for (switch_idx, &(mux, ch)) in SWITCH_MAP.iter().enumerate() {
@@ -512,18 +514,18 @@ mod app {
                 // When settings is open the four arrow keys become digital plunger switches;
                 let is_analog = switch_idx == PITCH_BEND_DOWN
                     || switch_idx == PITCH_BEND_UP
-                    || switch_idx == VIBRATO_A
-                    || switch_idx == VIBRATO_B;
+                    || switch_idx == EXPRESSION_KEY
+                    || switch_idx == VIBRATO_KEY;
 
                 if is_analog && !settings_active {
                     if switch_idx == PITCH_BEND_DOWN {
                         pb_filt_down = filtered;
                     } else if switch_idx == PITCH_BEND_UP {
                         pb_filt_up = filtered;
-                    } else if switch_idx == VIBRATO_A {
-                        vib_filt_a = filtered;
+                    } else if switch_idx == EXPRESSION_KEY {
+                        expr_filt = filtered;
                     } else {
-                        vib_filt_b = filtered;
+                        vib_filt = filtered;
                     }
                 } else if let Some(event) = states[switch_idx].update(
                     filtered,
@@ -605,23 +607,41 @@ mod app {
             );
         }
 
-        // ── Vibrato → CC1 (dead zone + rate-limited, only when settings closed) ─
+        // ── Vibrato → CC1, Expression → CC11 (dead zone + rate-limited, only when settings closed) ─
         if !settings_active && now % VIBRATO_INTERVAL_MS == 0 {
-            let max_delta = vib_filt_a
-                .abs_diff(ctx.local.dynamic_baselines[VIBRATO_A])
-                .max(vib_filt_b.abs_diff(ctx.local.dynamic_baselines[VIBRATO_B]))
+            let vib_delta = vib_filt
+                .abs_diff(ctx.local.dynamic_baselines[VIBRATO_KEY])
                 .saturating_sub(VIBRATO_DEAD_ZONE);
-            let cc_val =
-                ((max_delta.min(VIBRATO_MAX_DELTA) as u32 * 127 / VIBRATO_MAX_DELTA as u32) as u8)
+            let vib_cc_val =
+                ((vib_delta.min(VIBRATO_MAX_DELTA) as u32 * 127 / VIBRATO_MAX_DELTA as u32) as u8)
                     .min(127);
-            if cc_val.abs_diff(*ctx.local.last_vibrato_cc) >= VIBRATO_HYSTERESIS {
-                *ctx.local.last_vibrato_cc = cc_val;
+            if vib_cc_val.abs_diff(*ctx.local.last_vibrato_cc) >= VIBRATO_HYSTERESIS {
+                *ctx.local.last_vibrato_cc = vib_cc_val;
                 pending
                     .push((
                         0,
                         SwitchEvent::PotChange {
                             cc: 1,
-                            value: cc_val,
+                            value: vib_cc_val,
+                        },
+                    ))
+                    .ok();
+            }
+
+            let expr_delta = expr_filt
+                .abs_diff(ctx.local.dynamic_baselines[EXPRESSION_KEY])
+                .saturating_sub(VIBRATO_DEAD_ZONE);
+            let expr_cc_val =
+                ((expr_delta.min(VIBRATO_MAX_DELTA) as u32 * 127 / VIBRATO_MAX_DELTA as u32) as u8)
+                    .min(127);
+            if expr_cc_val.abs_diff(*ctx.local.last_expression_cc) >= VIBRATO_HYSTERESIS {
+                *ctx.local.last_expression_cc = expr_cc_val;
+                pending
+                    .push((
+                        0,
+                        SwitchEvent::PotChange {
+                            cc: 11,
+                            value: expr_cc_val,
                         },
                     ))
                     .ok();
