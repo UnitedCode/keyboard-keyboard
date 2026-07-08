@@ -425,12 +425,12 @@ mod app {
         }
 
         let active = ctx.shared.settings_active.lock(|a| *a);
+        let settings = ctx.shared.settings.lock(|s| *s);
         if active {
             let selected = ctx.shared.settings_selected.lock(|s| *s);
-            let settings = ctx.shared.settings.lock(|s| *s);
             crate::display::draw_settings(disp, selected, &settings);
         } else {
-            crate::display::draw_main(disp, &state);
+            crate::display::draw_main(disp, &state, &settings);
         }
     }
 
@@ -864,12 +864,12 @@ mod app {
                                 2 => OCTAVE_SELECT_CC,
                                 _ => FORMANT_SELECT_CC,
                             };
-                            let value = if switch_idx == VOICE_KEY_A {
-                                0
+                            let (value, col): (u8, u8) = if switch_idx == VOICE_KEY_A {
+                                (0, 0)
                             } else if switch_idx == VOICE_KEY_B {
-                                64
+                                (64, 1)
                             } else {
-                                127
+                                (127, 2)
                             };
                             info!(
                                 "{} select CC{}={} ch={}",
@@ -880,6 +880,10 @@ mod app {
                             );
                             ctx.local.midi_sender.set_channel(settings.melody_channel);
                             ctx.local.midi_sender.control_change(cc, value);
+                            ctx.shared
+                                .display_state
+                                .lock(|s| s.current_preset = Some((settings.preset_mode, col)));
+                            display_update::spawn().ok();
                         }
                         did_send = true;
                     }

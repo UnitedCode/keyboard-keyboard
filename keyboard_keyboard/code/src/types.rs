@@ -26,6 +26,9 @@ pub struct DisplayState {
     pub recalibrating: bool,
     pub current_voice: Option<u8>,
     pub volume_level: Option<u8>, // 0–10, mapped from CC7 (0–127)
+    // (preset_mode, column) for the last preset button pressed — column is 0/1/2
+    // for key A/B/C. Only drawn when preset_mode still matches the live setting.
+    pub current_preset: Option<(u8, u8)>,
 }
 
 impl DisplayState {
@@ -37,6 +40,7 @@ impl DisplayState {
             recalibrating: false,
             current_voice: None,
             volume_level: None,
+            current_preset: None,
         }
     }
 }

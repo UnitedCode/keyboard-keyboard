@@ -39,7 +39,7 @@ pub fn draw_splash(disp: &mut LcdDisplay) {
     disp.flush().ok();
 }
 
-pub fn draw_main(disp: &mut LcdDisplay, state: &DisplayState) {
+pub fn draw_main(disp: &mut LcdDisplay, state: &DisplayState, settings: &Settings) {
     disp.clear();
 
     let atlas = ImageRawBE::<BinaryColor>::new(SPRITE_ATLAS, 128);
@@ -130,15 +130,32 @@ pub fn draw_main(disp: &mut LcdDisplay, state: &DisplayState) {
         .ok();
     }
 
-    // Bottom-left waveform icon (20×8 px at display position 5,24)
-    if let Some(voice) = state.current_voice {
-        let atlas_x = match voice {
-            0 => 40, // triangle
-            1 => 20, // square
-            _ => 0,  // saw
-        };
-        let icon = atlas.sub_image(&Rectangle::new(Point::new(atlas_x, 64), Size::new(20, 8)));
-        Image::new(&icon, Point::new(5, 24)).draw(disp).ok();
+    // Bottom-left icon (display position 5,24): waveform when preset_mode is
+    // Waveform, otherwise the current Crush/Octave/Formant button state.
+    if settings.preset_mode == 0 {
+        if let Some(voice) = state.current_voice {
+            let atlas_x = match voice {
+                0 => 40, // triangle
+                1 => 20, // square
+                _ => 0,  // saw
+            };
+            let icon = atlas.sub_image(&Rectangle::new(Point::new(atlas_x, 64), Size::new(20, 8)));
+            Image::new(&icon, Point::new(5, 24)).draw(disp).ok();
+        }
+    } else if let Some((mode, col)) = state.current_preset {
+        if mode == settings.preset_mode {
+            // Sprite rows (12×8 px each, 3 columns at x=0/12/24): y=72 Octave
+            // (Low/Normal/High), y=80 Crush (Crush1/Off/Crush2), y=88 Formant
+            // (Male/Off/Female).
+            let atlas_y = match mode {
+                1 => 80, // Crush
+                2 => 72, // Octave
+                _ => 88, // Formant
+            };
+            let atlas_x = col as i32 * 12;
+            let icon = atlas.sub_image(&Rectangle::new(Point::new(atlas_x, atlas_y), Size::new(12, 8)));
+            Image::new(&icon, Point::new(5, 24)).draw(disp).ok();
+        }
     }
 
     disp.flush().ok();

@@ -58,9 +58,9 @@ pub const PRESET_MODE_NAMES: [&str; 4] = ["WAVEFORM", "CRUSH", "OCTAVE", "FORMAN
 
 // General Purpose Controllers 5–8 (CC80–83): no paired LSB controller, so by
 // convention used for switch/selector-style controls rather than continuous.
-pub const OCTAVE_SELECT_CC: u8 = 80; // 0=Down, 64=Normal, 127=Up
-pub const FORMANT_SELECT_CC: u8 = 81; // 0=Lower, 64=Neutral, 127=Higher
-pub const CRUSH_SELECT_CC: u8 = 82; // 0=Off, 64=Light, 127=Heavy
+pub const OCTAVE_SELECT_CC: u8 = 80; // 0=Low, 64=Normal, 127=High
+pub const FORMANT_SELECT_CC: u8 = 81; // 0=Male, 64=Off, 127=Female
+pub const CRUSH_SELECT_CC: u8 = 82; // 0=Crush1, 64=Off, 127=Crush2
 
 // ── Settings screen ───────────────────────────────────────────────────────────
 pub const SETTINGS_OPEN: usize = 73; // HE74 → open / close settings
