@@ -607,7 +607,7 @@ mod app {
             );
         }
 
-        // ── Vibrato → CC1, Expression → CC11 (dead zone + rate-limited, only when settings closed) ─
+        // ── Vibrato → CC1, Expression → CC4 (dead zone + rate-limited, only when settings closed) ─
         if !settings_active && now % VIBRATO_INTERVAL_MS == 0 {
             let vib_delta = vib_filt
                 .abs_diff(ctx.local.dynamic_baselines[VIBRATO_KEY])
@@ -644,7 +644,7 @@ mod app {
                     .push((
                         0,
                         SwitchEvent::PotChange {
-                            cc: 11,
+                            cc: 4,
                             value: expr_cc_val,
                         },
                     ))

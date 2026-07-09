@@ -104,7 +104,7 @@ pub const POT_ADC_MAX: u32 = 3776; // physical ceiling — pots don't reach full
 #[rustfmt::skip]
 pub const POT_MAP: [(u8, u8, u8); NUM_POTS] = [
     (4, 4,  7), // RV1  AM14 X4 → CC7  (volume)
-    (4, 6, 10), // RV2  AM14 X6 → CC10 (pan)
+    (4, 6, 43), // RV2  AM14 X6 → CC43 (pan)
     (4, 7, 12), // RV3  AM14 X7 → CC12 (effect control 1)
     (4, 5, 74), // RV4  AM14 X5 → CC74 (brightness)
     (4, 2, 36), // RV5  AM14 X2 → CC36 (sample rate 1)
@@ -113,8 +113,8 @@ pub const POT_MAP: [(u8, u8, u8); NUM_POTS] = [
     (4, 3, 39), // RV8  AM14 X3 → CC39 (bit rate 2)   — grouped next to sample rate 2
     (5, 4, 40), // RV9  AM15 X4 → CC40
     (5, 6, 41), // RV10 AM15 X6 → CC41
-    (5, 7, 42), // RV11 AM15 X7 → CC42
-    (5, 5, 43), // RV12 AM15 X5 → CC43
+    (5, 7, 34), // RV11 AM15 X7 → CC34
+    (5, 5, 35), // RV12 AM15 X5 → CC35
 ];
 
 // ── Switch map: (mux_index, channel) per switch index ────────────────────────

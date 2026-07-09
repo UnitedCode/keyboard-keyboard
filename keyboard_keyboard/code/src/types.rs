@@ -35,7 +35,7 @@ impl DisplayState {
     pub const fn new() -> Self {
         Self {
             last_event: None,
-            melody_channel: 0,
+            melody_channel: 1,
             drum_channel: 9,
             recalibrating: false,
             current_voice: None,

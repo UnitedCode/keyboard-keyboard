@@ -58,7 +58,7 @@ pub struct Settings {
 impl Settings {
     pub const fn default() -> Self {
         Self {
-            melody_channel: 0,
+            melody_channel: 1,
             drum_channel: 9,
             octave: 2,
             pitch_bend_range: 2,
