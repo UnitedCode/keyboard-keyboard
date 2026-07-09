@@ -615,7 +615,9 @@ mod app {
             let vib_cc_val =
                 ((vib_delta.min(VIBRATO_MAX_DELTA) as u32 * 127 / VIBRATO_MAX_DELTA as u32) as u8)
                     .min(127);
-            if vib_cc_val.abs_diff(*ctx.local.last_vibrato_cc) >= VIBRATO_HYSTERESIS {
+            if vib_cc_val >= VIBRATO_EXPRESSION_MIN_CC
+                && vib_cc_val.abs_diff(*ctx.local.last_vibrato_cc) >= VIBRATO_HYSTERESIS
+            {
                 *ctx.local.last_vibrato_cc = vib_cc_val;
                 pending
                     .push((
@@ -634,7 +636,9 @@ mod app {
             let expr_cc_val =
                 ((expr_delta.min(VIBRATO_MAX_DELTA) as u32 * 127 / VIBRATO_MAX_DELTA as u32) as u8)
                     .min(127);
-            if expr_cc_val.abs_diff(*ctx.local.last_expression_cc) >= VIBRATO_HYSTERESIS {
+            if expr_cc_val >= VIBRATO_EXPRESSION_MIN_CC
+                && expr_cc_val.abs_diff(*ctx.local.last_expression_cc) >= VIBRATO_HYSTERESIS
+            {
                 *ctx.local.last_expression_cc = expr_cc_val;
                 pending
                     .push((
@@ -962,7 +966,11 @@ mod app {
                     }
                     SwitchEvent::PotChange { cc, value } => {
                         info!("CC{} = {}", cc, value);
-                        ctx.local.midi_sender.control_change(cc, value);
+                        // MIDI volume (CC7) send disabled.
+                        // ctx.local.midi_sender.control_change(cc, value);
+                        if cc != 7 {
+                            ctx.local.midi_sender.control_change(cc, value);
+                        }
                         new_display_event = Some(LastEvent::Cc { num: cc, value });
                         if cc == 7 {
                             new_volume = Some((value as u32 * 10 / 127) as u8);

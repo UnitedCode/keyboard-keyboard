@@ -54,7 +54,7 @@ pub const VOICE_PC_A: u8 = 0; // triangle
 pub const VOICE_PC_B: u8 = 1; // square
 pub const VOICE_PC_C: u8 = 2; // saw
 
-pub const PRESET_MODE_NAMES: [&str; 4] = ["WAVEFORM", "CRUSH", "OCTAVE", "FORMANT"];
+pub const PRESET_MODE_NAMES: [&str; 4] = ["SYNTH", "CRUSH", "OCTAVE", "FORMANT"];
 
 // General Purpose Controllers 5–8 (CC80–83): no paired LSB controller, so by
 // convention used for switch/selector-style controls rather than continuous.
@@ -91,6 +91,8 @@ pub const VIBRATO_MAX_DELTA: u16 = 300;
 pub const VIBRATO_DEAD_ZONE: u16 = 30; // noise floor below which output = 0
 pub const VIBRATO_HYSTERESIS: u8 = 2;
 pub const VIBRATO_INTERVAL_MS: u32 = 10;
+// Values below this are treated as noise/rest and never sent for CC1/CC11.
+pub const VIBRATO_EXPRESSION_MIN_CC: u8 = 5;
 
 // ── Potentiometers ────────────────────────────────────────────────────────────
 pub const NUM_POTS: usize = 12;
@@ -105,10 +107,10 @@ pub const POT_MAP: [(u8, u8, u8); NUM_POTS] = [
     (4, 6, 10), // RV2  AM14 X6 → CC10 (pan)
     (4, 7, 12), // RV3  AM14 X7 → CC12 (effect control 1)
     (4, 5, 74), // RV4  AM14 X5 → CC74 (brightness)
-    (4, 2, 36), // RV5  AM14 X2 → CC36
-    (4, 1, 37), // RV6  AM14 X1 → CC37
-    (4, 0, 38), // RV7  AM14 X0 → CC38
-    (4, 3, 39), // RV8  AM14 X3 → CC39
+    (4, 2, 36), // RV5  AM14 X2 → CC36 (sample rate 1)
+    (4, 1, 38), // RV6  AM14 X1 → CC38 (bit rate 1)   — grouped next to sample rate 1
+    (4, 0, 37), // RV7  AM14 X0 → CC37 (sample rate 2)
+    (4, 3, 39), // RV8  AM14 X3 → CC39 (bit rate 2)   — grouped next to sample rate 2
     (5, 4, 40), // RV9  AM15 X4 → CC40
     (5, 6, 41), // RV10 AM15 X6 → CC41
     (5, 7, 42), // RV11 AM15 X7 → CC42
