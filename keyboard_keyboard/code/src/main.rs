@@ -11,6 +11,7 @@ mod display;
 mod hardware;
 mod midi;
 mod settings;
+mod settings_storage;
 mod switch;
 mod types;
 
@@ -25,7 +26,7 @@ mod app {
         i2c_bus_recovery, read_all_adcs, set_decoder, set_mux_channel, AdcPins, MuxRaw,
     };
     use crate::midi::MidiSender;
-    use crate::settings::{Settings, NUM_SETTINGS_ITEMS};
+    use crate::settings::{Settings, NUM_SETTINGS_ITEMS, RESET_DEFAULTS_SETTING};
     use crate::switch::{ChannelFilter, SwitchEvent, SwitchState};
     use crate::types::{DisplayState, LastEvent, LcdDisplay};
 
@@ -68,12 +69,15 @@ mod app {
         settings_active: bool,
         settings_selected: usize,
         recalibrate_pending: bool,
+        settings_changed: bool,
+        factory_reset_pending: bool,
     }
 
     // ── Local resources ───────────────────────────────────────────────────────
     #[local]
     struct Local {
         audio: audio::Audio,
+        flash: libdaisy::flash::Flash,
         adc: Adc<stm32::ADC1, adc::Enabled>,
         adc_pins: AdcPins,
         enb_a: Daisy4<Output<PushPull>>, // U1 A0 (ENB_A)
@@ -113,6 +117,10 @@ mod app {
 
         let ccdr = system::System::init_clocks(device.PWR, device.RCC, &device.SYSCFG);
         let mut system = libdaisy::system_init!(core, device, ccdr, BLOCK_SIZE);
+        let settings = crate::settings_storage::load(&mut system.flash).unwrap_or_else(|| {
+            info!("no valid saved settings; using defaults");
+            Settings::default()
+        });
 
         let mut s0 = system
             .gpio
@@ -325,6 +333,9 @@ mod app {
             "keyboard_keyboard ready: {} switches, {} muxes",
             NUM_SWITCHES, NUM_MUXES
         );
+        let mut display_state = DisplayState::new();
+        display_state.melody_channel = settings.melody_channel;
+        display_state.drum_channel = settings.drum_channel;
 
         (
             Shared {
@@ -333,15 +344,18 @@ mod app {
                 baselines,
                 event_queue: heapless::spsc::Queue::new(),
                 midi_tx_flag: false,
-                display_state: DisplayState::new(),
+                display_state,
                 splash_done: false,
-                settings: Settings::default(),
+                settings,
                 settings_active: false,
                 settings_selected: 0,
                 recalibrate_pending: false,
+                settings_changed: false,
+                factory_reset_pending: false,
             },
             Local {
                 audio: system.audio,
+                flash: system.flash,
                 adc,
                 adc_pins,
                 enb_a,
@@ -433,9 +447,12 @@ mod app {
                   last_pitch_bend, last_vibrato_cc, led1, led2, led3, midi_rx,
                   led1_off_at, led2_off_at,
                   recalibrate_show_until: u32 = 0,
-                  recalibrate_flashing: bool = false],
+                  recalibrate_flashing: bool = false,
+                  reset_hold_ms: u16 = 0,
+                  reset_armed: bool = true],
         shared = [tick_ms, switch_states, baselines, event_queue, midi_tx_flag, splash_done,
-                  settings_active, settings, recalibrate_pending, display_state],
+                  settings_active, settings, recalibrate_pending, display_state,
+                  factory_reset_pending],
         priority = 15
     )]
     fn timer_handler(mut ctx: timer_handler::Context) {
@@ -547,6 +564,27 @@ mod app {
                 }
             }
         });
+
+        // Emergency recovery: after the splash, hold Settings (HE74) and All Notes
+        // Off (HE76) together for three seconds. Requiring a post-calibration hold
+        // avoids treating keys held during power-on calibration as a reset request.
+        let splash_done = ctx.shared.splash_done.lock(|done| *done);
+        let reset_keys_down = ctx.shared.switch_states.lock(|states| {
+            !states[SETTINGS_OPEN].is_idle() && !states[ALL_NOTES_OFF_KEY].is_idle()
+        });
+        if splash_done && reset_keys_down && *ctx.local.reset_armed {
+            *ctx.local.reset_hold_ms = ctx.local.reset_hold_ms.saturating_add(1);
+            if *ctx.local.reset_hold_ms >= 3000 {
+                *ctx.local.reset_armed = false;
+                ctx.shared
+                    .factory_reset_pending
+                    .lock(|pending| *pending = true);
+                process_events::spawn().ok();
+            }
+        } else if !reset_keys_down {
+            *ctx.local.reset_hold_ms = 0;
+            *ctx.local.reset_armed = true;
+        }
 
         // ── Pitch bend (rate-limited, only when settings is closed) ───────────
         if !settings_active && now % PITCH_BEND_INTERVAL_MS == 0 {
@@ -705,8 +743,9 @@ mod app {
     // ── MIDI output ───────────────────────────────────────────────────────────
     #[task(
         shared = [event_queue, midi_tx_flag, display_state, splash_done,
-                  settings, settings_active, settings_selected, recalibrate_pending],
-        local  = [midi_sender],
+                  settings, settings_active, settings_selected, recalibrate_pending,
+                  settings_changed, factory_reset_pending],
+        local  = [midi_sender, flash],
         priority = 2,
         capacity = 32
     )]
@@ -722,6 +761,17 @@ mod app {
         let mut did_send = false;
         let mut new_display_event: Option<LastEvent> = None;
         let mut new_volume: Option<u8> = None;
+        let factory_reset = ctx
+            .shared
+            .factory_reset_pending
+            .lock(|pending| core::mem::replace(pending, false));
+        if factory_reset {
+            settings = Settings::default();
+            active = false;
+            selected = 0;
+            settings_dirty = true;
+            nav_dirty = true;
+        }
 
         ctx.shared.event_queue.lock(|queue| {
             while let Some((switch_idx, event)) = queue.dequeue() {
@@ -804,14 +854,21 @@ mod app {
                                 nav_dirty = true;
                             }
                             SETTINGS_VAL_UP => {
-                                settings.adjust(selected, 1);
+                                if selected == RESET_DEFAULTS_SETTING {
+                                    settings = Settings::default();
+                                    info!("factory defaults selected");
+                                } else {
+                                    settings.adjust(selected, 1);
+                                }
                                 settings_dirty = true;
                                 nav_dirty = true;
                             }
                             SETTINGS_VAL_DOWN => {
-                                settings.adjust(selected, -1);
-                                settings_dirty = true;
-                                nav_dirty = true;
+                                if selected != RESET_DEFAULTS_SETTING {
+                                    settings.adjust(selected, -1);
+                                    settings_dirty = true;
+                                    nav_dirty = true;
+                                }
                             }
                             _ => {}
                         }
@@ -881,6 +938,15 @@ mod app {
         // ── Write back mutations ───────────────────────────────────────────────
         if settings_dirty {
             ctx.shared.settings.lock(|s| *s = settings);
+            ctx.shared.settings_changed.lock(|changed| *changed = true);
+        }
+        if factory_reset {
+            if crate::settings_storage::save(ctx.local.flash, settings) {
+                info!("factory defaults restored and saved");
+                ctx.shared.settings_changed.lock(|changed| *changed = false);
+            } else {
+                warn!("factory reset save failed");
+            }
         }
         if nav_dirty {
             ctx.shared.settings_active.lock(|a| *a = active);
@@ -900,6 +966,18 @@ mod app {
             did_send = true;
 
             if !active {
+                let should_save = ctx
+                    .shared
+                    .settings_changed
+                    .lock(|changed| core::mem::replace(changed, false));
+                if should_save {
+                    if crate::settings_storage::save(ctx.local.flash, settings) {
+                        info!("settings saved");
+                    } else {
+                        warn!("settings save failed");
+                        ctx.shared.settings_changed.lock(|changed| *changed = true);
+                    }
+                }
                 // Settings just closed — push updated parameters to the synth.
                 ctx.local.midi_sender.set_channel(settings.melody_channel);
                 ctx.local

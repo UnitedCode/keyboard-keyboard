@@ -1,7 +1,8 @@
-pub const NUM_SETTINGS_ITEMS: usize = 7;
+pub const NUM_SETTINGS_ITEMS: usize = 8;
 
 /// Menu index of the VIBRATO on/off toggle (rendered as ON/OFF, not a number).
 pub const VIBRATO_SETTING: usize = 6;
+pub const RESET_DEFAULTS_SETTING: usize = 7;
 
 pub struct SettingsItem {
     pub name: &'static str,
@@ -45,23 +46,28 @@ pub const SETTINGS_ITEMS: [SettingsItem; NUM_SETTINGS_ITEMS] = [
         min: 0,
         max: 1,
     },
+    SettingsItem {
+        name: "RESET DEFAULTS",
+        min: 0,
+        max: 0,
+    },
 ];
 
 #[derive(Clone, Copy, Debug)]
 pub struct Settings {
-    pub melody_channel: u8,   // 0-indexed (0–15), displayed as 1–16
-    pub drum_channel: u8,     // 0-indexed (0–15), displayed as 1–16
-    pub octave: i8,           // 0–8; offset = (octave - 4) * 12
-    pub pitch_bend_range: u8, // semitones 1–12
-    pub melody_program: u8,   // 0–127, sent as PC on melody channel when settings closes
-    pub drum_program: u8,     // 0–127, sent as PC on drum channel when settings closes
+    pub melody_channel: u8,    // 0-indexed (0–15), displayed as 1–16
+    pub drum_channel: u8,      // 0-indexed (0–15), displayed as 1–16
+    pub octave: i8,            // 0–8; offset = (octave - 4) * 12
+    pub pitch_bend_range: u8,  // semitones 1–12
+    pub melody_program: u8,    // 0–127, sent as PC on melody channel when settings closes
+    pub drum_program: u8,      // 0–127, sent as PC on drum channel when settings closes
     pub vibrato_enabled: bool, // off by default — vibrato keys send CC1 only when on
 }
 
 impl Settings {
     pub const fn default() -> Self {
         Self {
-            melody_channel: 0,
+            melody_channel: 2,
             drum_channel: 9,
             octave: 2,
             pitch_bend_range: 2,
@@ -81,6 +87,7 @@ impl Settings {
             4 => self.melody_program as i16,
             5 => self.drum_program as i16,
             6 => self.vibrato_enabled as i16,
+            7 => 0,
             _ => 0,
         }
     }

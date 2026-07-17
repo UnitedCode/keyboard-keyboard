@@ -172,6 +172,8 @@ pub fn draw_settings(disp: &mut LcdDisplay, selected: usize, settings: &Settings
         let mut val_str: String<8> = String::new();
         if item_idx == crate::settings::VIBRATO_SETTING {
             write!(val_str, "{}", if value != 0 { "ON" } else { "OFF" }).ok();
+        } else if item_idx == crate::settings::RESET_DEFAULTS_SETTING {
+            write!(val_str, "UP").ok();
         } else {
             write!(val_str, "{}", value).ok();
         }
