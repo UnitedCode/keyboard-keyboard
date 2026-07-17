@@ -435,7 +435,7 @@ mod app {
                   recalibrate_show_until: u32 = 0,
                   recalibrate_flashing: bool = false],
         shared = [tick_ms, switch_states, baselines, event_queue, midi_tx_flag, splash_done,
-                  settings_active, recalibrate_pending, display_state],
+                  settings_active, settings, recalibrate_pending, display_state],
         priority = 15
     )]
     fn timer_handler(mut ctx: timer_handler::Context) {
@@ -459,6 +459,7 @@ mod app {
         // touched by per-tick tracking.
         let anchor_baselines = ctx.shared.baselines.lock(|b| *b);
         let settings_active = ctx.shared.settings_active.lock(|a| *a);
+        let vibrato_enabled = ctx.shared.settings.lock(|s| s.vibrato_enabled);
         let mut pending: heapless::Vec<(usize, SwitchEvent), 32> = heapless::Vec::new();
 
         // ── ADC scan ──────────────────────────────────────────────────────────
@@ -593,8 +594,8 @@ mod app {
             );
         }
 
-        // ── Vibrato → CC1 (dead zone + rate-limited, only when settings closed) ─
-        if !settings_active && now % VIBRATO_INTERVAL_MS == 0 {
+        // ── Vibrato → CC1 (dead zone + rate-limited, only when enabled & settings closed) ─
+        if vibrato_enabled && !settings_active && now % VIBRATO_INTERVAL_MS == 0 {
             let max_delta = vib_filt_a
                 .abs_diff(ctx.local.dynamic_baselines[VIBRATO_A])
                 .max(vib_filt_b.abs_diff(ctx.local.dynamic_baselines[VIBRATO_B]))
