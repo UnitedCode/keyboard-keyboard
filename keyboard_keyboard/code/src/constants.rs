@@ -74,7 +74,8 @@ pub const PITCH_BEND_INTERVAL_MS: u32 = 5;
 pub const VIBRATO_A: usize = 76; // HE77 → vibrato depth
 pub const VIBRATO_B: usize = 78; // HE79 → vibrato depth
 pub const VIBRATO_MAX_DELTA: u16 = 300;
-pub const VIBRATO_DEAD_ZONE: u16 = 30; // noise floor below which output = 0
+pub const VIBRATO_DEAD_ZONE: u16 = 100; // press threshold below which output = 0
+                                        // (was 30 — vibrato triggered far too easily)
 pub const VIBRATO_HYSTERESIS: u8 = 2;
 pub const VIBRATO_INTERVAL_MS: u32 = 10;
 

@@ -168,9 +168,15 @@ pub fn draw_settings(disp: &mut LcdDisplay, selected: usize, settings: &Settings
             .draw(disp)
             .ok();
 
-        // Value: right-aligned
+        // Value: right-aligned (the vibrato toggle shows ON/OFF, not 0/1)
         let mut val_str: String<8> = String::new();
-        write!(val_str, "{}", value).ok();
+        if item_idx == crate::settings::VIBRATO_SETTING {
+            write!(val_str, "{}", if value != 0 { "ON" } else { "OFF" }).ok();
+        } else if item_idx == crate::settings::RESET_DEFAULTS_SETTING {
+            write!(val_str, "UP").ok();
+        } else {
+            write!(val_str, "{}", value).ok();
+        }
         Text::with_alignment(
             val_str.as_str(),
             Point::new(127, y),
