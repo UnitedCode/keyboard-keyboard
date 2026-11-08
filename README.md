@@ -12,7 +12,8 @@ A hall-effect MIDI keyboard controller built around the Electrosmith Daisy Seed 
 - **Display:** 128x32 SSD1306 OLED over I2C
 - **MIDI:** USART1 at 31250 baud (DIN-5 out, opto-isolated in via 6N138)
 
-The firmware currently drives 100 switches across all 13 muxes. AM10–AM13 require a hardware bodge to function — see [Known Issues](#known-issues).
+The firmware drives 100 switches across 13 muxes plus 12 pots on AM14–AM15.
+Existing boards need the revision-specific checks in [Known Issues](#known-issues).
 
 Full pin mapping and mux architecture: [`keyboard_keyboard/code/HARDWARE.md`](keyboard_keyboard/code/HARDWARE.md)
 
@@ -59,11 +60,24 @@ Boot calibration averages 64 ADC samples per switch to establish per-key baselin
 
 ## Known Issues
 
-**U1 (74HC138D) PCB errata:** Pin 5 (`E2~`, active-low enable) is wired to +3.3V instead of GND, permanently disabling the decoder. AM10–AM13 (switches HE71–HE100) will not work until this is fixed.
+**Older fabricated boards:** U1 pins 7/Y7 and 9/Y6 were incorrectly grounded.
+The current schematic leaves them explicitly unconnected; the PCB isolates them
+from the ground pour and directly connects enable pins 4/5 to ground. The copper
+zones are refilled to clear the pot ADC trace. A source-file update does not
+repair an existing PCB: inspect the built revision before applying rework.
 
-Fix: solder bridge pin 5 → pin 4 (GND) on the SO16 package. They are adjacent.
+**Current pin mapping:** U1 pins 4/5 are low, pin 6 is high. Pot ADC input is
+Daisy pad 35 (D28/A11); pad 33 is unconnected. Earlier instructions claiming that
+the current design needs a pin-5 bridge or pad-33 bodge are obsolete.
 
-**Daisy Seed errata:** Pad 33 (D26) has no ADC function. AM14/AM15 pot reads use A11 (D28, pad 35). Run a bodge wire from pad 33 → pad 35 and leave D26 unconfigured in firmware.
+**Power and temperature:** 100 Hall sensors are a substantial continuous load.
+The hot-room incident still needs rail/current/temperature measurements. A
+regulator upgrade has not been validated. See the [hardware reference](keyboard_keyboard/code/HARDWARE.md).
+
+**Firmware timing:** MIDI transmission runs outside the priority-15 event-queue
+lock. Full-scan event storage prevents the old 32-key burst limit; queue overload
+is logged and sends all-channel All Notes Off to recover lost releases. Actual
+firmware verification commands are in [seed-tests](tools/seed-tests/README.md).
 
 ## Acknowledgements
 

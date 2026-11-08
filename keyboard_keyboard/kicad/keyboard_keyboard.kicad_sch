@@ -417,7 +417,7 @@
 					(hide yes)
 				)
 			)
-			(property "Datasheet" "http://www.ti.com/lit/ds/symlink/cd74hc238.pdf"
+			(property "Datasheet" "https://assets.nexperia.com/documents/data-sheet/74HC_HCT138.pdf"
 				(at 0 0 0)
 				(effects
 					(font
@@ -15927,16 +15927,7 @@
 		)
 		(uuid "de9fd2ae-ff69-45f5-88a9-6754b3c93a82")
 	)
-	(wire
-		(pts
-			(xy 779.78 345.44) (xy 783.59 345.44)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "deac8686-7d2e-4889-bdd0-2695e53cb5ec")
-	)
+
 	(wire
 		(pts
 			(xy 269.24 217.17) (xy 269.24 218.44)
@@ -16057,16 +16048,7 @@
 		)
 		(uuid "e02ad38a-f178-4d44-be35-65936be6aa0a")
 	)
-	(wire
-		(pts
-			(xy 783.59 347.98) (xy 783.59 345.44)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "e06d2032-778d-4207-b928-71ab476ebf8d")
-	)
+
 	(wire
 		(pts
 			(xy 21.59 177.8) (xy 26.67 177.8)
@@ -37891,7 +37873,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/cd74hc238.pdf"
+		(property "Datasheet" "https://assets.nexperia.com/documents/data-sheet/74HC_HCT138.pdf"
 			(at 769.62 340.36 0)
 			(effects
 				(font
@@ -43409,73 +43391,7 @@
 			)
 		)
 	)
-	(symbol
-		(lib_id "power:GND")
-		(at 779.78 347.98 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "4cab3862-570d-4246-bba6-c6f05844102d")
-		(property "Reference" "#PWR0302"
-			(at 779.78 354.33 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 779.78 353.06 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Footprint" ""
-			(at 779.78 347.98 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 779.78 347.98 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 779.78 347.98 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "937a53e2-5336-40ff-9d9f-27e266708a3d")
-		)
-		(instances
-			(project "keyboard_keyboard"
-				(path "/a04a08f6-0aff-4526-8b14-085b944c1df1"
-					(reference "#PWR0302")
-					(unit 1)
-				)
-			)
-		)
-	)
+
 	(symbol
 		(lib_id "power:GND")
 		(at 806.45 208.28 0)
@@ -48596,73 +48512,7 @@
 			)
 		)
 	)
-	(symbol
-		(lib_id "power:GND")
-		(at 783.59 347.98 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "639f092a-2f22-40b3-82fe-c432a09436aa")
-		(property "Reference" "#PWR0303"
-			(at 783.59 354.33 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 783.59 353.06 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Footprint" ""
-			(at 783.59 347.98 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 783.59 347.98 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 783.59 347.98 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "963e4b43-3f2e-406c-8aff-e0897b50beb5")
-		)
-		(instances
-			(project "keyboard_keyboard"
-				(path "/a04a08f6-0aff-4526-8b14-085b944c1df1"
-					(reference "#PWR0303")
-					(unit 1)
-				)
-			)
-		)
-	)
+
 	(symbol
 		(lib_id "Device:C")
 		(at 209.55 113.03 0)
@@ -81706,4 +81556,7 @@
 		)
 	)
 	(embedded_fonts no)
+
+	(no_connect (at 779.78 347.98) (uuid "fd748fa5-a565-40ca-9f02-fabf83320799"))
+	(no_connect (at 779.78 345.44) (uuid "63732ae6-60cc-4f10-a652-13b0c6809827"))
 )
