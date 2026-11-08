@@ -20,11 +20,18 @@ jobs:
       - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
         with:
-          components: rustfmt
+          components: rustfmt, clippy
 
       - name: Check formatting
         working-directory: keyboard_keyboard/code
         run: cargo fmt --check
+
+      - name: Check virtual Seed diagnostic
+        working-directory: tools/seed-tests
+        run: |
+          cargo fmt --all -- --check
+          cargo clippy --locked --all-targets -- -D warnings
+          cargo test --locked
 
   clippy:
     name: Clippy

@@ -1,0 +1,7 @@
+Python execution guard verified
+IRQ-aware wait pacing adapter verified
+NVIC active-count adapter verified
+Board: rev5
+Native instruction-fetch tag verified
+Keyboard progress: 100 ms, PC: 0x8005012
+Keyboard complete: PC: 0x8005012
