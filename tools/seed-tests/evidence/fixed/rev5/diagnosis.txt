@@ -1,0 +1,6 @@
+SCAN_STALL_FIX_VERIFIED
+quiet_max_gap_ns=1000000
+paced_max_gap_ns=1000050
+instant_control_max_gap_ns=1000050
+physical_hardware_cause=UNDETERMINED
+continuous_one_hour_soak=NOT_RUN

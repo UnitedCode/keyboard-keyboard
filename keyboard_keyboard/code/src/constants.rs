@@ -4,6 +4,10 @@ pub const NUM_SWITCHES: usize = 100;
 pub const NUM_MUXES: usize = 13;
 pub const NUM_ADC_PINS: usize = 9;
 pub const MUX_CHANNELS: usize = 8;
+// At most one transition per key, one CC per pot, pitch bend and vibrato.
+pub const MAX_SCAN_EVENTS: usize = NUM_SWITCHES + NUM_POTS + 2;
+// Usable capacity 255: holds two complete scans while MIDI drains at wire rate.
+pub const EVENT_QUEUE_CAPACITY: usize = 256;
 
 // ── Thresholds ────────────────────────────────────────────────────────────────
 pub const FIRST_DELTA: u16 = 150;

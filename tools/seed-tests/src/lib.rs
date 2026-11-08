@@ -44,6 +44,47 @@ pub fn classify(
     paced_bytes: &[u8],
     instant_bytes: &[u8],
 ) -> Result<String> {
+    validate_controls(quiet, paced, instant, paced_bytes, instant_bytes)?;
+    if paced.max_gap_ns > 5_000_000
+        && paced.gaps > 0
+        && instant.max_gap_ns <= 2_000_000
+        && instant.gaps == 0
+    {
+        Ok(format!("SOFTWARE_STALL_REPRODUCED\nquiet_max_gap_ns={}\npaced_max_gap_ns={}\ninstant_control_max_gap_ns={}\nphysical_hardware_cause=UNDETERMINED\n",quiet.max_gap_ns,paced.max_gap_ns,instant.max_gap_ns))
+    } else {
+        Err(format!("No isolated UART-dependent stall: paced={} ns, control={} ns. This does not prove a hardware cause.",paced.max_gap_ns,instant.max_gap_ns).into())
+    }
+}
+
+pub fn verify_fixed(
+    quiet: &Evidence,
+    paced: &Evidence,
+    instant: &Evidence,
+    paced_bytes: &[u8],
+    instant_bytes: &[u8],
+) -> Result<String> {
+    validate_controls(quiet, paced, instant, paced_bytes, instant_bytes)?;
+    if paced.max_gap_ns > 2_000_000
+        || paced.gaps != 0
+        || instant.max_gap_ns > 2_000_000
+        || instant.gaps != 0
+    {
+        return Err(format!(
+            "Scan deadline missed: paced={} ns, control={} ns",
+            paced.max_gap_ns, instant.max_gap_ns
+        )
+        .into());
+    }
+    Ok(format!("SCAN_STALL_FIX_VERIFIED\nquiet_max_gap_ns={}\npaced_max_gap_ns={}\ninstant_control_max_gap_ns={}\nphysical_hardware_cause=UNDETERMINED\n",quiet.max_gap_ns,paced.max_gap_ns,instant.max_gap_ns))
+}
+
+fn validate_controls(
+    quiet: &Evidence,
+    paced: &Evidence,
+    instant: &Evidence,
+    paced_bytes: &[u8],
+    instant_bytes: &[u8],
+) -> Result<()> {
     if quiet.scans < 10
         || quiet.max_gap_ns > 2_000_000
         || quiet.instant
@@ -70,15 +111,7 @@ pub fn classify(
     if paced.elapsed_ns != instant.elapsed_ns {
         return Err("Control duration differs".into());
     }
-    if paced.max_gap_ns > 5_000_000
-        && paced.gaps > 0
-        && instant.max_gap_ns <= 2_000_000
-        && instant.gaps == 0
-    {
-        Ok(format!("SOFTWARE_STALL_REPRODUCED\nquiet_max_gap_ns={}\npaced_max_gap_ns={}\ninstant_control_max_gap_ns={}\nphysical_hardware_cause=UNDETERMINED\n",quiet.max_gap_ns,paced.max_gap_ns,instant.max_gap_ns))
-    } else {
-        Err(format!("No isolated UART-dependent stall: paced={} ns, control={} ns. This does not prove a hardware cause.",paced.max_gap_ns,instant.max_gap_ns).into())
-    }
+    Ok(())
 }
 
 pub fn midi_csv(text: &str) -> Result<Vec<(u64, u8)>> {

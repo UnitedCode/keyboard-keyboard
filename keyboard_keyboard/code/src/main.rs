@@ -60,7 +60,8 @@ mod app {
         tick_ms: u32,
         switch_states: [SwitchState; NUM_SWITCHES],
         baselines: [u16; NUM_SWITCHES],
-        event_queue: heapless::spsc::Queue<(usize, SwitchEvent), 64>,
+        event_queue: heapless::spsc::Queue<(usize, SwitchEvent), EVENT_QUEUE_CAPACITY>,
+        event_overflow: bool,
         midi_tx_flag: bool,
         display_state: DisplayState,
         splash_done: bool,
@@ -81,7 +82,7 @@ mod app {
         enb_c: Daisy2<Output<PushPull>>, // U1 A2 (ENB_C)
         adc_pin_a9: Daisy24<Analog>,     // AM10+AM11 shared
         adc_pin_a10: Daisy25<Analog>,    // AM12+AM13 shared
-        // Pad 33 (D26) has no ADC — wire pad 33 → pad 35 on Daisy Seed.
+        // Pot ADC is pad 35 (D28/A11); pad 33 (D26) is unconnected on this PCB.
         adc_pin_a11: Daisy28<Analog>, // AM14+AM15 pots via pad 35 (A11)
         pot_last_cc: [u8; NUM_POTS],
         s0: Daisy7<Output<PushPull>>,   // MUX_SELECT_0
@@ -165,7 +166,7 @@ mod app {
             .into_push_pull_output();
         let mut adc_pin_a9 = system.gpio.daisy24.take().expect("daisy24").into_analog();
         let mut adc_pin_a10 = system.gpio.daisy25.take().expect("daisy25").into_analog();
-        // Pad 35 (D28/A11) reads AM14+AM15. Requires bodge wire pad 33 → pad 35.
+        // Pad 35 (D28/A11) reads AM14+AM15 directly on the current PCB.
         let adc_pin_a11 = system.gpio.daisy28.take().expect("daisy28").into_analog();
 
         enb_a.set_low();
@@ -332,6 +333,7 @@ mod app {
                 switch_states: [SwitchState::new(); NUM_SWITCHES],
                 baselines,
                 event_queue: heapless::spsc::Queue::new(),
+                event_overflow: false,
                 midi_tx_flag: false,
                 display_state: DisplayState::new(),
                 splash_done: false,
@@ -435,7 +437,7 @@ mod app {
                   recalibrate_show_until: u32 = 0,
                   recalibrate_flashing: bool = false],
         shared = [tick_ms, switch_states, baselines, event_queue, midi_tx_flag, splash_done,
-                  settings_active, recalibrate_pending, display_state],
+                  settings_active, recalibrate_pending, display_state, event_overflow],
         priority = 15
     )]
     fn timer_handler(mut ctx: timer_handler::Context) {
@@ -459,7 +461,8 @@ mod app {
         // touched by per-tick tracking.
         let anchor_baselines = ctx.shared.baselines.lock(|b| *b);
         let settings_active = ctx.shared.settings_active.lock(|a| *a);
-        let mut pending: heapless::Vec<(usize, SwitchEvent), 32> = heapless::Vec::new();
+        let mut pending: heapless::Vec<(usize, SwitchEvent), MAX_SCAN_EVENTS> =
+            heapless::Vec::new();
 
         // ── ADC scan ──────────────────────────────────────────────────────────
         for ch in 0..MUX_CHANNELS {
@@ -692,11 +695,15 @@ mod app {
         }
 
         if !pending.is_empty() {
+            let mut overflow = false;
             ctx.shared.event_queue.lock(|queue| {
                 for item in pending {
-                    queue.enqueue(item).ok();
+                    overflow |= queue.enqueue(item).is_err();
                 }
             });
+            if overflow {
+                ctx.shared.event_overflow.lock(|flag| *flag = true);
+            }
             process_events::spawn().ok();
         }
     }
@@ -704,7 +711,7 @@ mod app {
     // ── MIDI output ───────────────────────────────────────────────────────────
     #[task(
         shared = [event_queue, midi_tx_flag, display_state, splash_done,
-                  settings, settings_active, settings_selected, recalibrate_pending],
+                  settings, settings_active, settings_selected, recalibrate_pending, event_overflow],
         local  = [midi_sender],
         priority = 2,
         capacity = 32
@@ -722,160 +729,183 @@ mod app {
         let mut new_display_event: Option<LastEvent> = None;
         let mut new_volume: Option<u8> = None;
 
-        ctx.shared.event_queue.lock(|queue| {
-            while let Some((switch_idx, event)) = queue.dequeue() {
-                // ── Settings open / close (hold HE74) ────────────────────────
-                if switch_idx == SETTINGS_OPEN {
-                    match event {
-                        SwitchEvent::NoteOn { .. } => {
-                            active = true;
+        // Return an owned event before doing any UART or display work. The
+        // queue's ceiling is priority 15: transmitting while holding its lock
+        // masks the 1 kHz scan interrupt for the duration of a MIDI burst.
+        loop {
+            if ctx
+                .shared
+                .event_overflow
+                .lock(|flag| core::mem::replace(flag, false))
+            {
+                // Lost releases can strand sounding notes. Discard the stale
+                // ordered stream and recover at the receiver, outside the lock.
+                ctx.shared
+                    .event_queue
+                    .lock(|queue| while queue.dequeue().is_some() {});
+                warn!("MIDI event queue overflow: clearing pending events and sounding notes");
+                for channel in 0..16 {
+                    ctx.local.midi_sender.set_channel(channel);
+                    ctx.local.midi_sender.all_notes_off();
+                }
+                active = false;
+                nav_dirty = true;
+                new_display_event = Some(LastEvent::Clear);
+                did_send = true;
+                continue;
+            }
+            let Some((switch_idx, event)) = ctx.shared.event_queue.lock(|queue| queue.dequeue())
+            else {
+                break;
+            };
+            // ── Settings open / close (hold HE74) ────────────────────────
+            if switch_idx == SETTINGS_OPEN {
+                match event {
+                    SwitchEvent::NoteOn { .. } => {
+                        active = true;
+                        nav_dirty = true;
+                    }
+                    SwitchEvent::NoteOff => {
+                        active = false;
+                        nav_dirty = true;
+                    }
+                    _ => {}
+                }
+                continue;
+            }
+
+            // ── HE71–73: voice select → Program Change on melody channel ──
+            if switch_idx == VOICE_KEY_A || switch_idx == VOICE_KEY_B || switch_idx == VOICE_KEY_C {
+                if matches!(event, SwitchEvent::NoteOn { .. }) {
+                    let pc = if switch_idx == VOICE_KEY_A {
+                        VOICE_PC_A
+                    } else if switch_idx == VOICE_KEY_B {
+                        VOICE_PC_B
+                    } else {
+                        VOICE_PC_C
+                    };
+                    info!("Voice select PC={} ch={}", pc, settings.melody_channel + 1);
+                    ctx.local.midi_sender.set_channel(settings.melody_channel);
+                    ctx.local.midi_sender.all_notes_off();
+                    ctx.local.midi_sender.program_change(pc);
+                    ctx.shared
+                        .display_state
+                        .lock(|s| s.current_voice = Some(pc));
+                    display_update::spawn().ok();
+                    did_send = true;
+                }
+                continue;
+            }
+
+            // ── HE75: snapshot recalibration ──────────────────────────────
+            if switch_idx == RECALIBRATE_KEY {
+                if matches!(event, SwitchEvent::NoteOn { .. }) {
+                    ctx.shared.recalibrate_pending.lock(|p| *p = true);
+                    ctx.shared.display_state.lock(|s| s.recalibrating = true);
+                    display_update::spawn().ok();
+                    info!("recalibration requested");
+                }
+                continue;
+            }
+
+            // ── HE76: all notes off (CC 123) on all 16 channels ───────────
+            if switch_idx == ALL_NOTES_OFF_KEY {
+                if matches!(event, SwitchEvent::NoteOn { .. }) {
+                    info!("All Notes Off — all 16 channels");
+                    for ch in 0..16u8 {
+                        ctx.local.midi_sender.set_channel(ch);
+                        ctx.local.midi_sender.all_notes_off();
+                    }
+                    did_send = true;
+                }
+                continue;
+            }
+
+            // ── Settings navigation (arrow keys hijacked) ─────────────────
+            if active {
+                if matches!(event, SwitchEvent::NoteOn { .. }) {
+                    match switch_idx {
+                        SETTINGS_NAV_PREV => {
+                            selected = (selected + NUM_SETTINGS_ITEMS - 1) % NUM_SETTINGS_ITEMS;
                             nav_dirty = true;
                         }
-                        SwitchEvent::NoteOff => {
-                            active = false;
+                        SETTINGS_NAV_NEXT => {
+                            selected = (selected + 1) % NUM_SETTINGS_ITEMS;
+                            nav_dirty = true;
+                        }
+                        SETTINGS_VAL_UP => {
+                            settings.adjust(selected, 1);
+                            settings_dirty = true;
+                            nav_dirty = true;
+                        }
+                        SETTINGS_VAL_DOWN => {
+                            settings.adjust(selected, -1);
+                            settings_dirty = true;
                             nav_dirty = true;
                         }
                         _ => {}
                     }
-                    continue;
                 }
-
-                // ── HE71–73: voice select → Program Change on melody channel ──
-                if switch_idx == VOICE_KEY_A
-                    || switch_idx == VOICE_KEY_B
-                    || switch_idx == VOICE_KEY_C
-                {
-                    if matches!(event, SwitchEvent::NoteOn { .. }) {
-                        let pc = if switch_idx == VOICE_KEY_A {
-                            VOICE_PC_A
-                        } else if switch_idx == VOICE_KEY_B {
-                            VOICE_PC_B
-                        } else {
-                            VOICE_PC_C
-                        };
-                        info!("Voice select PC={} ch={}", pc, settings.melody_channel + 1);
-                        ctx.local.midi_sender.set_channel(settings.melody_channel);
-                        ctx.local.midi_sender.all_notes_off();
-                        ctx.local.midi_sender.program_change(pc);
-                        ctx.shared
-                            .display_state
-                            .lock(|s| s.current_voice = Some(pc));
-                        display_update::spawn().ok();
-                        did_send = true;
-                    }
-                    continue;
-                }
-
-                // ── HE75: snapshot recalibration ──────────────────────────────
-                if switch_idx == RECALIBRATE_KEY {
-                    if matches!(event, SwitchEvent::NoteOn { .. }) {
-                        ctx.shared.recalibrate_pending.lock(|p| *p = true);
-                        ctx.shared.display_state.lock(|s| s.recalibrating = true);
-                        display_update::spawn().ok();
-                        info!("recalibration requested");
-                    }
-                    continue;
-                }
-
-                // ── HE76: all notes off (CC 123) on all 16 channels ───────────
-                if switch_idx == ALL_NOTES_OFF_KEY {
-                    if matches!(event, SwitchEvent::NoteOn { .. }) {
-                        info!("All Notes Off — all 16 channels");
-                        for ch in 0..16u8 {
-                            ctx.local.midi_sender.set_channel(ch);
-                            ctx.local.midi_sender.all_notes_off();
-                        }
-                        did_send = true;
-                    }
-                    continue;
-                }
-
-                // ── Settings navigation (arrow keys hijacked) ─────────────────
-                if active {
-                    if matches!(event, SwitchEvent::NoteOn { .. }) {
-                        match switch_idx {
-                            SETTINGS_NAV_PREV => {
-                                selected = (selected + NUM_SETTINGS_ITEMS - 1) % NUM_SETTINGS_ITEMS;
-                                nav_dirty = true;
-                            }
-                            SETTINGS_NAV_NEXT => {
-                                selected = (selected + 1) % NUM_SETTINGS_ITEMS;
-                                nav_dirty = true;
-                            }
-                            SETTINGS_VAL_UP => {
-                                settings.adjust(selected, 1);
-                                settings_dirty = true;
-                                nav_dirty = true;
-                            }
-                            SETTINGS_VAL_DOWN => {
-                                settings.adjust(selected, -1);
-                                settings_dirty = true;
-                                nav_dirty = true;
-                            }
-                            _ => {}
-                        }
-                    }
-                    continue;
-                }
-
-                // ── Normal MIDI routing ────────────────────────────────────────
-                let he = HE_NUM[switch_idx];
-                let is_drum = switch_idx >= DRUM_SWITCH_START
-                    && switch_idx < DRUM_SWITCH_START + DRUM_NOTE.len();
-                let (raw_note, channel) = if is_drum {
-                    (
-                        DRUM_NOTE[switch_idx - DRUM_SWITCH_START],
-                        settings.drum_channel,
-                    )
-                } else {
-                    (SWITCH_TO_NOTE[switch_idx], settings.melody_channel)
-                };
-                if raw_note == 0 {
-                    continue;
-                }
-
-                // Apply octave offset to melody keys; clamp to valid MIDI range.
-                let note = if is_drum {
-                    raw_note
-                } else {
-                    let offset = (settings.octave as i16 - 4) * 12;
-                    (raw_note as i16 + offset).clamp(1, 127) as u8
-                };
-
-                ctx.local.midi_sender.set_channel(channel);
-                match event {
-                    SwitchEvent::NoteOn { velocity } => {
-                        info!(
-                            "NoteOn  HE{} ch={} note={} vel={}",
-                            he,
-                            channel + 1,
-                            note,
-                            velocity
-                        );
-                        ctx.local.midi_sender.note_on(note, velocity);
-                        new_display_event = Some(LastEvent::Note { note });
-                    }
-                    SwitchEvent::NoteOff => {
-                        info!("NoteOff HE{} ch={} note={}", he, channel + 1, note);
-                        ctx.local.midi_sender.note_off(note, 0);
-                        new_display_event = Some(LastEvent::Clear);
-                    }
-                    SwitchEvent::PotChange { cc, value } => {
-                        info!("CC{} = {}", cc, value);
-                        ctx.local.midi_sender.control_change(cc, value);
-                        new_display_event = Some(LastEvent::Cc { num: cc, value });
-                        if cc == 7 {
-                            new_volume = Some((value as u32 * 10 / 127) as u8);
-                        }
-                    }
-                    SwitchEvent::PitchBend { value } => {
-                        info!("PitchBend value={}", value);
-                        ctx.local.midi_sender.pitch_bend(value);
-                    }
-                }
-                did_send = true;
+                continue;
             }
-        });
+
+            // ── Normal MIDI routing ────────────────────────────────────────
+            let he = HE_NUM[switch_idx];
+            let is_drum =
+                switch_idx >= DRUM_SWITCH_START && switch_idx < DRUM_SWITCH_START + DRUM_NOTE.len();
+            let (raw_note, channel) = if is_drum {
+                (
+                    DRUM_NOTE[switch_idx - DRUM_SWITCH_START],
+                    settings.drum_channel,
+                )
+            } else {
+                (SWITCH_TO_NOTE[switch_idx], settings.melody_channel)
+            };
+            if raw_note == 0 {
+                continue;
+            }
+
+            // Apply octave offset to melody keys; clamp to valid MIDI range.
+            let note = if is_drum {
+                raw_note
+            } else {
+                let offset = (settings.octave as i16 - 4) * 12;
+                (raw_note as i16 + offset).clamp(1, 127) as u8
+            };
+
+            ctx.local.midi_sender.set_channel(channel);
+            match event {
+                SwitchEvent::NoteOn { velocity } => {
+                    info!(
+                        "NoteOn  HE{} ch={} note={} vel={}",
+                        he,
+                        channel + 1,
+                        note,
+                        velocity
+                    );
+                    ctx.local.midi_sender.note_on(note, velocity);
+                    new_display_event = Some(LastEvent::Note { note });
+                }
+                SwitchEvent::NoteOff => {
+                    info!("NoteOff HE{} ch={} note={}", he, channel + 1, note);
+                    ctx.local.midi_sender.note_off(note, 0);
+                    new_display_event = Some(LastEvent::Clear);
+                }
+                SwitchEvent::PotChange { cc, value } => {
+                    info!("CC{} = {}", cc, value);
+                    ctx.local.midi_sender.control_change(cc, value);
+                    new_display_event = Some(LastEvent::Cc { num: cc, value });
+                    if cc == 7 {
+                        new_volume = Some((value as u32 * 10 / 127) as u8);
+                    }
+                }
+                SwitchEvent::PitchBend { value } => {
+                    info!("PitchBend value={}", value);
+                    ctx.local.midi_sender.pitch_bend(value);
+                }
+            }
+            did_send = true;
+        }
 
         // ── Write back mutations ───────────────────────────────────────────────
         if settings_dirty {

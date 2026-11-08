@@ -1,0 +1,9 @@
+Python execution guard verified
+IRQ-aware wait pacing adapter verified
+NVIC active-count adapter verified
+Board: rev7
+Native instruction-fetch tag verified
+Keyboard progress: 100 ms, PC: 0x8004f36
+Keyboard progress: 230 ms, PC: 0x8004f3a
+Keyboard progress: 340 ms, PC: 0x8004f36
+Keyboard complete: PC: 0x800ae5a

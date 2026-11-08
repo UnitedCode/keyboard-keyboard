@@ -1,0 +1,321 @@
+INFO - Starting system init
+INFO - Set up up DMA RAM in DRAM2...
+INFO - Memory Size 0xe
+INFO - Setting up GPIOs...
+INFO - Setting up SDRAM...
+INFO - SDRAM Memory Size 0x19
+INFO - Set up Audio...
+INFO - Setup up SAI...
+INFO - Setting up AK4556/PCM3060 Audio CODEC...
+INFO - Start audio stream...
+INFO - Audio started!
+INFO - Setup up Audio DMA: input: 0x30000000, output: 0x30004000
+INFO - System init done!
+INFO - keyboard_keyboard ready: 100 switches, 13 muxes
+INFO - display ok
+INFO - CC7 = 58
+INFO - CC10 = 58
+INFO - CC11 = 58
+INFO - CC74 = 58
+INFO - CC36 = 58
+INFO - CC37 = 58
+INFO - CC38 = 58
+INFO - CC39 = 58
+INFO - CC40 = 58
+INFO - CC41 = 58
+INFO - CC42 = 58
+INFO - CC43 = 58
+INFO - NoteOn  HE1 ch=1 note=54 vel=124
+INFO - NoteOn  HE2 ch=1 note=56 vel=124
+INFO - NoteOn  HE3 ch=1 note=58 vel=124
+INFO - NoteOn  HE4 ch=1 note=60 vel=124
+INFO - NoteOn  HE5 ch=1 note=62 vel=124
+INFO - NoteOn  HE6 ch=1 note=64 vel=124
+INFO - NoteOn  HE7 ch=1 note=66 vel=124
+INFO - NoteOn  HE8 ch=1 note=68 vel=124
+INFO - NoteOn  HE9 ch=1 note=70 vel=124
+INFO - NoteOn  HE10 ch=1 note=72 vel=124
+INFO - NoteOn  HE11 ch=1 note=74 vel=124
+INFO - NoteOn  HE12 ch=1 note=76 vel=124
+INFO - NoteOn  HE13 ch=1 note=78 vel=124
+INFO - NoteOn  HE14 ch=1 note=80 vel=124
+INFO - NoteOn  HE15 ch=1 note=47 vel=124
+INFO - NoteOn  HE16 ch=1 note=49 vel=124
+INFO - NoteOn  HE17 ch=1 note=51 vel=124
+INFO - NoteOn  HE18 ch=1 note=53 vel=124
+INFO - NoteOn  HE19 ch=1 note=55 vel=124
+INFO - NoteOn  HE20 ch=1 note=57 vel=124
+INFO - NoteOn  HE21 ch=1 note=59 vel=124
+INFO - NoteOn  HE22 ch=1 note=61 vel=124
+INFO - NoteOn  HE23 ch=1 note=63 vel=124
+INFO - NoteOn  HE24 ch=1 note=65 vel=124
+INFO - NoteOn  HE25 ch=1 note=67 vel=124
+INFO - NoteOn  HE26 ch=1 note=69 vel=124
+INFO - NoteOn  HE27 ch=1 note=71 vel=124
+INFO - NoteOn  HE28 ch=1 note=73 vel=124
+INFO - NoteOn  HE29 ch=1 note=75 vel=124
+INFO - NoteOn  HE30 ch=1 note=42 vel=124
+INFO - NoteOn  HE31 ch=1 note=44 vel=124
+INFO - NoteOn  HE32 ch=1 note=46 vel=124
+INFO - NoteOn  HE33 ch=1 note=48 vel=124
+INFO - NoteOn  HE34 ch=1 note=50 vel=124
+INFO - NoteOn  HE35 ch=1 note=52 vel=124
+INFO - NoteOn  HE36 ch=1 note=54 vel=124
+INFO - NoteOn  HE37 ch=1 note=56 vel=124
+INFO - NoteOn  HE41 ch=1 note=64 vel=124
+INFO - NoteOn  HE42 ch=1 note=66 vel=124
+INFO - NoteOn  HE43 ch=1 note=68 vel=124
+INFO - NoteOff HE1 ch=1 note=54
+INFO - NoteOff HE2 ch=1 note=56
+INFO - NoteOff HE3 ch=1 note=58
+INFO - NoteOff HE4 ch=1 note=60
+INFO - NoteOff HE5 ch=1 note=62
+INFO - NoteOff HE6 ch=1 note=64
+INFO - NoteOff HE7 ch=1 note=66
+INFO - NoteOff HE8 ch=1 note=68
+INFO - NoteOff HE9 ch=1 note=70
+INFO - NoteOff HE10 ch=1 note=72
+INFO - NoteOff HE11 ch=1 note=74
+INFO - NoteOff HE12 ch=1 note=76
+INFO - NoteOff HE13 ch=1 note=78
+INFO - NoteOff HE14 ch=1 note=80
+INFO - NoteOff HE15 ch=1 note=47
+INFO - NoteOff HE16 ch=1 note=49
+INFO - NoteOff HE17 ch=1 note=51
+INFO - NoteOff HE18 ch=1 note=53
+INFO - NoteOff HE19 ch=1 note=55
+INFO - NoteOff HE20 ch=1 note=57
+INFO - NoteOff HE21 ch=1 note=59
+INFO - NoteOff HE22 ch=1 note=61
+INFO - NoteOff HE23 ch=1 note=63
+INFO - NoteOff HE24 ch=1 note=65
+INFO - NoteOff HE25 ch=1 note=67
+INFO - NoteOff HE26 ch=1 note=69
+INFO - NoteOff HE27 ch=1 note=71
+INFO - NoteOff HE28 ch=1 note=73
+INFO - NoteOff HE29 ch=1 note=75
+INFO - NoteOff HE30 ch=1 note=42
+INFO - NoteOff HE31 ch=1 note=44
+INFO - NoteOff HE32 ch=1 note=46
+INFO - NoteOff HE33 ch=1 note=48
+INFO - NoteOff HE34 ch=1 note=50
+INFO - NoteOff HE35 ch=1 note=52
+INFO - NoteOff HE36 ch=1 note=54
+INFO - NoteOff HE37 ch=1 note=56
+INFO - NoteOff HE41 ch=1 note=64
+INFO - NoteOff HE42 ch=1 note=66
+INFO - NoteOff HE43 ch=1 note=68
+INFO - NoteOn  HE1 ch=1 note=54 vel=124
+INFO - NoteOn  HE2 ch=1 note=56 vel=124
+INFO - NoteOn  HE3 ch=1 note=58 vel=124
+INFO - NoteOn  HE4 ch=1 note=60 vel=124
+INFO - NoteOn  HE5 ch=1 note=62 vel=124
+INFO - NoteOn  HE6 ch=1 note=64 vel=124
+INFO - NoteOn  HE7 ch=1 note=66 vel=124
+INFO - NoteOn  HE8 ch=1 note=68 vel=124
+INFO - NoteOn  HE9 ch=1 note=70 vel=124
+WARN - MIDI event queue overflow: clearing pending events and sounding notes
+INFO - NoteOff HE1 ch=1 note=54
+INFO - NoteOff HE2 ch=1 note=56
+INFO - NoteOff HE3 ch=1 note=58
+INFO - NoteOff HE4 ch=1 note=60
+INFO - NoteOff HE5 ch=1 note=62
+INFO - NoteOff HE6 ch=1 note=64
+INFO - NoteOff HE7 ch=1 note=66
+INFO - NoteOff HE8 ch=1 note=68
+INFO - NoteOff HE9 ch=1 note=70
+INFO - NoteOff HE10 ch=1 note=72
+INFO - NoteOff HE11 ch=1 note=74
+INFO - NoteOff HE12 ch=1 note=76
+INFO - NoteOff HE13 ch=1 note=78
+INFO - NoteOff HE14 ch=1 note=80
+INFO - NoteOff HE15 ch=1 note=47
+INFO - NoteOff HE16 ch=1 note=49
+INFO - NoteOff HE17 ch=1 note=51
+INFO - NoteOff HE18 ch=1 note=53
+INFO - NoteOff HE19 ch=1 note=55
+INFO - NoteOff HE20 ch=1 note=57
+INFO - NoteOff HE21 ch=1 note=59
+INFO - NoteOff HE22 ch=1 note=61
+INFO - NoteOff HE23 ch=1 note=63
+INFO - NoteOff HE24 ch=1 note=65
+INFO - NoteOff HE25 ch=1 note=67
+INFO - NoteOff HE26 ch=1 note=69
+INFO - NoteOff HE27 ch=1 note=71
+INFO - NoteOff HE28 ch=1 note=73
+INFO - NoteOff HE29 ch=1 note=75
+INFO - NoteOff HE30 ch=1 note=42
+INFO - NoteOff HE31 ch=1 note=44
+INFO - NoteOff HE32 ch=1 note=46
+INFO - NoteOff HE33 ch=1 note=48
+INFO - NoteOff HE34 ch=1 note=50
+INFO - NoteOff HE35 ch=1 note=52
+INFO - NoteOff HE36 ch=1 note=54
+INFO - NoteOff HE37 ch=1 note=56
+INFO - NoteOff HE41 ch=1 note=64
+INFO - NoteOff HE42 ch=1 note=66
+INFO - NoteOff HE43 ch=1 note=68
+INFO - NoteOn  HE1 ch=1 note=54 vel=124
+INFO - NoteOn  HE2 ch=1 note=56 vel=124
+INFO - NoteOn  HE3 ch=1 note=58 vel=124
+INFO - NoteOn  HE4 ch=1 note=60 vel=124
+INFO - NoteOn  HE5 ch=1 note=62 vel=124
+INFO - NoteOn  HE6 ch=1 note=64 vel=124
+INFO - NoteOn  HE7 ch=1 note=66 vel=124
+INFO - NoteOn  HE8 ch=1 note=68 vel=124
+INFO - NoteOn  HE9 ch=1 note=70 vel=124
+INFO - NoteOn  HE10 ch=1 note=72 vel=124
+INFO - NoteOn  HE11 ch=1 note=74 vel=124
+INFO - NoteOn  HE12 ch=1 note=76 vel=124
+INFO - NoteOn  HE13 ch=1 note=78 vel=124
+INFO - NoteOn  HE14 ch=1 note=80 vel=124
+INFO - NoteOn  HE15 ch=1 note=47 vel=124
+INFO - NoteOn  HE16 ch=1 note=49 vel=124
+INFO - NoteOn  HE17 ch=1 note=51 vel=124
+INFO - NoteOn  HE18 ch=1 note=53 vel=124
+INFO - NoteOn  HE19 ch=1 note=55 vel=124
+INFO - NoteOn  HE20 ch=1 note=57 vel=124
+INFO - NoteOn  HE21 ch=1 note=59 vel=124
+INFO - NoteOn  HE22 ch=1 note=61 vel=124
+INFO - NoteOn  HE23 ch=1 note=63 vel=124
+INFO - NoteOn  HE24 ch=1 note=65 vel=124
+INFO - NoteOn  HE25 ch=1 note=67 vel=124
+INFO - NoteOn  HE26 ch=1 note=69 vel=124
+INFO - NoteOn  HE27 ch=1 note=71 vel=124
+INFO - NoteOn  HE28 ch=1 note=73 vel=124
+INFO - NoteOn  HE29 ch=1 note=75 vel=124
+INFO - NoteOn  HE30 ch=1 note=42 vel=124
+INFO - NoteOn  HE31 ch=1 note=44 vel=124
+INFO - NoteOn  HE32 ch=1 note=46 vel=124
+INFO - NoteOn  HE33 ch=1 note=48 vel=124
+INFO - NoteOn  HE34 ch=1 note=50 vel=124
+INFO - NoteOn  HE35 ch=1 note=52 vel=124
+INFO - NoteOn  HE36 ch=1 note=54 vel=124
+INFO - NoteOn  HE37 ch=1 note=56 vel=124
+INFO - NoteOn  HE41 ch=1 note=64 vel=124
+WARN - MIDI event queue overflow: clearing pending events and sounding notes
+INFO - NoteOn  HE1 ch=1 note=54 vel=124
+INFO - NoteOn  HE2 ch=1 note=56 vel=124
+INFO - NoteOn  HE3 ch=1 note=58 vel=124
+INFO - NoteOn  HE4 ch=1 note=60 vel=124
+INFO - NoteOn  HE5 ch=1 note=62 vel=124
+INFO - NoteOn  HE6 ch=1 note=64 vel=124
+INFO - NoteOn  HE7 ch=1 note=66 vel=124
+INFO - NoteOn  HE8 ch=1 note=68 vel=124
+INFO - NoteOn  HE9 ch=1 note=70 vel=124
+INFO - NoteOn  HE10 ch=1 note=72 vel=124
+INFO - NoteOn  HE11 ch=1 note=74 vel=124
+INFO - NoteOn  HE12 ch=1 note=76 vel=124
+INFO - NoteOn  HE13 ch=1 note=78 vel=124
+INFO - NoteOn  HE14 ch=1 note=80 vel=124
+INFO - NoteOn  HE15 ch=1 note=47 vel=124
+INFO - NoteOn  HE16 ch=1 note=49 vel=124
+INFO - NoteOn  HE17 ch=1 note=51 vel=124
+INFO - NoteOn  HE18 ch=1 note=53 vel=124
+INFO - NoteOn  HE19 ch=1 note=55 vel=124
+INFO - NoteOn  HE20 ch=1 note=57 vel=124
+INFO - NoteOn  HE21 ch=1 note=59 vel=124
+INFO - NoteOn  HE22 ch=1 note=61 vel=124
+INFO - NoteOn  HE23 ch=1 note=63 vel=124
+INFO - NoteOn  HE24 ch=1 note=65 vel=124
+INFO - NoteOn  HE25 ch=1 note=67 vel=124
+INFO - NoteOn  HE26 ch=1 note=69 vel=124
+INFO - NoteOn  HE27 ch=1 note=71 vel=124
+INFO - NoteOn  HE28 ch=1 note=73 vel=124
+INFO - NoteOn  HE29 ch=1 note=75 vel=124
+INFO - NoteOn  HE30 ch=1 note=42 vel=124
+INFO - NoteOn  HE31 ch=1 note=44 vel=124
+INFO - NoteOn  HE32 ch=1 note=46 vel=124
+INFO - NoteOn  HE33 ch=1 note=48 vel=124
+INFO - NoteOn  HE34 ch=1 note=50 vel=124
+INFO - NoteOn  HE35 ch=1 note=52 vel=124
+INFO - NoteOn  HE36 ch=1 note=54 vel=124
+INFO - NoteOn  HE37 ch=1 note=56 vel=124
+INFO - NoteOn  HE41 ch=1 note=64 vel=124
+INFO - NoteOn  HE42 ch=1 note=66 vel=124
+INFO - NoteOn  HE43 ch=1 note=68 vel=124
+INFO - NoteOff HE1 ch=1 note=54
+INFO - NoteOff HE2 ch=1 note=56
+INFO - NoteOff HE3 ch=1 note=58
+INFO - NoteOff HE4 ch=1 note=60
+INFO - NoteOff HE5 ch=1 note=62
+INFO - NoteOff HE6 ch=1 note=64
+INFO - NoteOff HE7 ch=1 note=66
+INFO - NoteOff HE8 ch=1 note=68
+INFO - NoteOff HE9 ch=1 note=70
+INFO - NoteOff HE10 ch=1 note=72
+INFO - NoteOff HE11 ch=1 note=74
+INFO - NoteOff HE12 ch=1 note=76
+INFO - NoteOff HE13 ch=1 note=78
+INFO - NoteOff HE14 ch=1 note=80
+INFO - NoteOff HE15 ch=1 note=47
+INFO - NoteOff HE16 ch=1 note=49
+INFO - NoteOff HE17 ch=1 note=51
+INFO - NoteOff HE18 ch=1 note=53
+INFO - NoteOff HE19 ch=1 note=55
+INFO - NoteOff HE20 ch=1 note=57
+INFO - NoteOff HE21 ch=1 note=59
+INFO - NoteOff HE22 ch=1 note=61
+INFO - NoteOff HE23 ch=1 note=63
+INFO - NoteOff HE24 ch=1 note=65
+INFO - NoteOff HE25 ch=1 note=67
+INFO - NoteOff HE26 ch=1 note=69
+INFO - NoteOff HE27 ch=1 note=71
+INFO - NoteOff HE28 ch=1 note=73
+INFO - NoteOff HE29 ch=1 note=75
+INFO - NoteOff HE30 ch=1 note=42
+INFO - NoteOff HE31 ch=1 note=44
+INFO - NoteOff HE32 ch=1 note=46
+INFO - NoteOff HE33 ch=1 note=48
+INFO - NoteOff HE34 ch=1 note=50
+INFO - NoteOff HE35 ch=1 note=52
+INFO - NoteOff HE36 ch=1 note=54
+INFO - NoteOff HE37 ch=1 note=56
+INFO - NoteOff HE41 ch=1 note=64
+WARN - MIDI event queue overflow: clearing pending events and sounding notes
+INFO - NoteOff HE1 ch=1 note=54
+INFO - NoteOff HE2 ch=1 note=56
+INFO - NoteOff HE3 ch=1 note=58
+INFO - NoteOff HE4 ch=1 note=60
+INFO - NoteOff HE5 ch=1 note=62
+INFO - NoteOff HE6 ch=1 note=64
+INFO - NoteOff HE7 ch=1 note=66
+INFO - NoteOff HE8 ch=1 note=68
+INFO - NoteOff HE9 ch=1 note=70
+INFO - NoteOff HE10 ch=1 note=72
+INFO - NoteOff HE11 ch=1 note=74
+INFO - NoteOff HE12 ch=1 note=76
+INFO - NoteOff HE13 ch=1 note=78
+INFO - NoteOff HE14 ch=1 note=80
+INFO - NoteOff HE15 ch=1 note=47
+INFO - NoteOff HE16 ch=1 note=49
+INFO - NoteOff HE17 ch=1 note=51
+INFO - NoteOff HE18 ch=1 note=53
+INFO - NoteOff HE19 ch=1 note=55
+INFO - NoteOff HE20 ch=1 note=57
+INFO - NoteOff HE21 ch=1 note=59
+INFO - NoteOff HE22 ch=1 note=61
+INFO - NoteOff HE23 ch=1 note=63
+INFO - NoteOff HE24 ch=1 note=65
+INFO - NoteOff HE25 ch=1 note=67
+INFO - NoteOff HE26 ch=1 note=69
+INFO - NoteOff HE27 ch=1 note=71
+INFO - NoteOff HE28 ch=1 note=73
+INFO - NoteOff HE29 ch=1 note=75
+INFO - NoteOff HE30 ch=1 note=42
+INFO - NoteOff HE31 ch=1 note=44
+INFO - NoteOff HE32 ch=1 note=46
+INFO - NoteOff HE33 ch=1 note=48
+INFO - NoteOff HE34 ch=1 note=50
+INFO - NoteOff HE35 ch=1 note=52
+INFO - NoteOff HE36 ch=1 note=54
+INFO - NoteOff HE37 ch=1 note=56
+INFO - NoteOff HE41 ch=1 note=64
+INFO - NoteOff HE42 ch=1 note=66
+INFO - NoteOff HE43 ch=1 note=68
+INFO - NoteOff HE35 ch=1 note=52
+INFO - NoteOff HE36 ch=1 note=54
+INFO - NoteOff HE37 ch=1 note=56
+INFO - NoteOff HE41 ch=1 note=64
+INFO - NoteOff HE42 ch=1 note=66
+INFO - NoteOff HE43 ch=1 note=68
