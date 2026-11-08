@@ -1,0 +1,31 @@
+INFO - Starting system init
+INFO - Set up up DMA RAM in DRAM2...
+INFO - Memory Size 0xe
+INFO - Setting up GPIOs...
+INFO - Setting up SDRAM...
+INFO - SDRAM Memory Size 0x19
+INFO - Set up Audio...
+INFO - Setup up SAI...
+INFO - Setting up AK4556/PCM3060 Audio CODEC...
+INFO - Start audio stream...
+INFO - Audio started!
+INFO - Setup up Audio DMA: input: 0x30000000, output: 0x30004000
+INFO - System init done!
+INFO - keyboard_keyboard ready: 100 switches, 13 muxes
+INFO - display ok
+INFO - CC7 = 58
+INFO - CC10 = 58
+INFO - CC11 = 58
+INFO - CC74 = 58
+INFO - CC36 = 58
+INFO - CC37 = 58
+INFO - CC38 = 58
+INFO - CC39 = 58
+INFO - CC40 = 58
+INFO - CC41 = 58
+INFO - CC42 = 58
+INFO - CC43 = 58
+INFO - All Notes Off â all 16 channels
+INFO - CC7 = 127
+INFO - NoteOn  HE1 ch=1 note=54 vel=124
+INFO - NoteOff HE1 ch=1 note=54

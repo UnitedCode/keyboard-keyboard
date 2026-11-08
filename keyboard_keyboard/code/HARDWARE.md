@@ -4,7 +4,7 @@
 
 Hall-effect MIDI keyboard controller on Electrosmith Daisy Seed (STM32H750V).
 PCB hosts up to 15 analog muxes (AM1–AM15) feeding hall-effect sensors into Daisy ADC pins.
-Firmware currently drives 9 muxes (70 keys, HE1–HE70). PCB supports 15 muxes, 100 hall-effect sensors (HE1–HE100).
+Firmware drives 13 sensor muxes (100 keys, HE1–HE100) and 2 pot muxes (12 pots).
 
 KiCad schematic: `keyboard_keyboard/kicad/keyboard_keyboard.kicad_sch`
 
@@ -52,7 +52,8 @@ KiCad schematic: `keyboard_keyboard/kicad/keyboard_keyboard.kicad_sch`
 | 30 | `DAC_OUT1`   | A8  | AM9 mux output ← repurposed as ADC |
 | 31 | `SAI2_MCLK`  | A9  | AM10+AM11 shared ← repurposed as ADC |
 | 32 | `SAI2_SD_B`  | A10 | AM12+AM13 shared ← repurposed as ADC |
-| 33 | `SAI2_SD_A`  | A11 | AM14+AM15 shared ← repurposed as ADC |
+| 33 | `SAI2_SD_A`  | D26 | intentionally unconnected (no ADC) |
+| 35 | `SAI2_SCK`   | A11 / D28 | AM14+AM15 shared ADC input |
 | 16 | `AUDIO_IN_1` | —   | Audio in 1 → J1 |
 | 17 | `AUDIO_IN_2` | —   | Audio in 2 → J1 |
 | 18 | `AUDIO_OUT_1`| —   | Audio out 1 → J2 |
@@ -103,57 +104,56 @@ Driven by D2 (A2), D3 (A1), D4 (A0). Outputs active-low `ENABLE_10`–`ENABLE_15
 
 ---
 
-## Firmware vs. PCB Capability
+## Current firmware and board corrections
 
-| | Firmware (`src/main.rs`) | PCB (netlist) |
-|-|--------------------------|---------------|
-| Muxes | 9 (AM1–AM9) | 15 (AM1–AM15) |
-| Keys | 70 (HE1–HE70) | 100 (HE1–HE100) |
-| ADC pins | A0–A8 | A0–A11 |
-| Pair-enable logic | not implemented | needs U1 + D2/D3/D4 |
+Firmware scans AM1–AM13 for all 100 switches and AM14–AM15 for 12 pots.
+AM10/11 share A9, AM12/13 share A10, and AM14/15 share A11; U1 outputs
+Y0–Y5 select the corresponding active-low mux inhibit inputs.
 
-### Current pin assignments (AM1–AM9)
+U1 pins 4/5 are grounded and pin 6 is at 3.3 V. Pins 7/Y7 and 9/Y6 are
+unused push-pull outputs: leave them open. The earlier PCB grounded them,
+forcing high outputs into ground during normal decoder addresses 0–5.
+The corrected PCB has isolated pads and refilled ground copper, and a direct
+0.3 mm connection from enable pad 5 to grounded pad 4. The refill also removes
+stale ground fill overlapping the MUX_OUT_14 pot ADC trace.
 
-| Mux | Daisy Pin | ADC | Sensors |
-|-----|-----------|-----|---------|
-| AM1 | Daisy15 | A0 | HE1–HE8 |
-| AM2 | Daisy16 | A1 | HE9–HE14, HE28–HE29 |
-| AM3 | Daisy17 | A2 | HE15–HE22 |
-| AM4 | Daisy18 | A3 | HE23–HE27, HE41–HE43 |
-| AM5 | Daisy19 | A4 | HE30–HE37 |
-| AM6 | Daisy20 | A5 | HE38–HE40, HE54–HE58 |
-| AM7 | Daisy21 | A6 | HE44–HE51 |
-| AM8 | Daisy22 | A7 | HE52–HE53, HE67–HE70 (X0/X3 unused) |
-| AM9 | Daisy23 | A8 | HE59–HE66 |
+Pot input is **pad 35 / D28 / PA2 / A11**. Pad 33 / D26 / PD11 has no ADC and
+is intentionally unconnected on the current PCB. Older documentation describing
+an obligatory pad-33 bodge or permanently disabled decoder does not describe
+these current design files. Check an assembled board's revision and continuity
+before rework; do not blindly bridge pins while their old supply connection remains.
 
-### To expand to HE71–HE100 (AM10–AM13)
+The schematic marks unused U1 outputs as no-connects. KiCad 9.0.8 checks found
+zero PCB errors and zero unconnected items after repair/refill; pre-existing
+library, silkscreen and connection-width warnings remain. The schematic still
+has pre-existing external-power and unused-connector ERC errors plus label/library
+warnings. Reports and their limits are in `../kicad/validation/README.md`.
 
-1. Implement U1 decoder enable sequencing with Daisy2 (ENB_C/A2), Daisy3 (ENB_B/A1), Daisy4 (ENB_A/A0)
-2. Add ADC pins Daisy24 (A9) for AM10/AM11 and Daisy25 (A10) for AM12/AM13
-3. Scan AM10/AM11 alternately per mux-channel by toggling the U1 address
-4. Increase `NUM_MUXES`, `NUM_ADC_PINS`, `NUM_KEYS` and update `KEY_MAP`
+## Power and hot-room validation
 
-> **⚠ PCB errata — requires hardware fix before AM10–AM13 will work:**
->
-> On the 74HC138D (SO16 / D package), **pin 5 = E2~ (active-LOW enable)** is routed to +3.3VA
-> instead of GND. This permanently disables the decoder regardless of firmware.
->
-> Pin 6 (E3, active-HIGH) at 3.3V is correct. Only pin 5 is wrong.
->
-> **Fix:** Cut the trace on pad 5 and bridge pad 5 → pad 4 (GND) with a bodge wire.
-> Pads 4 and 5 are adjacent on the SO16 package; a short solder bridge works.
->
-> ```
-> Before:  GND[4]  [5]+3.3V   (broken)
-> After:   GND[4]--[5]        (fixed)
-> ```
->
-> After this fix the firmware decoder logic (Daisy2/3/4 → U1 A2/A1/A0) drives AM10–AM13
-> and HE71–HE100 should work without any firmware changes.
+The carrier rail named +3.3VA is supplied by A1 **pad 38 (3V3_D)**, not the
+Seed's pad-21 analog output. MagnTek's MT910X datasheet specifies 6.0 mA typical,
+7.0 mA maximum per sensor at 3.3 V: 100 sensors alone account for 0.60–0.70 A
+and 1.98–2.31 W on the carrier. Muxes, LEDs, pots and the Seed add other loads.
+This is a load estimate, not measured regulator overload or a prediction of
+component temperatures. Headroom depends on the fitted Seed, source and wiring.
 
-> Note: AM14/AM15 mux outputs are connected to trim pots (RV1–RV12), not hall-effect
-> sensors. AM15 X0–X3 are tied to GND. AM14/AM15 Inh pins are tied to GND via U1 Y6/Y7
-> (which are also grounded), so these muxes are always enabled on the shared A11 line.
+After correcting the output shorts, record input voltage/current, the 3.3 V rail
+at the Seed and a distant sensor, and component temperatures in cool and warm
+ambient conditions while repeating the same key/pot sequence. Separate missed
+keys, false/stuck notes, latency and resets in the observation log. The OpenSauce
+report is temperature-correlated with an unknown duration; an hour is not an
+established failure threshold. Virtual tests do not model electrical/thermal faults.
+
+A dedicated regulated 3.3 V carrier supply remains a design option if measured
+headroom is inadequate. Its output must be isolated from the Seed's 3.3 V output,
+with a shared ground and a checked power-up/back-powering sequence. Do not
+parallel two regulators or move sensor power to 5 V without redesigning ADC levels.
+No replacement regulator has been selected or validated in this change.
+
+Sources: [Nexperia 74HC138](https://assets.nexperia.com/documents/data-sheet/74HC_HCT138.pdf),
+[MagnTek MT910X manufacturer datasheet, distributor mirror](https://xonstorage.z8.web.core.windows.net/pdf/magntek_mt9105et_apr22_xonlink.pdf),
+[Electrosmith Seed pin table, manufacturer datasheet mirror](https://www.electrokit.com/upload/product/41020/41020659/Daisy_Seed_datasheet_v1.0.5.pdf).
 
 ---
 
@@ -161,7 +161,7 @@ Driven by D2 (A2), D3 (A1), D4 (A0). Outputs active-low `ENABLE_10`–`ENABLE_15
 
 | Component | Connection | Notes |
 |-----------|------------|-------|
-| MIDI out | D13 / `USART1_TX` (pin 14) | 31250 baud, `src/midi_sender.rs` |
+| MIDI out | D13 / `USART1_TX` (pin 14) | 31250 baud, `src/midi.rs` |
 | MIDI in  | D14 / `USART1_RX` (pin 15) | 31250 baud, U2 opto-isolator |
 | I2C      | D11/D12 (pins 12–13) | J3 — display (`ssd1306`) |
 | LEDs     | D1, D5, D6 (pins 2, 6, 7) | `led_1`, `led_2`, `led_3` |

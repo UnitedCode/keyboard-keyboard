@@ -1,0 +1,1300 @@
+[17:42:13.3434]  [WARNING] Translation cache size 536870912 is larger than maximum allowed 134217728. It will be clamped to maximum
+[17:42:13.5600]  [INFO] sysbus: Loading block of 32768 bytes length at 0x30000000.
+[17:42:13.5658]  [INFO] sysbus: Loading block of 664 bytes length at 0x8000000.
+[17:42:13.5661]  [INFO] sysbus: Loading block of 46588 bytes length at 0x8000298.
+[17:42:13.5711]  [INFO] sysbus: Loading block of 15156 bytes length at 0x800B894.
+[17:42:13.5726]  [INFO] sysbus: Loading block of 8 bytes length at 0x800F3C8.
+[17:42:13.5726]  [INFO] sysbus: Loading block of 7392 bytes length at 0x20000008.
+[17:42:13.6109]  [INFO] daisy: Machine started.
+[17:42:13.7812]  [WARNING] [no-name]: Unhandled write to offset 0x8. Unhandled bits: [29] when writing value 0x2FC00000. Tags: RESERVED (0x1).
+[17:42:13.7892]  [WARNING] [no-name]: Unhandled write to offset 0x8. Unhandled bits: [31] when writing value 0x9FC10000. Tags: ADCAL (0x1).
+[17:42:14.5263]  [INFO] daisy: Machine paused.
+[17:42:14.5265]  [INFO] daisy: Machine resumed.
+[17:42:14.5276]  [INFO] daisy: Machine paused.
+[17:42:14.5277]  [INFO] daisy: Machine resumed.
+[17:42:14.5281]  [INFO] daisy: Machine paused.
+[17:42:14.5281]  [INFO] daisy: Machine resumed.
+[17:42:14.5282]  [INFO] daisy: Machine paused.
+[17:42:14.5282]  [INFO] daisy: Machine resumed.
+[17:42:14.5282]  [INFO] daisy: Machine paused.
+[17:42:14.5283]  [INFO] daisy: Machine resumed.
+[17:42:14.5284]  [INFO] daisy: Machine paused.
+[17:42:14.5284]  [INFO] daisy: Machine resumed.
+[17:42:14.5285]  [INFO] daisy: Machine paused.
+[17:42:14.5285]  [INFO] daisy: Machine resumed.
+[17:42:14.5285]  [INFO] daisy: Machine paused.
+[17:42:14.5286]  [INFO] daisy: Machine resumed.
+[17:42:14.5286]  [INFO] daisy: Machine paused.
+[17:42:14.5286]  [INFO] daisy: Machine resumed.
+[17:42:14.5287]  [INFO] daisy: Machine paused.
+[17:42:14.5287]  [INFO] daisy: Machine resumed.
+[17:42:14.5288]  [INFO] daisy: Machine paused.
+[17:42:14.5288]  [INFO] daisy: Machine resumed.
+[17:42:14.5288]  [INFO] daisy: Machine paused.
+[17:42:14.5289]  [INFO] daisy: Machine resumed.
+[17:42:14.5289]  [INFO] daisy: Machine paused.
+[17:42:14.5289]  [INFO] daisy: Machine resumed.
+[17:42:14.5289]  [INFO] daisy: Machine paused.
+[17:42:14.5290]  [INFO] daisy: Machine resumed.
+[17:42:14.5290]  [INFO] daisy: Machine paused.
+[17:42:14.5290]  [INFO] daisy: Machine resumed.
+[17:42:14.5291]  [INFO] daisy: Machine paused.
+[17:42:14.5291]  [INFO] daisy: Machine resumed.
+[17:42:14.5291]  [INFO] daisy: Machine paused.
+[17:42:14.5292]  [INFO] daisy: Machine resumed.
+[17:42:14.5292]  [INFO] daisy: Machine paused.
+[17:42:14.5292]  [INFO] daisy: Machine resumed.
+[17:42:14.5293]  [INFO] daisy: Machine paused.
+[17:42:14.5293]  [INFO] daisy: Machine resumed.
+[17:42:14.5293]  [INFO] daisy: Machine paused.
+[17:42:14.5293]  [INFO] daisy: Machine resumed.
+[17:42:14.5294]  [INFO] daisy: Machine paused.
+[17:42:14.5294]  [INFO] daisy: Machine resumed.
+[17:42:14.5294]  [INFO] daisy: Machine paused.
+[17:42:14.5294]  [INFO] daisy: Machine resumed.
+[17:42:14.5295]  [INFO] daisy: Machine paused.
+[17:42:14.5295]  [INFO] daisy: Machine resumed.
+[17:42:14.5295]  [INFO] daisy: Machine paused.
+[17:42:14.5295]  [INFO] daisy: Machine resumed.
+[17:42:14.5296]  [INFO] daisy: Machine paused.
+[17:42:14.5296]  [INFO] daisy: Machine resumed.
+[17:42:14.5296]  [INFO] daisy: Machine paused.
+[17:42:14.5296]  [INFO] daisy: Machine resumed.
+[17:42:14.5297]  [INFO] daisy: Machine paused.
+[17:42:14.5297]  [INFO] daisy: Machine resumed.
+[17:42:14.5297]  [INFO] daisy: Machine paused.
+[17:42:14.5297]  [INFO] daisy: Machine resumed.
+[17:42:14.5298]  [INFO] daisy: Machine paused.
+[17:42:14.5298]  [INFO] daisy: Machine resumed.
+[17:42:14.5298]  [INFO] daisy: Machine paused.
+[17:42:14.5298]  [INFO] daisy: Machine resumed.
+[17:42:14.5299]  [INFO] daisy: Machine paused.
+[17:42:14.5299]  [INFO] daisy: Machine resumed.
+[17:42:14.5299]  [INFO] daisy: Machine paused.
+[17:42:14.5300]  [INFO] daisy: Machine resumed.
+[17:42:14.5300]  [INFO] daisy: Machine paused.
+[17:42:14.5300]  [INFO] daisy: Machine resumed.
+[17:42:14.5301]  [INFO] daisy: Machine paused.
+[17:42:14.5301]  [INFO] daisy: Machine resumed.
+[17:42:14.5301]  [INFO] daisy: Machine paused.
+[17:42:14.5301]  [INFO] daisy: Machine resumed.
+[17:42:14.5302]  [INFO] daisy: Machine paused.
+[17:42:14.5302]  [INFO] daisy: Machine resumed.
+[17:42:14.5302]  [INFO] daisy: Machine paused.
+[17:42:14.5302]  [INFO] daisy: Machine resumed.
+[17:42:14.5303]  [INFO] daisy: Machine paused.
+[17:42:14.5303]  [INFO] daisy: Machine resumed.
+[17:42:14.5304]  [INFO] daisy: Machine paused.
+[17:42:14.5304]  [INFO] daisy: Machine resumed.
+[17:42:14.5305]  [INFO] daisy: Machine paused.
+[17:42:14.5305]  [INFO] daisy: Machine resumed.
+[17:42:14.5305]  [INFO] daisy: Machine paused.
+[17:42:14.5305]  [INFO] daisy: Machine resumed.
+[17:42:14.5307]  [INFO] daisy: Machine paused.
+[17:42:14.5307]  [INFO] daisy: Machine resumed.
+[17:42:14.5308]  [INFO] daisy: Machine paused.
+[17:42:14.5308]  [INFO] daisy: Machine resumed.
+[17:42:14.5309]  [INFO] daisy: Machine paused.
+[17:42:14.5309]  [INFO] daisy: Machine resumed.
+[17:42:14.5310]  [INFO] daisy: Machine paused.
+[17:42:14.5310]  [INFO] daisy: Machine resumed.
+[17:42:14.5310]  [INFO] daisy: Machine paused.
+[17:42:14.5310]  [INFO] daisy: Machine resumed.
+[17:42:14.5311]  [INFO] daisy: Machine paused.
+[17:42:14.5311]  [INFO] daisy: Machine resumed.
+[17:42:14.5312]  [INFO] daisy: Machine paused.
+[17:42:14.5312]  [INFO] daisy: Machine resumed.
+[17:42:14.5312]  [INFO] daisy: Machine paused.
+[17:42:14.5312]  [INFO] daisy: Machine resumed.
+[17:42:14.5313]  [INFO] daisy: Machine paused.
+[17:42:14.5313]  [INFO] daisy: Machine resumed.
+[17:42:14.5314]  [INFO] daisy: Machine paused.
+[17:42:14.5314]  [INFO] daisy: Machine resumed.
+[17:42:14.5315]  [INFO] daisy: Machine paused.
+[17:42:14.5315]  [INFO] daisy: Machine resumed.
+[17:42:14.5315]  [INFO] daisy: Machine paused.
+[17:42:14.5316]  [INFO] daisy: Machine resumed.
+[17:42:14.5317]  [INFO] daisy: Machine paused.
+[17:42:14.5317]  [INFO] daisy: Machine resumed.
+[17:42:14.5318]  [INFO] daisy: Machine paused.
+[17:42:14.5318]  [INFO] daisy: Machine resumed.
+[17:42:14.5319]  [INFO] daisy: Machine paused.
+[17:42:14.5319]  [INFO] daisy: Machine resumed.
+[17:42:14.5319]  [INFO] daisy: Machine paused.
+[17:42:14.5319]  [INFO] daisy: Machine resumed.
+[17:42:14.5320]  [INFO] daisy: Machine paused.
+[17:42:14.5320]  [INFO] daisy: Machine resumed.
+[17:42:14.5320]  [INFO] daisy: Machine paused.
+[17:42:14.5320]  [INFO] daisy: Machine resumed.
+[17:42:14.5321]  [INFO] daisy: Machine paused.
+[17:42:14.5321]  [INFO] daisy: Machine resumed.
+[17:42:14.5321]  [INFO] daisy: Machine paused.
+[17:42:14.5322]  [INFO] daisy: Machine resumed.
+[17:42:14.5322]  [INFO] daisy: Machine paused.
+[17:42:14.5322]  [INFO] daisy: Machine resumed.
+[17:42:14.5323]  [INFO] daisy: Machine paused.
+[17:42:14.5323]  [INFO] daisy: Machine resumed.
+[17:42:14.5323]  [INFO] daisy: Machine paused.
+[17:42:14.5323]  [INFO] daisy: Machine resumed.
+[17:42:14.5324]  [INFO] daisy: Machine paused.
+[17:42:14.5324]  [INFO] daisy: Machine resumed.
+[17:42:14.5324]  [INFO] daisy: Machine paused.
+[17:42:14.5325]  [INFO] daisy: Machine resumed.
+[17:42:14.5325]  [INFO] daisy: Machine paused.
+[17:42:14.5325]  [INFO] daisy: Machine resumed.
+[17:42:14.5326]  [INFO] daisy: Machine paused.
+[17:42:14.5326]  [INFO] daisy: Machine resumed.
+[17:42:14.5326]  [INFO] daisy: Machine paused.
+[17:42:14.5326]  [INFO] daisy: Machine resumed.
+[17:42:14.5327]  [INFO] daisy: Machine paused.
+[17:42:14.5327]  [INFO] daisy: Machine resumed.
+[17:42:14.5327]  [INFO] daisy: Machine paused.
+[17:42:14.5328]  [INFO] daisy: Machine resumed.
+[17:42:14.5328]  [INFO] daisy: Machine paused.
+[17:42:14.5328]  [INFO] daisy: Machine resumed.
+[17:42:14.5329]  [INFO] daisy: Machine paused.
+[17:42:14.5329]  [INFO] daisy: Machine resumed.
+[17:42:14.5329]  [INFO] daisy: Machine paused.
+[17:42:14.5329]  [INFO] daisy: Machine resumed.
+[17:42:14.5330]  [INFO] daisy: Machine paused.
+[17:42:14.5330]  [INFO] daisy: Machine resumed.
+[17:42:14.5330]  [INFO] daisy: Machine paused.
+[17:42:14.5330]  [INFO] daisy: Machine resumed.
+[17:42:14.5331]  [INFO] daisy: Machine paused.
+[17:42:14.5331]  [INFO] daisy: Machine resumed.
+[17:42:14.5331]  [INFO] daisy: Machine paused.
+[17:42:14.5331]  [INFO] daisy: Machine resumed.
+[17:42:14.5332]  [INFO] daisy: Machine paused.
+[17:42:14.5332]  [INFO] daisy: Machine resumed.
+[17:42:14.5332]  [INFO] daisy: Machine paused.
+[17:42:14.5332]  [INFO] daisy: Machine resumed.
+[17:42:14.5333]  [INFO] daisy: Machine paused.
+[17:42:14.5333]  [INFO] daisy: Machine resumed.
+[17:42:14.5333]  [INFO] daisy: Machine paused.
+[17:42:14.5333]  [INFO] daisy: Machine resumed.
+[17:42:14.5334]  [INFO] daisy: Machine paused.
+[17:42:14.5334]  [INFO] daisy: Machine resumed.
+[17:42:14.5334]  [INFO] daisy: Machine paused.
+[17:42:14.5334]  [INFO] daisy: Machine resumed.
+[17:42:14.5335]  [INFO] daisy: Machine paused.
+[17:42:14.5335]  [INFO] daisy: Machine resumed.
+[17:42:14.5335]  [INFO] daisy: Machine paused.
+[17:42:14.5335]  [INFO] daisy: Machine resumed.
+[17:42:14.5336]  [INFO] daisy: Machine paused.
+[17:42:14.5336]  [INFO] daisy: Machine resumed.
+[17:42:14.5337]  [INFO] daisy: Machine paused.
+[17:42:14.5337]  [INFO] daisy: Machine resumed.
+[17:42:14.5337]  [INFO] daisy: Machine paused.
+[17:42:14.5337]  [INFO] daisy: Machine resumed.
+[17:42:14.5338]  [INFO] daisy: Machine paused.
+[17:42:14.5338]  [INFO] daisy: Machine resumed.
+[17:42:14.5339]  [INFO] daisy: Machine paused.
+[17:42:14.5339]  [INFO] daisy: Machine resumed.
+[17:42:14.5339]  [INFO] daisy: Machine paused.
+[17:42:14.5339]  [INFO] daisy: Machine resumed.
+[17:42:14.5340]  [INFO] daisy: Machine paused.
+[17:42:14.5340]  [INFO] daisy: Machine resumed.
+[17:42:14.5340]  [INFO] daisy: Machine paused.
+[17:42:14.5340]  [INFO] daisy: Machine resumed.
+[17:42:14.5341]  [INFO] daisy: Machine paused.
+[17:42:14.5341]  [INFO] daisy: Machine resumed.
+[17:42:14.5342]  [INFO] daisy: Machine paused.
+[17:42:14.5343]  [INFO] daisy: Machine resumed.
+[17:42:14.5343]  [INFO] daisy: Machine paused.
+[17:42:14.5344]  [INFO] daisy: Machine resumed.
+[17:42:14.5344]  [INFO] daisy: Machine paused.
+[17:42:14.5344]  [INFO] daisy: Machine resumed.
+[17:42:14.5345]  [INFO] daisy: Machine paused.
+[17:42:14.5345]  [INFO] daisy: Machine resumed.
+[17:42:14.5345]  [INFO] daisy: Machine paused.
+[17:42:14.5345]  [INFO] daisy: Machine resumed.
+[17:42:14.5346]  [INFO] daisy: Machine paused.
+[17:42:14.5346]  [INFO] daisy: Machine resumed.
+[17:42:14.5347]  [INFO] daisy: Machine paused.
+[17:42:14.5347]  [INFO] daisy: Machine resumed.
+[17:42:14.5347]  [INFO] daisy: Machine paused.
+[17:42:14.5348]  [INFO] daisy: Machine resumed.
+[17:42:14.5348]  [INFO] daisy: Machine paused.
+[17:42:14.5348]  [INFO] daisy: Machine resumed.
+[17:42:14.5348]  [INFO] daisy: Machine paused.
+[17:42:14.5349]  [INFO] daisy: Machine resumed.
+[17:42:14.5349]  [INFO] daisy: Machine paused.
+[17:42:14.5349]  [INFO] daisy: Machine resumed.
+[17:42:14.5350]  [INFO] daisy: Machine paused.
+[17:42:14.5350]  [INFO] daisy: Machine resumed.
+[17:42:14.5350]  [INFO] daisy: Machine paused.
+[17:42:14.5350]  [INFO] daisy: Machine resumed.
+[17:42:14.5351]  [INFO] daisy: Machine paused.
+[17:42:14.5351]  [INFO] daisy: Machine resumed.
+[17:42:14.5352]  [INFO] daisy: Machine paused.
+[17:42:14.5352]  [INFO] daisy: Machine resumed.
+[17:42:14.5353]  [INFO] daisy: Machine paused.
+[17:42:14.5353]  [INFO] daisy: Machine resumed.
+[17:42:14.5353]  [INFO] daisy: Machine paused.
+[17:42:14.5353]  [INFO] daisy: Machine resumed.
+[17:42:14.5354]  [INFO] daisy: Machine paused.
+[17:42:14.5354]  [INFO] daisy: Machine resumed.
+[17:42:14.5354]  [INFO] daisy: Machine paused.
+[17:42:14.5354]  [INFO] daisy: Machine resumed.
+[17:42:14.5356]  [INFO] daisy: Machine paused.
+[17:42:14.5356]  [INFO] daisy: Machine resumed.
+[17:42:14.5357]  [INFO] daisy: Machine paused.
+[17:42:14.5357]  [INFO] daisy: Machine resumed.
+[17:42:14.5357]  [INFO] daisy: Machine paused.
+[17:42:14.5357]  [INFO] daisy: Machine resumed.
+[17:42:14.5358]  [INFO] daisy: Machine paused.
+[17:42:14.5358]  [INFO] daisy: Machine resumed.
+[17:42:14.5358]  [INFO] daisy: Machine paused.
+[17:42:14.5359]  [INFO] daisy: Machine resumed.
+[17:42:14.5359]  [INFO] daisy: Machine paused.
+[17:42:14.5359]  [INFO] daisy: Machine resumed.
+[17:42:14.5360]  [INFO] daisy: Machine paused.
+[17:42:14.5360]  [INFO] daisy: Machine resumed.
+[17:42:14.5360]  [INFO] daisy: Machine paused.
+[17:42:14.5360]  [INFO] daisy: Machine resumed.
+[17:42:14.5361]  [INFO] daisy: Machine paused.
+[17:42:14.5361]  [INFO] daisy: Machine resumed.
+[17:42:14.5361]  [INFO] daisy: Machine paused.
+[17:42:14.5361]  [INFO] daisy: Machine resumed.
+[17:42:14.5362]  [INFO] daisy: Machine paused.
+[17:42:14.5362]  [INFO] daisy: Machine resumed.
+[17:42:14.5362]  [INFO] daisy: Machine paused.
+[17:42:14.5363]  [INFO] daisy: Machine resumed.
+[17:42:14.5363]  [INFO] daisy: Machine paused.
+[17:42:14.5363]  [INFO] daisy: Machine resumed.
+[17:42:14.5364]  [INFO] daisy: Machine paused.
+[17:42:14.5364]  [INFO] daisy: Machine resumed.
+[17:42:14.5364]  [INFO] daisy: Machine paused.
+[17:42:14.5364]  [INFO] daisy: Machine resumed.
+[17:42:14.5365]  [INFO] daisy: Machine paused.
+[17:42:14.5365]  [INFO] daisy: Machine resumed.
+[17:42:14.5366]  [INFO] daisy: Machine paused.
+[17:42:14.5366]  [INFO] daisy: Machine resumed.
+[17:42:14.5366]  [INFO] daisy: Machine paused.
+[17:42:14.5366]  [INFO] daisy: Machine resumed.
+[17:42:14.5367]  [INFO] daisy: Machine paused.
+[17:42:14.5367]  [INFO] daisy: Machine resumed.
+[17:42:14.5368]  [INFO] daisy: Machine paused.
+[17:42:14.5368]  [INFO] daisy: Machine resumed.
+[17:42:14.5369]  [INFO] daisy: Machine paused.
+[17:42:14.5369]  [INFO] daisy: Machine resumed.
+[17:42:14.5369]  [INFO] daisy: Machine paused.
+[17:42:14.5369]  [INFO] daisy: Machine resumed.
+[17:42:14.5370]  [INFO] daisy: Machine paused.
+[17:42:14.5370]  [INFO] daisy: Machine resumed.
+[17:42:14.5370]  [INFO] daisy: Machine paused.
+[17:42:14.5370]  [INFO] daisy: Machine resumed.
+[17:42:14.5371]  [INFO] daisy: Machine paused.
+[17:42:14.5371]  [INFO] daisy: Machine resumed.
+[17:42:14.5372]  [INFO] daisy: Machine paused.
+[17:42:14.5372]  [INFO] daisy: Machine resumed.
+[17:42:14.5372]  [INFO] daisy: Machine paused.
+[17:42:14.5372]  [INFO] daisy: Machine resumed.
+[17:42:14.5373]  [INFO] daisy: Machine paused.
+[17:42:14.5373]  [INFO] daisy: Machine resumed.
+[17:42:14.5373]  [INFO] daisy: Machine paused.
+[17:42:14.5373]  [INFO] daisy: Machine resumed.
+[17:42:14.5374]  [INFO] daisy: Machine paused.
+[17:42:14.5374]  [INFO] daisy: Machine resumed.
+[17:42:14.5374]  [INFO] daisy: Machine paused.
+[17:42:14.5375]  [INFO] daisy: Machine resumed.
+[17:42:14.5375]  [INFO] daisy: Machine paused.
+[17:42:14.5375]  [INFO] daisy: Machine resumed.
+[17:42:14.5376]  [INFO] daisy: Machine paused.
+[17:42:14.5376]  [INFO] daisy: Machine resumed.
+[17:42:14.5376]  [INFO] daisy: Machine paused.
+[17:42:14.5376]  [INFO] daisy: Machine resumed.
+[17:42:14.5377]  [INFO] daisy: Machine paused.
+[17:42:14.5377]  [INFO] daisy: Machine resumed.
+[17:42:14.5377]  [INFO] daisy: Machine paused.
+[17:42:14.5377]  [INFO] daisy: Machine resumed.
+[17:42:14.5378]  [INFO] daisy: Machine paused.
+[17:42:14.5378]  [INFO] daisy: Machine resumed.
+[17:42:14.5379]  [INFO] daisy: Machine paused.
+[17:42:14.5379]  [INFO] daisy: Machine resumed.
+[17:42:14.5379]  [INFO] daisy: Machine paused.
+[17:42:14.5379]  [INFO] daisy: Machine resumed.
+[17:42:14.5380]  [INFO] daisy: Machine paused.
+[17:42:14.5380]  [INFO] daisy: Machine resumed.
+[17:42:14.5380]  [INFO] daisy: Machine paused.
+[17:42:14.5380]  [INFO] daisy: Machine resumed.
+[17:42:14.5381]  [INFO] daisy: Machine paused.
+[17:42:14.5381]  [INFO] daisy: Machine resumed.
+[17:42:14.5382]  [INFO] daisy: Machine paused.
+[17:42:14.5382]  [INFO] daisy: Machine resumed.
+[17:42:14.5382]  [INFO] daisy: Machine paused.
+[17:42:14.5382]  [INFO] daisy: Machine resumed.
+[17:42:14.5383]  [INFO] daisy: Machine paused.
+[17:42:14.5383]  [INFO] daisy: Machine resumed.
+[17:42:14.5383]  [INFO] daisy: Machine paused.
+[17:42:14.5384]  [INFO] daisy: Machine resumed.
+[17:42:14.5384]  [INFO] daisy: Machine paused.
+[17:42:14.5384]  [INFO] daisy: Machine resumed.
+[17:42:14.5385]  [INFO] daisy: Machine paused.
+[17:42:14.5385]  [INFO] daisy: Machine resumed.
+[17:42:14.5385]  [INFO] daisy: Machine paused.
+[17:42:14.5385]  [INFO] daisy: Machine resumed.
+[17:42:14.5386]  [INFO] daisy: Machine paused.
+[17:42:14.5386]  [INFO] daisy: Machine resumed.
+[17:42:14.5386]  [INFO] daisy: Machine paused.
+[17:42:14.5386]  [INFO] daisy: Machine resumed.
+[17:42:14.5387]  [INFO] daisy: Machine paused.
+[17:42:14.5387]  [INFO] daisy: Machine resumed.
+[17:42:14.5387]  [INFO] daisy: Machine paused.
+[17:42:14.5388]  [INFO] daisy: Machine resumed.
+[17:42:14.5388]  [INFO] daisy: Machine paused.
+[17:42:14.5388]  [INFO] daisy: Machine resumed.
+[17:42:14.5389]  [INFO] daisy: Machine paused.
+[17:42:14.5389]  [INFO] daisy: Machine resumed.
+[17:42:14.5389]  [INFO] daisy: Machine paused.
+[17:42:14.5389]  [INFO] daisy: Machine resumed.
+[17:42:14.5390]  [INFO] daisy: Machine paused.
+[17:42:14.5390]  [INFO] daisy: Machine resumed.
+[17:42:14.5390]  [INFO] daisy: Machine paused.
+[17:42:14.5390]  [INFO] daisy: Machine resumed.
+[17:42:14.5391]  [INFO] daisy: Machine paused.
+[17:42:14.5391]  [INFO] daisy: Machine resumed.
+[17:42:14.5391]  [INFO] daisy: Machine paused.
+[17:42:14.5391]  [INFO] daisy: Machine resumed.
+[17:42:14.5392]  [INFO] daisy: Machine paused.
+[17:42:14.5392]  [INFO] daisy: Machine resumed.
+[17:42:14.5392]  [INFO] daisy: Machine paused.
+[17:42:14.5393]  [INFO] daisy: Machine resumed.
+[17:42:14.5393]  [INFO] daisy: Machine paused.
+[17:42:14.5393]  [INFO] daisy: Machine resumed.
+[17:42:14.5393]  [INFO] daisy: Machine paused.
+[17:42:14.5394]  [INFO] daisy: Machine resumed.
+[17:42:14.5394]  [INFO] daisy: Machine paused.
+[17:42:14.5394]  [INFO] daisy: Machine resumed.
+[17:42:14.5395]  [INFO] daisy: Machine paused.
+[17:42:14.5395]  [INFO] daisy: Machine resumed.
+[17:42:14.5395]  [INFO] daisy: Machine paused.
+[17:42:14.5395]  [INFO] daisy: Machine resumed.
+[17:42:14.5396]  [INFO] daisy: Machine paused.
+[17:42:14.5396]  [INFO] daisy: Machine resumed.
+[17:42:14.5397]  [INFO] daisy: Machine paused.
+[17:42:14.5397]  [INFO] daisy: Machine resumed.
+[17:42:14.5397]  [INFO] daisy: Machine paused.
+[17:42:14.5397]  [INFO] daisy: Machine resumed.
+[17:42:14.5398]  [INFO] daisy: Machine paused.
+[17:42:14.5398]  [INFO] daisy: Machine resumed.
+[17:42:14.5399]  [INFO] daisy: Machine paused.
+[17:42:14.5399]  [INFO] daisy: Machine resumed.
+[17:42:14.5399]  [INFO] daisy: Machine paused.
+[17:42:14.5399]  [INFO] daisy: Machine resumed.
+[17:42:14.5400]  [INFO] daisy: Machine paused.
+[17:42:14.5400]  [INFO] daisy: Machine resumed.
+[17:42:14.5400]  [INFO] daisy: Machine paused.
+[17:42:14.5401]  [INFO] daisy: Machine resumed.
+[17:42:14.5401]  [INFO] daisy: Machine paused.
+[17:42:14.5401]  [INFO] daisy: Machine resumed.
+[17:42:14.5402]  [INFO] daisy: Machine paused.
+[17:42:14.5402]  [INFO] daisy: Machine resumed.
+[17:42:14.5403]  [INFO] daisy: Machine paused.
+[17:42:14.5403]  [INFO] daisy: Machine resumed.
+[17:42:14.5403]  [INFO] daisy: Machine paused.
+[17:42:14.5403]  [INFO] daisy: Machine resumed.
+[17:42:14.5404]  [INFO] daisy: Machine paused.
+[17:42:14.5404]  [INFO] daisy: Machine resumed.
+[17:42:14.5405]  [INFO] daisy: Machine paused.
+[17:42:14.5405]  [INFO] daisy: Machine resumed.
+[17:42:14.5405]  [INFO] daisy: Machine paused.
+[17:42:14.5405]  [INFO] daisy: Machine resumed.
+[17:42:14.5406]  [INFO] daisy: Machine paused.
+[17:42:14.5406]  [INFO] daisy: Machine resumed.
+[17:42:14.5406]  [INFO] daisy: Machine paused.
+[17:42:14.5406]  [INFO] daisy: Machine resumed.
+[17:42:14.5407]  [INFO] daisy: Machine paused.
+[17:42:14.5407]  [INFO] daisy: Machine resumed.
+[17:42:14.5407]  [INFO] daisy: Machine paused.
+[17:42:14.5408]  [INFO] daisy: Machine resumed.
+[17:42:14.5408]  [INFO] daisy: Machine paused.
+[17:42:14.5408]  [INFO] daisy: Machine resumed.
+[17:42:14.5408]  [INFO] daisy: Machine paused.
+[17:42:14.5408]  [INFO] daisy: Machine resumed.
+[17:42:14.5409]  [INFO] daisy: Machine paused.
+[17:42:14.5409]  [INFO] daisy: Machine resumed.
+[17:42:14.5410]  [INFO] daisy: Machine paused.
+[17:42:14.5410]  [INFO] daisy: Machine resumed.
+[17:42:14.5410]  [INFO] daisy: Machine paused.
+[17:42:14.5410]  [INFO] daisy: Machine resumed.
+[17:42:14.5411]  [INFO] daisy: Machine paused.
+[17:42:14.5411]  [INFO] daisy: Machine resumed.
+[17:42:14.5411]  [INFO] daisy: Machine paused.
+[17:42:14.5411]  [INFO] daisy: Machine resumed.
+[17:42:14.5412]  [INFO] daisy: Machine paused.
+[17:42:14.5412]  [INFO] daisy: Machine resumed.
+[17:42:14.5412]  [INFO] daisy: Machine paused.
+[17:42:14.5412]  [INFO] daisy: Machine resumed.
+[17:42:14.5413]  [INFO] daisy: Machine paused.
+[17:42:14.5413]  [INFO] daisy: Machine resumed.
+[17:42:14.5414]  [INFO] daisy: Machine paused.
+[17:42:14.5414]  [INFO] daisy: Machine resumed.
+[17:42:14.5414]  [INFO] daisy: Machine paused.
+[17:42:14.5414]  [INFO] daisy: Machine resumed.
+[17:42:14.5415]  [INFO] daisy: Machine paused.
+[17:42:14.5415]  [INFO] daisy: Machine resumed.
+[17:42:14.5415]  [INFO] daisy: Machine paused.
+[17:42:14.5415]  [INFO] daisy: Machine resumed.
+[17:42:14.5416]  [INFO] daisy: Machine paused.
+[17:42:14.5416]  [INFO] daisy: Machine resumed.
+[17:42:14.5416]  [INFO] daisy: Machine paused.
+[17:42:14.5416]  [INFO] daisy: Machine resumed.
+[17:42:14.5417]  [INFO] daisy: Machine paused.
+[17:42:14.5417]  [INFO] daisy: Machine resumed.
+[17:42:14.5417]  [INFO] daisy: Machine paused.
+[17:42:14.5418]  [INFO] daisy: Machine resumed.
+[17:42:14.5418]  [INFO] daisy: Machine paused.
+[17:42:14.5418]  [INFO] daisy: Machine resumed.
+[17:42:14.5419]  [INFO] daisy: Machine paused.
+[17:42:14.5419]  [INFO] daisy: Machine resumed.
+[17:42:14.5419]  [INFO] daisy: Machine paused.
+[17:42:14.5419]  [INFO] daisy: Machine resumed.
+[17:42:14.5420]  [INFO] daisy: Machine paused.
+[17:42:14.5420]  [INFO] daisy: Machine resumed.
+[17:42:14.5421]  [INFO] daisy: Machine paused.
+[17:42:14.5421]  [INFO] daisy: Machine resumed.
+[17:42:14.5421]  [INFO] daisy: Machine paused.
+[17:42:14.5421]  [INFO] daisy: Machine resumed.
+[17:42:14.5422]  [INFO] daisy: Machine paused.
+[17:42:14.5422]  [INFO] daisy: Machine resumed.
+[17:42:14.5422]  [INFO] daisy: Machine paused.
+[17:42:14.5422]  [INFO] daisy: Machine resumed.
+[17:42:14.5423]  [INFO] daisy: Machine paused.
+[17:42:14.5423]  [INFO] daisy: Machine resumed.
+[17:42:14.5424]  [INFO] daisy: Machine paused.
+[17:42:14.5424]  [INFO] daisy: Machine resumed.
+[17:42:14.5425]  [INFO] daisy: Machine paused.
+[17:42:14.5425]  [INFO] daisy: Machine resumed.
+[17:42:14.5425]  [INFO] daisy: Machine paused.
+[17:42:14.5425]  [INFO] daisy: Machine resumed.
+[17:42:14.5426]  [INFO] daisy: Machine paused.
+[17:42:14.5426]  [INFO] daisy: Machine resumed.
+[17:42:14.5427]  [INFO] daisy: Machine paused.
+[17:42:14.5427]  [INFO] daisy: Machine resumed.
+[17:42:14.5427]  [INFO] daisy: Machine paused.
+[17:42:14.5427]  [INFO] daisy: Machine resumed.
+[17:42:14.5428]  [INFO] daisy: Machine paused.
+[17:42:14.5428]  [INFO] daisy: Machine resumed.
+[17:42:14.5428]  [INFO] daisy: Machine paused.
+[17:42:14.5428]  [INFO] daisy: Machine resumed.
+[17:42:14.5429]  [INFO] daisy: Machine paused.
+[17:42:14.5429]  [INFO] daisy: Machine resumed.
+[17:42:14.5429]  [INFO] daisy: Machine paused.
+[17:42:14.5429]  [INFO] daisy: Machine resumed.
+[17:42:14.5430]  [INFO] daisy: Machine paused.
+[17:42:14.5430]  [INFO] daisy: Machine resumed.
+[17:42:14.5431]  [INFO] daisy: Machine paused.
+[17:42:14.5431]  [INFO] daisy: Machine resumed.
+[17:42:14.5432]  [INFO] daisy: Machine paused.
+[17:42:14.5432]  [INFO] daisy: Machine resumed.
+[17:42:14.5433]  [INFO] daisy: Machine paused.
+[17:42:14.5433]  [INFO] daisy: Machine resumed.
+[17:42:14.5434]  [INFO] daisy: Machine paused.
+[17:42:14.5435]  [INFO] daisy: Machine resumed.
+[17:42:14.5435]  [INFO] daisy: Machine paused.
+[17:42:14.5435]  [INFO] daisy: Machine resumed.
+[17:42:14.5436]  [INFO] daisy: Machine paused.
+[17:42:14.5436]  [INFO] daisy: Machine resumed.
+[17:42:14.5436]  [INFO] daisy: Machine paused.
+[17:42:14.5437]  [INFO] daisy: Machine resumed.
+[17:42:14.5437]  [INFO] daisy: Machine paused.
+[17:42:14.5438]  [INFO] daisy: Machine resumed.
+[17:42:14.5438]  [INFO] daisy: Machine paused.
+[17:42:14.5439]  [INFO] daisy: Machine resumed.
+[17:42:14.5439]  [INFO] daisy: Machine paused.
+[17:42:14.5439]  [INFO] daisy: Machine resumed.
+[17:42:14.5440]  [INFO] daisy: Machine paused.
+[17:42:14.5440]  [INFO] daisy: Machine resumed.
+[17:42:14.5440]  [INFO] daisy: Machine paused.
+[17:42:14.5440]  [INFO] daisy: Machine resumed.
+[17:42:14.5441]  [INFO] daisy: Machine paused.
+[17:42:14.5441]  [INFO] daisy: Machine resumed.
+[17:42:14.5441]  [INFO] daisy: Machine paused.
+[17:42:14.5441]  [INFO] daisy: Machine resumed.
+[17:42:14.5442]  [INFO] daisy: Machine paused.
+[17:42:14.5442]  [INFO] daisy: Machine resumed.
+[17:42:14.5442]  [INFO] daisy: Machine paused.
+[17:42:14.5442]  [INFO] daisy: Machine resumed.
+[17:42:14.5443]  [INFO] daisy: Machine paused.
+[17:42:14.5443]  [INFO] daisy: Machine resumed.
+[17:42:14.5443]  [INFO] daisy: Machine paused.
+[17:42:14.5444]  [INFO] daisy: Machine resumed.
+[17:42:14.5444]  [INFO] daisy: Machine paused.
+[17:42:14.5444]  [INFO] daisy: Machine resumed.
+[17:42:14.5444]  [INFO] daisy: Machine paused.
+[17:42:14.5445]  [INFO] daisy: Machine resumed.
+[17:42:14.5445]  [INFO] daisy: Machine paused.
+[17:42:14.5445]  [INFO] daisy: Machine resumed.
+[17:42:14.5446]  [INFO] daisy: Machine paused.
+[17:42:14.5446]  [INFO] daisy: Machine resumed.
+[17:42:14.5447]  [INFO] daisy: Machine paused.
+[17:42:14.5447]  [INFO] daisy: Machine resumed.
+[17:42:14.5448]  [INFO] daisy: Machine paused.
+[17:42:14.5448]  [INFO] daisy: Machine resumed.
+[17:42:14.5448]  [INFO] daisy: Machine paused.
+[17:42:14.5448]  [INFO] daisy: Machine resumed.
+[17:42:14.5449]  [INFO] daisy: Machine paused.
+[17:42:14.5449]  [INFO] daisy: Machine resumed.
+[17:42:14.5450]  [INFO] daisy: Machine paused.
+[17:42:14.5450]  [INFO] daisy: Machine resumed.
+[17:42:14.5450]  [INFO] daisy: Machine paused.
+[17:42:14.5450]  [INFO] daisy: Machine resumed.
+[17:42:14.5451]  [INFO] daisy: Machine paused.
+[17:42:14.5451]  [INFO] daisy: Machine resumed.
+[17:42:14.5452]  [INFO] daisy: Machine paused.
+[17:42:14.5452]  [INFO] daisy: Machine resumed.
+[17:42:14.5455]  [INFO] daisy: Machine paused.
+[17:42:14.5455]  [INFO] daisy: Machine resumed.
+[17:42:14.5455]  [INFO] daisy: Machine paused.
+[17:42:14.5455]  [INFO] daisy: Machine resumed.
+[17:42:14.5456]  [INFO] daisy: Machine paused.
+[17:42:14.5456]  [INFO] daisy: Machine resumed.
+[17:42:14.5456]  [INFO] daisy: Machine paused.
+[17:42:14.5457]  [INFO] daisy: Machine resumed.
+[17:42:14.5457]  [INFO] daisy: Machine paused.
+[17:42:14.5457]  [INFO] daisy: Machine resumed.
+[17:42:14.5457]  [INFO] daisy: Machine paused.
+[17:42:14.5458]  [INFO] daisy: Machine resumed.
+[17:42:14.5458]  [INFO] daisy: Machine paused.
+[17:42:14.5458]  [INFO] daisy: Machine resumed.
+[17:42:14.5459]  [INFO] daisy: Machine paused.
+[17:42:14.5459]  [INFO] daisy: Machine resumed.
+[17:42:14.5459]  [INFO] daisy: Machine paused.
+[17:42:14.5459]  [INFO] daisy: Machine resumed.
+[17:42:14.5459]  [INFO] daisy: Machine paused.
+[17:42:14.5460]  [INFO] daisy: Machine resumed.
+[17:42:14.5460]  [INFO] daisy: Machine paused.
+[17:42:14.5460]  [INFO] daisy: Machine resumed.
+[17:42:14.5461]  [INFO] daisy: Machine paused.
+[17:42:14.5461]  [INFO] daisy: Machine resumed.
+[17:42:14.5461]  [INFO] daisy: Machine paused.
+[17:42:14.5461]  [INFO] daisy: Machine resumed.
+[17:42:14.5462]  [INFO] daisy: Machine paused.
+[17:42:14.5462]  [INFO] daisy: Machine resumed.
+[17:42:14.5462]  [INFO] daisy: Machine paused.
+[17:42:14.5462]  [INFO] daisy: Machine resumed.
+[17:42:14.5463]  [INFO] daisy: Machine paused.
+[17:42:14.5463]  [INFO] daisy: Machine resumed.
+[17:42:14.5463]  [INFO] daisy: Machine paused.
+[17:42:14.5463]  [INFO] daisy: Machine resumed.
+[17:42:14.5464]  [INFO] daisy: Machine paused.
+[17:42:14.5464]  [INFO] daisy: Machine resumed.
+[17:42:14.5464]  [INFO] daisy: Machine paused.
+[17:42:14.5465]  [INFO] daisy: Machine resumed.
+[17:42:14.5465]  [INFO] daisy: Machine paused.
+[17:42:14.5465]  [INFO] daisy: Machine resumed.
+[17:42:14.5466]  [INFO] daisy: Machine paused.
+[17:42:14.5466]  [INFO] daisy: Machine resumed.
+[17:42:14.5467]  [INFO] daisy: Machine paused.
+[17:42:14.5467]  [INFO] daisy: Machine resumed.
+[17:42:14.5467]  [INFO] daisy: Machine paused.
+[17:42:14.5467]  [INFO] daisy: Machine resumed.
+[17:42:14.5468]  [INFO] daisy: Machine paused.
+[17:42:14.5468]  [INFO] daisy: Machine resumed.
+[17:42:14.5468]  [INFO] daisy: Machine paused.
+[17:42:14.5469]  [INFO] daisy: Machine resumed.
+[17:42:14.5469]  [INFO] daisy: Machine paused.
+[17:42:14.5469]  [INFO] daisy: Machine resumed.
+[17:42:14.5470]  [INFO] daisy: Machine paused.
+[17:42:14.5470]  [INFO] daisy: Machine resumed.
+[17:42:14.5470]  [INFO] daisy: Machine paused.
+[17:42:14.5471]  [INFO] daisy: Machine resumed.
+[17:42:14.5471]  [INFO] daisy: Machine paused.
+[17:42:14.5471]  [INFO] daisy: Machine resumed.
+[17:42:14.5472]  [INFO] daisy: Machine paused.
+[17:42:14.5472]  [INFO] daisy: Machine resumed.
+[17:42:14.5473]  [INFO] daisy: Machine paused.
+[17:42:14.5473]  [INFO] daisy: Machine resumed.
+[17:42:14.5474]  [INFO] daisy: Machine paused.
+[17:42:14.5474]  [INFO] daisy: Machine resumed.
+[17:42:14.5475]  [INFO] daisy: Machine paused.
+[17:42:14.5475]  [INFO] daisy: Machine resumed.
+[17:42:14.5476]  [INFO] daisy: Machine paused.
+[17:42:14.5476]  [INFO] daisy: Machine resumed.
+[17:42:14.5476]  [INFO] daisy: Machine paused.
+[17:42:14.5476]  [INFO] daisy: Machine resumed.
+[17:42:14.5477]  [INFO] daisy: Machine paused.
+[17:42:14.5477]  [INFO] daisy: Machine resumed.
+[17:42:14.5478]  [INFO] daisy: Machine paused.
+[17:42:14.5478]  [INFO] daisy: Machine resumed.
+[17:42:14.5478]  [INFO] daisy: Machine paused.
+[17:42:14.5478]  [INFO] daisy: Machine resumed.
+[17:42:14.5479]  [INFO] daisy: Machine paused.
+[17:42:14.5479]  [INFO] daisy: Machine resumed.
+[17:42:14.5480]  [INFO] daisy: Machine paused.
+[17:42:14.5480]  [INFO] daisy: Machine resumed.
+[17:42:14.5480]  [INFO] daisy: Machine paused.
+[17:42:14.5480]  [INFO] daisy: Machine resumed.
+[17:42:14.5481]  [INFO] daisy: Machine paused.
+[17:42:14.5481]  [INFO] daisy: Machine resumed.
+[17:42:14.5482]  [INFO] daisy: Machine paused.
+[17:42:14.5482]  [INFO] daisy: Machine resumed.
+[17:42:14.5482]  [INFO] daisy: Machine paused.
+[17:42:14.5482]  [INFO] daisy: Machine resumed.
+[17:42:14.5483]  [INFO] daisy: Machine paused.
+[17:42:14.5483]  [INFO] daisy: Machine resumed.
+[17:42:14.5484]  [INFO] daisy: Machine paused.
+[17:42:14.5484]  [INFO] daisy: Machine resumed.
+[17:42:14.5484]  [INFO] daisy: Machine paused.
+[17:42:14.5484]  [INFO] daisy: Machine resumed.
+[17:42:14.5485]  [INFO] daisy: Machine paused.
+[17:42:14.5485]  [INFO] daisy: Machine resumed.
+[17:42:14.5486]  [INFO] daisy: Machine paused.
+[17:42:14.5486]  [INFO] daisy: Machine resumed.
+[17:42:14.5486]  [INFO] daisy: Machine paused.
+[17:42:14.5486]  [INFO] daisy: Machine resumed.
+[17:42:14.5487]  [INFO] daisy: Machine paused.
+[17:42:14.5487]  [INFO] daisy: Machine resumed.
+[17:42:14.5488]  [INFO] daisy: Machine paused.
+[17:42:14.5488]  [INFO] daisy: Machine resumed.
+[17:42:14.5488]  [INFO] daisy: Machine paused.
+[17:42:14.5488]  [INFO] daisy: Machine resumed.
+[17:42:14.5489]  [INFO] daisy: Machine paused.
+[17:42:14.5489]  [INFO] daisy: Machine resumed.
+[17:42:14.5490]  [INFO] daisy: Machine paused.
+[17:42:14.5490]  [INFO] daisy: Machine resumed.
+[17:42:14.5490]  [INFO] daisy: Machine paused.
+[17:42:14.5490]  [INFO] daisy: Machine resumed.
+[17:42:14.5491]  [INFO] daisy: Machine paused.
+[17:42:14.5491]  [INFO] daisy: Machine resumed.
+[17:42:14.5492]  [INFO] daisy: Machine paused.
+[17:42:14.5492]  [INFO] daisy: Machine resumed.
+[17:42:14.5492]  [INFO] daisy: Machine paused.
+[17:42:14.5493]  [INFO] daisy: Machine resumed.
+[17:42:14.5493]  [INFO] daisy: Machine paused.
+[17:42:14.5493]  [INFO] daisy: Machine resumed.
+[17:42:14.5494]  [INFO] daisy: Machine paused.
+[17:42:14.5494]  [INFO] daisy: Machine resumed.
+[17:42:14.5494]  [INFO] daisy: Machine paused.
+[17:42:14.5494]  [INFO] daisy: Machine resumed.
+[17:42:14.5495]  [INFO] daisy: Machine paused.
+[17:42:14.5495]  [INFO] daisy: Machine resumed.
+[17:42:14.5496]  [INFO] daisy: Machine paused.
+[17:42:14.5496]  [INFO] daisy: Machine resumed.
+[17:42:14.5496]  [INFO] daisy: Machine paused.
+[17:42:14.5496]  [INFO] daisy: Machine resumed.
+[17:42:14.5497]  [INFO] daisy: Machine paused.
+[17:42:14.5497]  [INFO] daisy: Machine resumed.
+[17:42:14.5497]  [INFO] daisy: Machine paused.
+[17:42:14.5497]  [INFO] daisy: Machine resumed.
+[17:42:14.5498]  [INFO] daisy: Machine paused.
+[17:42:14.5498]  [INFO] daisy: Machine resumed.
+[17:42:14.5498]  [INFO] daisy: Machine paused.
+[17:42:14.5498]  [INFO] daisy: Machine resumed.
+[17:42:14.5499]  [INFO] daisy: Machine paused.
+[17:42:14.5499]  [INFO] daisy: Machine resumed.
+[17:42:14.5499]  [INFO] daisy: Machine paused.
+[17:42:14.5499]  [INFO] daisy: Machine resumed.
+[17:42:14.5500]  [INFO] daisy: Machine paused.
+[17:42:14.5500]  [INFO] daisy: Machine resumed.
+[17:42:14.5500]  [INFO] daisy: Machine paused.
+[17:42:14.5501]  [INFO] daisy: Machine resumed.
+[17:42:14.5501]  [INFO] daisy: Machine paused.
+[17:42:14.5501]  [INFO] daisy: Machine resumed.
+[17:42:14.5502]  [INFO] daisy: Machine paused.
+[17:42:14.5502]  [INFO] daisy: Machine resumed.
+[17:42:14.5503]  [INFO] daisy: Machine paused.
+[17:42:14.5503]  [INFO] daisy: Machine resumed.
+[17:42:14.5503]  [INFO] daisy: Machine paused.
+[17:42:14.5503]  [INFO] daisy: Machine resumed.
+[17:42:14.5505]  [INFO] daisy: Machine paused.
+[17:42:14.5505]  [INFO] daisy: Machine resumed.
+[17:42:14.5507]  [INFO] daisy: Machine paused.
+[17:42:14.5507]  [INFO] daisy: Machine resumed.
+[17:42:14.5508]  [INFO] daisy: Machine paused.
+[17:42:14.5508]  [INFO] daisy: Machine resumed.
+[17:42:14.5508]  [INFO] daisy: Machine paused.
+[17:42:14.5508]  [INFO] daisy: Machine resumed.
+[17:42:14.5509]  [INFO] daisy: Machine paused.
+[17:42:14.5509]  [INFO] daisy: Machine resumed.
+[17:42:14.5509]  [INFO] daisy: Machine paused.
+[17:42:14.5509]  [INFO] daisy: Machine resumed.
+[17:42:14.5510]  [INFO] daisy: Machine paused.
+[17:42:14.5510]  [INFO] daisy: Machine resumed.
+[17:42:14.5510]  [INFO] daisy: Machine paused.
+[17:42:14.5510]  [INFO] daisy: Machine resumed.
+[17:42:14.5511]  [INFO] daisy: Machine paused.
+[17:42:14.5511]  [INFO] daisy: Machine resumed.
+[17:42:14.5512]  [INFO] daisy: Machine paused.
+[17:42:14.5512]  [INFO] daisy: Machine resumed.
+[17:42:14.5512]  [INFO] daisy: Machine paused.
+[17:42:14.5512]  [INFO] daisy: Machine resumed.
+[17:42:14.5513]  [INFO] daisy: Machine paused.
+[17:42:14.5513]  [INFO] daisy: Machine resumed.
+[17:42:14.5513]  [INFO] daisy: Machine paused.
+[17:42:14.5513]  [INFO] daisy: Machine resumed.
+[17:42:14.5514]  [INFO] daisy: Machine paused.
+[17:42:14.5514]  [INFO] daisy: Machine resumed.
+[17:42:14.5514]  [INFO] daisy: Machine paused.
+[17:42:14.5514]  [INFO] daisy: Machine resumed.
+[17:42:14.5515]  [INFO] daisy: Machine paused.
+[17:42:14.5515]  [INFO] daisy: Machine resumed.
+[17:42:14.5515]  [INFO] daisy: Machine paused.
+[17:42:14.5515]  [INFO] daisy: Machine resumed.
+[17:42:14.5516]  [INFO] daisy: Machine paused.
+[17:42:14.5516]  [INFO] daisy: Machine resumed.
+[17:42:14.5516]  [INFO] daisy: Machine paused.
+[17:42:14.5516]  [INFO] daisy: Machine resumed.
+[17:42:14.5517]  [INFO] daisy: Machine paused.
+[17:42:14.5517]  [INFO] daisy: Machine resumed.
+[17:42:14.5517]  [INFO] daisy: Machine paused.
+[17:42:14.5518]  [INFO] daisy: Machine resumed.
+[17:42:14.5518]  [INFO] daisy: Machine paused.
+[17:42:14.5518]  [INFO] daisy: Machine resumed.
+[17:42:14.5519]  [INFO] daisy: Machine paused.
+[17:42:14.5519]  [INFO] daisy: Machine resumed.
+[17:42:14.5519]  [INFO] daisy: Machine paused.
+[17:42:14.5519]  [INFO] daisy: Machine resumed.
+[17:42:14.5520]  [INFO] daisy: Machine paused.
+[17:42:14.5520]  [INFO] daisy: Machine resumed.
+[17:42:14.5520]  [INFO] daisy: Machine paused.
+[17:42:14.5520]  [INFO] daisy: Machine resumed.
+[17:42:14.5521]  [INFO] daisy: Machine paused.
+[17:42:14.5521]  [INFO] daisy: Machine resumed.
+[17:42:14.5521]  [INFO] daisy: Machine paused.
+[17:42:14.5521]  [INFO] daisy: Machine resumed.
+[17:42:14.5522]  [INFO] daisy: Machine paused.
+[17:42:14.5522]  [INFO] daisy: Machine resumed.
+[17:42:14.5522]  [INFO] daisy: Machine paused.
+[17:42:14.5522]  [INFO] daisy: Machine resumed.
+[17:42:14.5523]  [INFO] daisy: Machine paused.
+[17:42:14.5523]  [INFO] daisy: Machine resumed.
+[17:42:14.5523]  [INFO] daisy: Machine paused.
+[17:42:14.5523]  [INFO] daisy: Machine resumed.
+[17:42:14.5524]  [INFO] daisy: Machine paused.
+[17:42:14.5524]  [INFO] daisy: Machine resumed.
+[17:42:14.5525]  [INFO] daisy: Machine paused.
+[17:42:14.5525]  [INFO] daisy: Machine resumed.
+[17:42:14.5525]  [INFO] daisy: Machine paused.
+[17:42:14.5525]  [INFO] daisy: Machine resumed.
+[17:42:14.5526]  [INFO] daisy: Machine paused.
+[17:42:14.5526]  [INFO] daisy: Machine resumed.
+[17:42:14.5527]  [INFO] daisy: Machine paused.
+[17:42:14.5527]  [INFO] daisy: Machine resumed.
+[17:42:14.5528]  [INFO] daisy: Machine paused.
+[17:42:14.5528]  [INFO] daisy: Machine resumed.
+[17:42:14.5528]  [INFO] daisy: Machine paused.
+[17:42:14.5528]  [INFO] daisy: Machine resumed.
+[17:42:14.5529]  [INFO] daisy: Machine paused.
+[17:42:14.5529]  [INFO] daisy: Machine resumed.
+[17:42:14.5529]  [INFO] daisy: Machine paused.
+[17:42:14.5529]  [INFO] daisy: Machine resumed.
+[17:42:14.5530]  [INFO] daisy: Machine paused.
+[17:42:14.5530]  [INFO] daisy: Machine resumed.
+[17:42:14.5530]  [INFO] daisy: Machine paused.
+[17:42:14.5530]  [INFO] daisy: Machine resumed.
+[17:42:14.5531]  [INFO] daisy: Machine paused.
+[17:42:14.5531]  [INFO] daisy: Machine resumed.
+[17:42:14.5532]  [INFO] daisy: Machine paused.
+[17:42:14.5532]  [INFO] daisy: Machine resumed.
+[17:42:14.5532]  [INFO] daisy: Machine paused.
+[17:42:14.5532]  [INFO] daisy: Machine resumed.
+[17:42:14.5533]  [INFO] daisy: Machine paused.
+[17:42:14.5533]  [INFO] daisy: Machine resumed.
+[17:42:14.5533]  [INFO] daisy: Machine paused.
+[17:42:14.5533]  [INFO] daisy: Machine resumed.
+[17:42:14.5534]  [INFO] daisy: Machine paused.
+[17:42:14.5534]  [INFO] daisy: Machine resumed.
+[17:42:14.5534]  [INFO] daisy: Machine paused.
+[17:42:14.5534]  [INFO] daisy: Machine resumed.
+[17:42:14.5535]  [INFO] daisy: Machine paused.
+[17:42:14.5535]  [INFO] daisy: Machine resumed.
+[17:42:14.5537]  [INFO] daisy: Machine paused.
+[17:42:14.5537]  [INFO] daisy: Machine resumed.
+[17:42:14.5538]  [INFO] daisy: Machine paused.
+[17:42:14.5538]  [INFO] daisy: Machine resumed.
+[17:42:14.5539]  [INFO] daisy: Machine paused.
+[17:42:14.5539]  [INFO] daisy: Machine resumed.
+[17:42:14.5539]  [INFO] daisy: Machine paused.
+[17:42:14.5539]  [INFO] daisy: Machine resumed.
+[17:42:14.5540]  [INFO] daisy: Machine paused.
+[17:42:14.5540]  [INFO] daisy: Machine resumed.
+[17:42:14.5541]  [INFO] daisy: Machine paused.
+[17:42:14.5541]  [INFO] daisy: Machine resumed.
+[17:42:14.5541]  [INFO] daisy: Machine paused.
+[17:42:14.5542]  [INFO] daisy: Machine resumed.
+[17:42:14.5542]  [INFO] daisy: Machine paused.
+[17:42:14.5542]  [INFO] daisy: Machine resumed.
+[17:42:14.5543]  [INFO] daisy: Machine paused.
+[17:42:14.5543]  [INFO] daisy: Machine resumed.
+[17:42:14.5543]  [INFO] daisy: Machine paused.
+[17:42:14.5543]  [INFO] daisy: Machine resumed.
+[17:42:14.5544]  [INFO] daisy: Machine paused.
+[17:42:14.5544]  [INFO] daisy: Machine resumed.
+[17:42:14.5545]  [INFO] daisy: Machine paused.
+[17:42:14.5545]  [INFO] daisy: Machine resumed.
+[17:42:14.5545]  [INFO] daisy: Machine paused.
+[17:42:14.5545]  [INFO] daisy: Machine resumed.
+[17:42:14.5546]  [INFO] daisy: Machine paused.
+[17:42:14.5546]  [INFO] daisy: Machine resumed.
+[17:42:14.5546]  [INFO] daisy: Machine paused.
+[17:42:14.5546]  [INFO] daisy: Machine resumed.
+[17:42:14.5547]  [INFO] daisy: Machine paused.
+[17:42:14.5547]  [INFO] daisy: Machine resumed.
+[17:42:14.5547]  [INFO] daisy: Machine paused.
+[17:42:14.5548]  [INFO] daisy: Machine resumed.
+[17:42:14.5548]  [INFO] daisy: Machine paused.
+[17:42:14.5548]  [INFO] daisy: Machine resumed.
+[17:42:14.5549]  [INFO] daisy: Machine paused.
+[17:42:14.5549]  [INFO] daisy: Machine resumed.
+[17:42:14.5549]  [INFO] daisy: Machine paused.
+[17:42:14.5549]  [INFO] daisy: Machine resumed.
+[17:42:14.5550]  [INFO] daisy: Machine paused.
+[17:42:14.5550]  [INFO] daisy: Machine resumed.
+[17:42:14.5550]  [INFO] daisy: Machine paused.
+[17:42:14.5551]  [INFO] daisy: Machine resumed.
+[17:42:14.5551]  [INFO] daisy: Machine paused.
+[17:42:14.5551]  [INFO] daisy: Machine resumed.
+[17:42:14.5552]  [INFO] daisy: Machine paused.
+[17:42:14.5552]  [INFO] daisy: Machine resumed.
+[17:42:14.5553]  [INFO] daisy: Machine paused.
+[17:42:14.5553]  [INFO] daisy: Machine resumed.
+[17:42:14.5553]  [INFO] daisy: Machine paused.
+[17:42:14.5553]  [INFO] daisy: Machine resumed.
+[17:42:14.5555]  [INFO] daisy: Machine paused.
+[17:42:14.5555]  [INFO] daisy: Machine resumed.
+[17:42:14.5555]  [INFO] daisy: Machine paused.
+[17:42:14.5555]  [INFO] daisy: Machine resumed.
+[17:42:14.5556]  [INFO] daisy: Machine paused.
+[17:42:14.5556]  [INFO] daisy: Machine resumed.
+[17:42:14.5556]  [INFO] daisy: Machine paused.
+[17:42:14.5556]  [INFO] daisy: Machine resumed.
+[17:42:14.5557]  [INFO] daisy: Machine paused.
+[17:42:14.5557]  [INFO] daisy: Machine resumed.
+[17:42:14.5557]  [INFO] daisy: Machine paused.
+[17:42:14.5557]  [INFO] daisy: Machine resumed.
+[17:42:14.5558]  [INFO] daisy: Machine paused.
+[17:42:14.5558]  [INFO] daisy: Machine resumed.
+[17:42:14.5558]  [INFO] daisy: Machine paused.
+[17:42:14.5558]  [INFO] daisy: Machine resumed.
+[17:42:14.5559]  [INFO] daisy: Machine paused.
+[17:42:14.5559]  [INFO] daisy: Machine resumed.
+[17:42:14.5560]  [INFO] daisy: Machine paused.
+[17:42:14.5560]  [INFO] daisy: Machine resumed.
+[17:42:14.5560]  [INFO] daisy: Machine paused.
+[17:42:14.5560]  [INFO] daisy: Machine resumed.
+[17:42:14.5560]  [INFO] daisy: Machine paused.
+[17:42:14.5561]  [INFO] daisy: Machine resumed.
+[17:42:14.5561]  [INFO] daisy: Machine paused.
+[17:42:14.5561]  [INFO] daisy: Machine resumed.
+[17:42:14.5562]  [INFO] daisy: Machine paused.
+[17:42:14.5562]  [INFO] daisy: Machine resumed.
+[17:42:14.5562]  [INFO] daisy: Machine paused.
+[17:42:14.5562]  [INFO] daisy: Machine resumed.
+[17:42:14.5563]  [INFO] daisy: Machine paused.
+[17:42:14.5563]  [INFO] daisy: Machine resumed.
+[17:42:14.5563]  [INFO] daisy: Machine paused.
+[17:42:14.5563]  [INFO] daisy: Machine resumed.
+[17:42:14.5564]  [INFO] daisy: Machine paused.
+[17:42:14.5564]  [INFO] daisy: Machine resumed.
+[17:42:14.5564]  [INFO] daisy: Machine paused.
+[17:42:14.5564]  [INFO] daisy: Machine resumed.
+[17:42:14.5565]  [INFO] daisy: Machine paused.
+[17:42:14.5565]  [INFO] daisy: Machine resumed.
+[17:42:14.5565]  [INFO] daisy: Machine paused.
+[17:42:14.5565]  [INFO] daisy: Machine resumed.
+[17:42:14.5566]  [INFO] daisy: Machine paused.
+[17:42:14.5566]  [INFO] daisy: Machine resumed.
+[17:42:14.5566]  [INFO] daisy: Machine paused.
+[17:42:14.5566]  [INFO] daisy: Machine resumed.
+[17:42:14.5567]  [INFO] daisy: Machine paused.
+[17:42:14.5567]  [INFO] daisy: Machine resumed.
+[17:42:14.5567]  [INFO] daisy: Machine paused.
+[17:42:14.5567]  [INFO] daisy: Machine resumed.
+[17:42:14.5568]  [INFO] daisy: Machine paused.
+[17:42:14.5568]  [INFO] daisy: Machine resumed.
+[17:42:14.5568]  [INFO] daisy: Machine paused.
+[17:42:14.5568]  [INFO] daisy: Machine resumed.
+[17:42:14.5569]  [INFO] daisy: Machine paused.
+[17:42:14.5569]  [INFO] daisy: Machine resumed.
+[17:42:14.5569]  [INFO] daisy: Machine paused.
+[17:42:14.5569]  [INFO] daisy: Machine resumed.
+[17:42:14.5570]  [INFO] daisy: Machine paused.
+[17:42:14.5570]  [INFO] daisy: Machine resumed.
+[17:42:14.5570]  [INFO] daisy: Machine paused.
+[17:42:14.5570]  [INFO] daisy: Machine resumed.
+[17:42:14.5571]  [INFO] daisy: Machine paused.
+[17:42:14.5571]  [INFO] daisy: Machine resumed.
+[17:42:14.5571]  [INFO] daisy: Machine paused.
+[17:42:14.5571]  [INFO] daisy: Machine resumed.
+[17:42:14.5572]  [INFO] daisy: Machine paused.
+[17:42:14.5572]  [INFO] daisy: Machine resumed.
+[17:42:14.5572]  [INFO] daisy: Machine paused.
+[17:42:14.5572]  [INFO] daisy: Machine resumed.
+[17:42:14.5573]  [INFO] daisy: Machine paused.
+[17:42:14.5573]  [INFO] daisy: Machine resumed.
+[17:42:14.5573]  [INFO] daisy: Machine paused.
+[17:42:14.5574]  [INFO] daisy: Machine resumed.
+[17:42:14.5574]  [INFO] daisy: Machine paused.
+[17:42:14.5574]  [INFO] daisy: Machine resumed.
+[17:42:14.5575]  [INFO] daisy: Machine paused.
+[17:42:14.5575]  [INFO] daisy: Machine resumed.
+[17:42:14.5575]  [INFO] daisy: Machine paused.
+[17:42:14.5575]  [INFO] daisy: Machine resumed.
+[17:42:14.5576]  [INFO] daisy: Machine paused.
+[17:42:14.5576]  [INFO] daisy: Machine resumed.
+[17:42:14.5576]  [INFO] daisy: Machine paused.
+[17:42:14.5576]  [INFO] daisy: Machine resumed.
+[17:42:14.5577]  [INFO] daisy: Machine paused.
+[17:42:14.5577]  [INFO] daisy: Machine resumed.
+[17:42:14.5577]  [INFO] daisy: Machine paused.
+[17:42:14.5577]  [INFO] daisy: Machine resumed.
+[17:42:14.5578]  [INFO] daisy: Machine paused.
+[17:42:14.5578]  [INFO] daisy: Machine resumed.
+[17:42:14.5578]  [INFO] daisy: Machine paused.
+[17:42:14.5578]  [INFO] daisy: Machine resumed.
+[17:42:14.5579]  [INFO] daisy: Machine paused.
+[17:42:14.5579]  [INFO] daisy: Machine resumed.
+[17:42:14.5579]  [INFO] daisy: Machine paused.
+[17:42:14.5579]  [INFO] daisy: Machine resumed.
+[17:42:14.5580]  [INFO] daisy: Machine paused.
+[17:42:14.5580]  [INFO] daisy: Machine resumed.
+[17:42:14.5580]  [INFO] daisy: Machine paused.
+[17:42:14.5581]  [INFO] daisy: Machine resumed.
+[17:42:14.5581]  [INFO] daisy: Machine paused.
+[17:42:14.5581]  [INFO] daisy: Machine resumed.
+[17:42:14.5581]  [INFO] daisy: Machine paused.
+[17:42:14.5581]  [INFO] daisy: Machine resumed.
+[17:42:14.5582]  [INFO] daisy: Machine paused.
+[17:42:14.5582]  [INFO] daisy: Machine resumed.
+[17:42:14.5583]  [INFO] daisy: Machine paused.
+[17:42:14.5583]  [INFO] daisy: Machine resumed.
+[17:42:14.5583]  [INFO] daisy: Machine paused.
+[17:42:14.5583]  [INFO] daisy: Machine resumed.
+[17:42:14.5584]  [INFO] daisy: Machine paused.
+[17:42:14.5584]  [INFO] daisy: Machine resumed.
+[17:42:14.5584]  [INFO] daisy: Machine paused.
+[17:42:14.5584]  [INFO] daisy: Machine resumed.
+[17:42:14.5585]  [INFO] daisy: Machine paused.
+[17:42:14.5585]  [INFO] daisy: Machine resumed.
+[17:42:14.5585]  [INFO] daisy: Machine paused.
+[17:42:14.5585]  [INFO] daisy: Machine resumed.
+[17:42:14.5586]  [INFO] daisy: Machine paused.
+[17:42:14.5586]  [INFO] daisy: Machine resumed.
+[17:42:14.5586]  [INFO] daisy: Machine paused.
+[17:42:14.5587]  [INFO] daisy: Machine resumed.
+[17:42:14.5587]  [INFO] daisy: Machine paused.
+[17:42:14.5587]  [INFO] daisy: Machine resumed.
+[17:42:14.5588]  [INFO] daisy: Machine paused.
+[17:42:14.5588]  [INFO] daisy: Machine resumed.
+[17:42:14.5588]  [INFO] daisy: Machine paused.
+[17:42:14.5588]  [INFO] daisy: Machine resumed.
+[17:42:14.5589]  [INFO] daisy: Machine paused.
+[17:42:14.5589]  [INFO] daisy: Machine resumed.
+[17:42:14.5589]  [INFO] daisy: Machine paused.
+[17:42:14.5589]  [INFO] daisy: Machine resumed.
+[17:42:14.5590]  [INFO] daisy: Machine paused.
+[17:42:14.5590]  [INFO] daisy: Machine resumed.
+[17:42:14.5590]  [INFO] daisy: Machine paused.
+[17:42:14.5591]  [INFO] daisy: Machine resumed.
+[17:42:14.5591]  [INFO] daisy: Machine paused.
+[17:42:14.5591]  [INFO] daisy: Machine resumed.
+[17:42:14.5592]  [INFO] daisy: Machine paused.
+[17:42:14.5592]  [INFO] daisy: Machine resumed.
+[17:42:14.5592]  [INFO] daisy: Machine paused.
+[17:42:14.5592]  [INFO] daisy: Machine resumed.
+[17:42:14.5593]  [INFO] daisy: Machine paused.
+[17:42:14.5593]  [INFO] daisy: Machine resumed.
+[17:42:14.5593]  [INFO] daisy: Machine paused.
+[17:42:14.5593]  [INFO] daisy: Machine resumed.
+[17:42:14.5594]  [INFO] daisy: Machine paused.
+[17:42:14.5594]  [INFO] daisy: Machine resumed.
+[17:42:14.5594]  [INFO] daisy: Machine paused.
+[17:42:14.5594]  [INFO] daisy: Machine resumed.
+[17:42:14.5595]  [INFO] daisy: Machine paused.
+[17:42:14.5595]  [INFO] daisy: Machine resumed.
+[17:42:14.5597]  [INFO] daisy: Machine paused.
+[17:42:14.5597]  [INFO] daisy: Machine resumed.
+[17:42:14.5597]  [INFO] daisy: Machine paused.
+[17:42:14.5598]  [INFO] daisy: Machine resumed.
+[17:42:14.5598]  [INFO] daisy: Machine paused.
+[17:42:14.5598]  [INFO] daisy: Machine resumed.
+[17:42:14.5599]  [INFO] daisy: Machine paused.
+[17:42:14.5599]  [INFO] daisy: Machine resumed.
+[17:42:14.5599]  [INFO] daisy: Machine paused.
+[17:42:14.5599]  [INFO] daisy: Machine resumed.
+[17:42:14.5600]  [INFO] daisy: Machine paused.
+[17:42:14.5600]  [INFO] daisy: Machine resumed.
+[17:42:14.5600]  [INFO] daisy: Machine paused.
+[17:42:14.5600]  [INFO] daisy: Machine resumed.
+[17:42:14.5601]  [INFO] daisy: Machine paused.
+[17:42:14.5601]  [INFO] daisy: Machine resumed.
+[17:42:14.5601]  [INFO] daisy: Machine paused.
+[17:42:14.5602]  [INFO] daisy: Machine resumed.
+[17:42:14.5602]  [INFO] daisy: Machine paused.
+[17:42:14.5602]  [INFO] daisy: Machine resumed.
+[17:42:14.5603]  [INFO] daisy: Machine paused.
+[17:42:14.5603]  [INFO] daisy: Machine resumed.
+[17:42:14.5603]  [INFO] daisy: Machine paused.
+[17:42:14.5603]  [INFO] daisy: Machine resumed.
+[17:42:14.5604]  [INFO] daisy: Machine paused.
+[17:42:14.5604]  [INFO] daisy: Machine resumed.
+[17:42:14.5604]  [INFO] daisy: Machine paused.
+[17:42:14.5604]  [INFO] daisy: Machine resumed.
+[17:42:14.5605]  [INFO] daisy: Machine paused.
+[17:42:14.5605]  [INFO] daisy: Machine resumed.
+[17:42:14.5605]  [INFO] daisy: Machine paused.
+[17:42:14.5605]  [INFO] daisy: Machine resumed.
+[17:42:14.5609]  [INFO] daisy: Machine paused.
+[17:42:14.5609]  [INFO] daisy: Machine resumed.
+[17:42:14.9180]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10000. Tags: DISCEN (0x1).
+[17:42:15.9825]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:42:15.9825]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (1584)
+[17:42:15.9825]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (5043)
+[17:42:15.9825]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (28)
+[17:42:16.6927]  [WARNING] i2c1: Unhandled write to offset 0x10. Unhandled bits: [2, 5, 10, 13, 16-17, 21-23, 28-31] when writing value 0xF0E32424. Tags: SCLL (0x24), SCLH (0x24), SDADEL (0x3), SCLDEL (0xE), PRESC (0xF).
+[17:42:17.0664]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:42:17.0664]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (207)
+[17:42:17.0664]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (416)
+[17:42:17.0664]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (104)
+[17:42:17.0664]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (208)
+[17:42:17.0664]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (116)
+[17:42:17.0664]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (104)
+[17:42:17.0664]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (91)
+[17:42:17.0664]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (221)
+[17:42:17.0664]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (749)
+[17:42:17.0664]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (719)
+[17:42:21.6264]  [INFO] daisy: Machine paused.
+[17:42:21.6282]  [INFO] daisy: Machine resumed.
+[17:42:21.6373]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:42:21.6373]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (1051)
+[17:42:21.6373]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (1260)
+[17:42:21.6373]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (844)
+[17:42:23.0016]  [INFO] daisy: Machine paused.
+[17:42:23.0020]  [INFO] daisy: Machine resumed.
+[17:42:23.0095]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:42:23.0095]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (739)
+[17:42:23.0095]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (312)
+[17:42:23.8141]  [INFO] daisy: Machine paused.
+[17:42:23.8144]  [INFO] daisy: Machine resumed.
+[17:42:23.8573]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:42:23.8573]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (427)
+[17:42:23.8573]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (464)
+[17:42:23.8573]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (160)
+[17:42:25.0258]  [INFO] daisy: Machine paused.
+[17:42:25.0261]  [INFO] daisy: Machine resumed.
+[17:42:25.0774]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:42:25.0774]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (427)
+[17:42:25.0774]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (416)
+[17:42:25.0774]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (208)
+[17:42:26.2752]  [INFO] daisy: Machine paused.
+[17:42:26.2754]  [INFO] daisy: Machine resumed.
+[17:42:26.3208]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:42:26.3208]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (531)
+[17:42:26.3208]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (312)
+[17:42:26.3208]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (208)
+[17:42:27.6156]  [INFO] daisy: Machine paused.
+[17:42:27.6159]  [INFO] daisy: Machine resumed.
+[17:42:27.6714]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:42:27.6714]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (323)
+[17:42:27.6714]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (520)
+[17:42:27.6714]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (208)
+[17:42:28.8811]  [INFO] daisy: Machine paused.
+[17:42:28.8814]  [INFO] daisy: Machine resumed.
+[17:42:28.9248]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:42:28.9248]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (427)
+[17:42:28.9248]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (520)
+[17:42:28.9248]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (104)
+[17:42:30.0601]  [INFO] daisy: Machine paused.
+[17:42:30.0603]  [INFO] daisy: Machine resumed.
+[17:42:30.1000]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:42:30.1000]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (531)
+[17:42:30.1000]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (416)
+[17:42:30.1000]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (104)
+[17:42:31.2147]  [INFO] daisy: Machine paused.
+[17:42:31.2150]  [INFO] daisy: Machine resumed.
+[17:42:31.2575]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:42:31.2575]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (531)
+[17:42:31.2575]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (416)
+[17:42:31.2575]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (104)
+[17:42:32.2812]  [INFO] daisy: Machine paused.
+[17:42:32.2814]  [INFO] daisy: Machine resumed.
+[17:42:32.3228]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:42:32.3228]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (427)
+[17:42:32.3228]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (520)
+[17:42:32.3228]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (104)
+[17:42:33.4469]  [INFO] daisy: Machine paused.
+[17:42:33.4471]  [INFO] daisy: Machine resumed.
+[17:42:33.4897]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:42:33.4897]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (427)
+[17:42:33.4897]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (520)
+[17:42:33.4897]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (104)
+[17:42:34.6561]  [INFO] daisy: Machine paused.
+[17:42:34.6562]  [INFO] daisy: Machine resumed.
+[17:42:34.7004]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:42:34.7004]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (323)
+[17:42:34.7004]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (416)
+[17:42:34.7004]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (312)
+[17:42:36.0552]  [INFO] daisy: Machine paused.
+[17:42:36.0554]  [INFO] daisy: Machine resumed.
+[17:42:36.0947]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:42:36.0947]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (531)
+[17:42:36.0947]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (416)
+[17:42:36.0947]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (104)
+[17:42:37.2113]  [INFO] daisy: Machine paused.
+[17:42:37.2115]  [INFO] daisy: Machine resumed.
+[17:42:37.3136]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:42:37.3136]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (427)
+[17:42:37.3136]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (520)
+[17:42:37.3136]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (104)
+[17:42:38.3175]  [INFO] daisy: Machine paused.
+[17:42:38.3179]  [INFO] daisy: Machine resumed.
+[17:42:38.3547]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:42:38.3547]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (531)
+[17:42:38.3547]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (416)
+[17:42:38.3547]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (104)
+[17:42:39.5172]  [INFO] daisy: Machine paused.
+[17:42:39.5175]  [INFO] daisy: Machine resumed.
+[17:42:39.5872]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:42:39.5872]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (323)
+[17:42:39.5872]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (208)
+[17:42:39.5872]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (416)
+[17:42:39.5872]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (104)
+[17:42:41.1885]  [INFO] daisy: Machine paused.
+[17:42:41.1888]  [INFO] daisy: Machine resumed.
+[17:42:41.2291]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:42:41.2291]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (531)
+[17:42:41.2291]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (520)
+[17:42:42.1957]  [INFO] daisy: Machine paused.
+[17:42:42.1958]  [INFO] daisy: Machine resumed.
+[17:42:42.2830]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:42:42.2830]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (531)
+[17:42:42.2830]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (416)
+[17:42:42.2830]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (104)
+[17:42:43.2443]  [INFO] daisy: Machine paused.
+[17:42:43.2445]  [INFO] daisy: Machine resumed.
+[17:42:43.2820]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:42:43.2820]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (427)
+[17:42:43.2820]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (520)
+[17:42:43.2820]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (104)
+[17:42:44.3611]  [INFO] daisy: Machine paused.
+[17:42:44.3613]  [INFO] daisy: Machine resumed.
+[17:42:44.4007]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:42:44.4007]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (531)
+[17:42:44.4007]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (416)
+[17:42:44.4007]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (104)
+[17:42:45.4588]  [INFO] daisy: Machine paused.
+[17:42:45.4589]  [INFO] daisy: Machine resumed.
+[17:42:45.4971]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:42:45.4971]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (531)
+[17:42:45.4971]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (520)
+[17:42:46.5028]  [INFO] daisy: Machine paused.
+[17:42:46.5029]  [INFO] daisy: Machine resumed.
+[17:42:46.5402]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:42:46.5402]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (531)
+[17:42:46.5402]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (520)
+[17:42:47.4930]  [INFO] daisy: Machine paused.
+[17:42:47.4932]  [INFO] daisy: Machine resumed.
+[17:42:47.5312]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:42:47.5312]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (427)
+[17:42:47.5312]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (520)
+[17:42:47.5312]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (104)
+[17:42:48.5413]  [INFO] daisy: Machine paused.
+[17:42:48.5415]  [INFO] daisy: Machine resumed.
+[17:42:48.5780]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:42:48.5780]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (531)
+[17:42:48.5780]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (416)
+[17:42:48.5780]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (104)
+[17:42:49.6065]  [INFO] daisy: Machine paused.
+[17:42:49.6067]  [INFO] daisy: Machine resumed.
+[17:42:49.6442]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:42:49.6442]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (531)
+[17:42:49.6442]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (520)
+[17:42:50.6410]  [INFO] daisy: Machine paused.
+[17:42:50.6412]  [INFO] daisy: Machine resumed.
+[17:42:50.6790]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:42:50.6790]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (531)
+[17:42:50.6790]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (416)
+[17:42:50.6790]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (104)
+[17:42:51.7089]  [INFO] daisy: Machine paused.
+[17:42:51.7092]  [INFO] daisy: Machine resumed.
+[17:42:51.7581]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:42:51.7581]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (388)
+[17:42:51.7581]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (351)
+[17:42:51.7581]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (312)
+[17:42:53.1150]  [INFO] daisy: Machine paused.
+[17:42:53.1153]  [INFO] daisy: Machine resumed.
+[17:42:53.1639]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:42:53.1639]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (427)
+[17:42:53.1639]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (416)
+[17:42:53.1639]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (208)
+[17:42:54.4461]  [INFO] daisy: Machine paused.
+[17:42:54.4463]  [INFO] daisy: Machine resumed.
+[17:42:54.4867]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:42:54.4867]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (427)
+[17:42:54.4867]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (312)
+[17:42:54.4867]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (312)
+[17:42:55.8362]  [INFO] daisy: Machine paused.
+[17:42:55.8363]  [INFO] daisy: Machine resumed.
+[17:42:55.8865]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:42:55.8865]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (427)
+[17:42:55.8865]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (416)
+[17:42:55.8865]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (208)
+[17:42:57.0392]  [INFO] daisy: Machine paused.
+[17:42:57.0397]  [INFO] daisy: Machine resumed.
+[17:42:57.1375]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:42:57.1375]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (427)
+[17:42:57.1375]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (416)
+[17:42:57.1375]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (532)
+[17:42:57.1375]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (416)
+[17:42:57.1375]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (416)
+[17:42:57.1375]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (428)
+[17:42:57.1375]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (208)
+[17:42:57.1375]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (416)
+[17:42:57.1375]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (428)
+[17:42:57.1375]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (312)
+[17:42:57.1375]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (428)
+[17:42:57.1375]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (416)
+[17:42:57.1375]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (520)
+[17:42:57.1375]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (324)
+[17:42:57.1375]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (520)
+[17:42:57.1375]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (324)
+[17:42:57.1375]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (520)
+[17:42:57.1375]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (208)
+[17:42:57.1375]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (477)
+[17:42:57.1375]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (263)
+[17:42:57.1375]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (416)
+[17:42:57.1375]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (532)
+[17:42:57.1375]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (425)
+[17:42:57.1375]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (523)
+[17:42:57.1375]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (520)
+[17:42:57.1375]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (104)
+[17:43:09.7371]  [INFO] daisy: Machine paused.
+[17:43:09.7379]  [INFO] daisy: Machine resumed.
+[17:43:09.7770]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:43:09.7770]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (427)
+[17:43:09.7770]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (957)
+[17:43:09.7770]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (1251)
+[17:43:09.7770]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (1156)
+[17:43:09.7770]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (974)
+[17:43:09.7770]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (1234)
+[17:43:09.7770]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (1156)
+[17:43:09.7770]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (1364)
+[17:43:09.7770]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (1177)
+[17:43:09.7770]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (823)
+[17:43:14.5618]  [INFO] daisy: Machine paused.
+[17:43:14.5621]  [INFO] daisy: Machine resumed.
+[17:43:14.5685]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:43:14.5685]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (1375)
+[17:43:14.5685]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (1156)
+[17:43:14.5685]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (1260)
+[17:43:14.5685]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (1156)
+[17:43:14.5685]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (1468)
+[17:43:14.5685]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (1052)
+[17:43:14.5685]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (1168)
+[17:43:14.5685]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (1156)
+[17:43:14.5685]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (728)
+[17:43:18.8391]  [INFO] daisy: Machine paused.
+[17:43:18.8422]  [INFO] daisy: Machine resumed.
+[17:43:18.8492]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1).
+[17:43:18.8492]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (1155)
+[17:43:18.8492]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (1091)
+[17:43:18.8492]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (1129)
+[17:43:18.8492]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (1052)
+[17:43:18.8492]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (1045)
+[17:43:18.8492]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (1059)
+[17:43:18.8492]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (1052)
+[17:43:18.8492]  [WARNING] [no-name]: Unhandled write to offset 0xC. Unhandled bits: [16] when writing value 0x10008. Tags: DISCEN (0x1). (832)
+[17:43:22.6737]  [INFO] daisy: Machine paused.
+[17:43:22.7430]  [INFO] daisy: Disposed.

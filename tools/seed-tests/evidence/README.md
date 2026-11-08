@@ -27,5 +27,5 @@ See the parent README to rebuild and execute fresh controls.
 The traces reproduce a UART-dependent software scan stall. They are not physical
 measurements, and the CPU timing model is uncalibrated. The continuous 3,661 s
 firmware scenario is implemented but **NOT_RUN**. No conclusion has been reached
-about which fault caused the reported deterioration after an hour, or whether
+about which fault caused the reported hot-room behavior (duration unknown), or whether
 the board also has thermal/electrical faults.

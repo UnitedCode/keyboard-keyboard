@@ -1,2 +1,7 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Keep raw validation evidence available while focusing review on source changes.
+tools/seed-tests/evidence/** linguist-generated=true
+tools/seed-tests/evidence/**/README.md linguist-generated=false
+keyboard_keyboard/kicad/validation/*.json linguist-generated=true
