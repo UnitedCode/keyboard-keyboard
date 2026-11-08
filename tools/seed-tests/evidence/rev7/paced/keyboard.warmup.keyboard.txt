@@ -1,0 +1,8 @@
+elapsed_ns=100000000
+scans=23
+max_scan_gap_ns=6436150
+scan_gaps_over_2ms=1
+midi_bytes=36
+instant_uart=false
+hardware_equivalence=UNVERIFIED
+thermal_and_power_behavior=UNMODELED
