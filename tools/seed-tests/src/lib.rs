@@ -1,5 +1,31 @@
 //! Grade externally observed firmware scan timing and MIDI bytes.
 use std::collections::BTreeMap;
+// Execute the firmware implementation on the host; do not substitute a model
+// of its detection/filtering code in the velocity experiment.
+#[allow(dead_code)]
+#[path = "../../../keyboard_keyboard/code/src/constants.rs"]
+pub mod constants;
+#[path = "velocity.rs"]
+pub mod simulation;
+#[allow(dead_code, clippy::new_without_default)]
+#[path = "../../../keyboard_keyboard/code/src/switch.rs"]
+pub mod switch;
+#[path = "../../../keyboard_keyboard/code/src/velocity.rs"]
+pub mod velocity;
+#[allow(dead_code, clippy::new_without_default)]
+pub mod legacy_switch {
+    const VELOCITY_WINDOW_MS: u32 = 80;
+    const FILTER_SHIFT: u32 = 2;
+    include!("fixtures/switch_before_velocity.rs");
+
+    // Read-only instrumentation around the unchanged historical implementation.
+    pub fn pending_elapsed(state: &SwitchState, tick: u32) -> Option<u32> {
+        match state.phase {
+            SwitchPhase::FirstActuated { tick: first } => Some(tick.saturating_sub(first)),
+            _ => None,
+        }
+    }
+}
 pub type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
 #[derive(Debug)]

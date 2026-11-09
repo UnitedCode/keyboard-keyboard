@@ -3,5 +3,9 @@ name = "keyboard-seed-tests"
 version = "0.1.0"
 edition = "2021"
 publish = false
+default-run = "keyboard-seed-tests"
+
+[dependencies]
+log = "0.4"
 
 [workspace]

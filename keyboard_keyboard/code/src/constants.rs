@@ -16,9 +16,8 @@ pub const RELEASE_DELTA: u16 = 100;
 pub const DEBOUNCE_TICKS: u8 = 3;
 
 pub const FILTER_SIZE: usize = 4;
-pub const FILTER_SHIFT: u32 = 2;
+pub const VELOCITY_FILTER_SIZE: usize = 2;
 
-pub const VELOCITY_WINDOW_MS: u32 = 80;
 pub const CALIBRATION_SAMPLES: usize = 64;
 
 pub const SPLASH_DURATION_MS: u32 = 3000;
