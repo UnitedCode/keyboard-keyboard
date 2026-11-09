@@ -1,5 +1,5 @@
 use crate::display::note_name;
-use crate::settings::{Settings, NUM_SETTINGS_ITEMS, SETTINGS_ITEMS};
+use crate::settings::{Settings, NUM_SETTINGS_ITEMS, OUTPUT_SETTING, SETTINGS_ITEMS};
 use crate::types::{DisplayState, LastEvent, LcdDisplay};
 use core::fmt::Write;
 use embedded_graphics::{
@@ -140,6 +140,33 @@ pub fn draw_main(disp: &mut LcdDisplay, state: &DisplayState) {
         Image::new(&icon, Point::new(5, 24)).draw(disp).ok();
     }
 
+    // Center footer fits between waveform and volume; route is a choice,
+    // USB status is the actual host-selected protocol. DIN has no link sensing.
+    Rectangle::new(Point::new(27, 23), Size::new(76, 9))
+        .into_styled(PrimitiveStyle::with_fill(BinaryColor::On))
+        .draw(disp)
+        .ok();
+    let mut status: String<16> = String::new();
+    write!(
+        status,
+        "{} U:{}{}",
+        state.output_route.label(),
+        state.usb_status,
+        if state.transport_overflows > 0 {
+            "!"
+        } else {
+            ""
+        }
+    )
+    .ok();
+    Text::with_alignment(
+        status.as_str(),
+        Point::new(65, 31),
+        MonoTextStyle::new(&FONT_6X9, BinaryColor::Off),
+        Alignment::Center,
+    )
+    .draw(disp)
+    .ok();
     disp.flush().ok();
 }
 
@@ -170,7 +197,11 @@ pub fn draw_settings(disp: &mut LcdDisplay, selected: usize, settings: &Settings
 
         // Value: right-aligned
         let mut val_str: String<8> = String::new();
-        write!(val_str, "{}", value).ok();
+        if item_idx == OUTPUT_SETTING {
+            val_str.push_str(settings.output_route.label()).ok();
+        } else {
+            write!(val_str, "{}", value).ok();
+        }
         Text::with_alignment(
             val_str.as_str(),
             Point::new(127, y),

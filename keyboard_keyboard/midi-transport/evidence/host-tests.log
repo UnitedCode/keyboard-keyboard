@@ -1,0 +1,30 @@
+   Compiling keyboard-midi-transport v0.1.0 (/Users/nathanbradshaw/Documents/GitHub/keyboard-keyboard/keyboard_keyboard/midi-transport)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.26s
+     Running unittests src/lib.rs (keyboard_keyboard/midi-transport/target/aarch64-apple-darwin/debug/deps/keyboard_midi_transport-838a26aaf4816c4a)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/usb_host.rs (keyboard_keyboard/midi-transport/target/aarch64-apple-darwin/debug/deps/usb_host-2e82de64937d0241)
+
+running 11 tests
+test computer_receives_legacy_notes_then_can_select_midi2 ... ok
+test computer_can_enumerate_legacy_and_ump_alternates ... ok
+test host_cannot_select_ump_if_endpoint_reset_fails ... ok
+test midi2_velocity_matches_specification_min_center_max_examples ... ok
+test host_can_fragment_discovery_and_reserved_protocol_does_not_change_output ... ok
+test malformed_usb_packet_does_not_poison_next_discovery ... ok
+test computer_discovers_identity_capabilities_and_keyboard_function ... ok
+test midi2_wire_messages_preserve_notes_controls_pitch_program_and_bend_range ... ok
+test blocked_usb_does_not_block_din_and_route_changes_silence_old_destination ... ok
+test usb_reconnect_drops_stale_notes_and_starts_with_all_notes_off ... ok
+test saturated_din_recovers_without_losing_usb_performance ... ok
+
+test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests keyboard_midi_transport
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
