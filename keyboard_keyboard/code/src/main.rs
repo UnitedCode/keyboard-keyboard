@@ -14,6 +14,7 @@ mod settings;
 mod switch;
 mod types;
 mod usb;
+mod velocity;
 
 #[rtic::app(
     device = stm32h7xx_hal::stm32,
@@ -107,6 +108,7 @@ mod app {
         ),
         midi_rx: Rx<stm32::USART1>,
         filters: [ChannelFilter; NUM_SWITCHES],
+        velocity_filters: [ChannelFilter<VELOCITY_FILTER_SIZE>; NUM_SWITCHES],
         dynamic_baselines: [u16; NUM_SWITCHES],
         last_pitch_bend: u16,
         last_vibrato_cc: u8,
@@ -281,12 +283,14 @@ mod app {
 
         let mut baselines = [0u16; NUM_SWITCHES];
         let mut filters = [ChannelFilter::new(); NUM_SWITCHES];
+        let mut velocity_filters = [ChannelFilter::new(); NUM_SWITCHES];
         for (switch_idx, &(mux, ch)) in SWITCH_MAP.iter().enumerate() {
             let avg = slot_sum[mux as usize][ch as usize]
                 .checked_div(slot_count[mux as usize][ch as usize])
                 .unwrap_or(0) as u16;
             baselines[switch_idx] = avg;
             filters[switch_idx].prime(avg);
+            velocity_filters[switch_idx].prime(avg);
             if DIAG_LOGGING {
                 info!(
                     "baseline switch={} mux={} ch={} val={}",
@@ -401,7 +405,11 @@ mod app {
         (
             Shared {
                 tick_ms: 0,
-                switch_states: [SwitchState::new(); NUM_SWITCHES],
+                switch_states: core::array::from_fn(|i| {
+                    let mut state = SwitchState::new();
+                    state.set_calibration(crate::velocity::SWITCH_CALIBRATIONS[i]);
+                    state
+                }),
                 baselines,
                 event_queue: heapless::spsc::Queue::new(),
                 event_overflow: false,
@@ -436,6 +444,7 @@ mod app {
                 usb: (usb_dev, usb_midi),
                 midi_rx,
                 filters,
+                velocity_filters,
                 dynamic_baselines: baselines,
                 last_pitch_bend: 0x2000,
                 last_vibrato_cc: 0,
@@ -529,7 +538,7 @@ mod app {
     #[task(
         binds = TIM2,
         local  = [timer2, adc, adc_pins, enb_a, enb_b, enb_c, adc_pin_a9, adc_pin_a10,
-                  adc_pin_a11, pot_last_cc, s0, s1, s2, mux_raw, filters, dynamic_baselines,
+                  adc_pin_a11, pot_last_cc, s0, s1, s2, mux_raw, filters, velocity_filters, dynamic_baselines,
                   last_pitch_bend, last_vibrato_cc, led1, led2, led3, midi_rx,
                   led1_off_at, led2_off_at,
                   recalibrate_show_until: u32 = 0,
@@ -598,6 +607,7 @@ mod app {
             for (switch_idx, &(mux, ch)) in SWITCH_MAP.iter().enumerate() {
                 let raw = ctx.local.mux_raw[mux as usize][ch as usize];
                 let filtered = ctx.local.filters[switch_idx].feed(raw);
+                let velocity_filtered = ctx.local.velocity_filters[switch_idx].feed(raw);
 
                 // When settings is open the four arrow keys become digital plunger switches;
                 let is_analog = switch_idx == PITCH_BEND_DOWN
@@ -617,6 +627,7 @@ mod app {
                     }
                 } else if let Some(event) = states[switch_idx].update(
                     filtered,
+                    velocity_filtered,
                     ctx.local.dynamic_baselines[switch_idx],
                     now,
                     switch_idx,
@@ -775,6 +786,7 @@ mod app {
                 let current = ctx.local.filters[i].last_output();
                 ctx.local.dynamic_baselines[i] = current;
                 ctx.local.filters[i].prime(current);
+                ctx.local.velocity_filters[i].prime(current);
             }
             ctx.shared
                 .baselines

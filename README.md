@@ -59,9 +59,14 @@ target remote :1337
 
 ### How it works
 
-The `timer_handler` task fires at 1 kHz, scans all 13 muxes × 8 channels, and runs a three-state machine (`Idle → FirstActuated → FullyActuated`) per switch. Velocity is derived from the time between two ADC thresholds within an 80 ms window. Pot values are scanned every 10 ms and sent as CC messages. MIDI events queue into a `heapless::spsc::Queue` and are sent by a lower-priority `process_events` task.
+The `timer_handler` task fires at 1 kHz, scans all 13 muxes × 8 channels, and runs a three-state machine (`Idle → FirstActuated → FullyActuated`) per switch. Velocity uses interpolated crossings from a two-sample measurement filter; note validation retains four-sample smoothing and three-scan confirmation. A configurable three-anchor response maps transit time to MIDI velocity. Pot values are scanned every 10 ms and sent as CC messages. MIDI events queue into a `heapless::spsc::Queue` and are sent by a lower-priority `process_events` task.
 
 Boot calibration averages 64 ADC samples per switch to establish per-key baselines before the timer starts.
+
+The [velocity investigation and Rust simulations](tools/seed-tests/VELOCITY.md)
+compare the old algorithm and five alternatives across synthetic press speeds,
+sensor spans, magnetic responses, noise and scan jitter. The response defaults
+are provisional pending physical key recordings and listening tests.
 
 ## Known Issues
 

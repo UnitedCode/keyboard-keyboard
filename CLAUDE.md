@@ -60,7 +60,7 @@ Three select lines (Daisy7/8/9 → `MUX_SELECT_0/1/2`) address one of 8 channels
 
 ### Switch state machine
 
-Each switch runs a three-state machine: `Idle → FirstActuated → FullyActuated`. A press requires crossing `FIRST_DELTA` (150 ADC counts above baseline), then `SECOND_DELTA` (250 counts). Velocity is derived from elapsed ms between the two thresholds within a `VELOCITY_WINDOW_MS` (80 ms) window. Release is detected when delta falls below `RELEASE_DELTA` (100 counts). All transitions require `DEBOUNCE_TICKS` (3) consecutive confirmations. Detection uses `abs_diff` so either magnet polarity works.
+Each switch runs a three-state machine: `Idle → FirstActuated → FullyActuated`. Default first/second/release thresholds are 150/250/100 ADC counts from baseline. Three consecutive confirmations validate each transition. A separate two-sample measurement filter records interpolated crossing times before debounce, then a three-anchor curve maps elapsed microseconds to velocity. `src/velocity.rs` contains provisional timing anchors and the per-key calibration table. Detection uses `abs_diff` so either magnet polarity works. See `tools/seed-tests/VELOCITY.md` for simulation evidence and physical acceptance limits.
 
 Each switch also has a 4-sample ring-buffer averaging filter (`ChannelFilter`) primed with the boot calibration baseline.
 
