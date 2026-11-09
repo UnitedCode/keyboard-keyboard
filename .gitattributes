@@ -5,3 +5,5 @@
 tools/seed-tests/evidence/** linguist-generated=true
 tools/seed-tests/evidence/**/README.md linguist-generated=false
 keyboard_keyboard/kicad/validation/*.json linguist-generated=true
+keyboard_keyboard/midi-transport/evidence/** linguist-generated=true
+keyboard_keyboard/midi-transport/evidence/README.md linguist-generated=false

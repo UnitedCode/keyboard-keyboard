@@ -1,5 +1,5 @@
 //! hall_effect_keyboard — Daisy Seed MIDI keyboard firmware
-//! MIDI out over USART1 at 31250 baud. See HARDWARE.md for full pin mapping.
+//! DIN MIDI 1.0 and built-in USB MIDI 1.0/2.0. See HARDWARE.md for full pin mapping.
 
 #![no_main]
 #![no_std]
@@ -13,6 +13,7 @@ mod midi;
 mod settings;
 mod switch;
 mod types;
+mod usb;
 
 #[rtic::app(
     device = stm32h7xx_hal::stm32,
@@ -28,6 +29,12 @@ mod app {
     use crate::settings::{Settings, NUM_SETTINGS_ITEMS};
     use crate::switch::{ChannelFilter, SwitchEvent, SwitchState};
     use crate::types::{DisplayState, LastEvent, LcdDisplay};
+    use keyboard_midi_transport::UsbMidi;
+    use stm32h7xx_hal::{
+        rcc::rec::UsbClkSel,
+        usb_hs::{UsbBus, USB2},
+    };
+    use usb_device::{device::StringDescriptors, prelude::*};
 
     use libdaisy::gpio::*;
     use libdaisy::logger;
@@ -69,6 +76,7 @@ mod app {
         settings_active: bool,
         settings_selected: usize,
         recalibrate_pending: bool,
+        midi_sender: MidiSender,
     }
 
     // ── Local resources ───────────────────────────────────────────────────────
@@ -93,7 +101,10 @@ mod app {
         led3: Daisy1<Output<PushPull>>, // active-low — heartbeat
         timer2: timer::Timer<stm32::TIM2>,
         mux_raw: MuxRaw,
-        midi_sender: MidiSender,
+        usb: (
+            UsbDevice<'static, UsbBus<USB2>>,
+            UsbMidi<'static, UsbBus<USB2>>,
+        ),
         midi_rx: Rx<stm32::USART1>,
         filters: [ChannelFilter; NUM_SWITCHES],
         dynamic_baselines: [u16; NUM_SWITCHES],
@@ -112,8 +123,68 @@ mod app {
         let mut core = ctx.core;
         let device = ctx.device;
 
-        let ccdr = system::System::init_clocks(device.PWR, device.RCC, &device.SYSCFG);
+        let mut ccdr = system::System::init_clocks(device.PWR, device.RCC, &device.SYSCFG);
+        ccdr.peripheral.kernel_usb_clk_mux(UsbClkSel::Hsi48);
         let mut system = libdaisy::system_init!(core, device, ccdr, BLOCK_SIZE);
+
+        // Built-in Seed connector: PA11/PA12, USB2_OTG_FS (not carrier USB pins).
+        assert_eq!(ccdr.clocks.hsi48_ck().unwrap().raw(), 48_000_000);
+        // Trim HSI48 against this connector's USB2 SOF, not USB1/carrier SOF.
+        // STM32H7 Rev Y and earlier use source encoding 0 for USB2 (ST HAL).
+        use stm32h7xx_hal::rcc::ResetEnable;
+        ccdr.peripheral.CRS.enable().reset();
+        let sync_source = if device.DBGMCU.idc.read().rev_id().bits() <= 0x1003 {
+            0
+        } else {
+            3
+        };
+        device.CRS.cfgr.write(|w| unsafe {
+            w.syncsrc()
+                .bits(sync_source)
+                .syncdiv()
+                .bits(0)
+                .reload()
+                .bits(47_999)
+                .felim()
+                .bits(34)
+        });
+        device
+            .CRS
+            .cr
+            .modify(|_, w| w.autotrimen().set_bit().cen().set_bit());
+        let usb_pins = system.internal_usb.take().expect("internal USB pins");
+        let usb_peripheral = USB2::new(
+            device.OTG2_HS_GLOBAL,
+            device.OTG2_HS_DEVICE,
+            device.OTG2_HS_PWRCLK,
+            usb_pins.dm.into_alternate::<10>(),
+            usb_pins.dp.into_alternate::<10>(),
+            ccdr.peripheral.USB2OTG,
+            &ccdr.clocks,
+        );
+        let ep_memory = cortex_m::singleton!(: [u32;1024]=[0;1024]).unwrap();
+        let allocator = UsbBus::new(usb_peripheral, ep_memory);
+        let bus = cortex_m::singleton!(: usb_device::bus::UsbBusAllocator<UsbBus<USB2>>=allocator)
+            .unwrap();
+        let serial = cortex_m::singleton!(: heapless::String<24>=heapless::String::new()).unwrap();
+        use core::fmt::Write;
+        for byte in stm32h7xx_hal::signature::Uid::read() {
+            write!(serial, "{:02X}", byte).ok();
+        }
+        let usb_midi = UsbMidi::new(bus, serial.as_str())
+            .with_endpoint_reset(crate::usb::reset_midi_endpoints);
+        // pid.codes private Test PID: not unique, not for redistributed hardware.
+        let usb_dev = UsbDeviceBuilder::new(bus, UsbVidPid(0x1209, 0x0001))
+            .strings(&[StringDescriptors::default()
+                .manufacturer("UnitedCode")
+                .product("Keyboard Keyboard MIDI experiment")
+                .serial_number(serial.as_str())])
+            .unwrap()
+            .max_packet_size_0(64)
+            .unwrap()
+            .max_power(500)
+            .unwrap()
+            .build();
 
         let mut s0 = system
             .gpio
@@ -341,6 +412,7 @@ mod app {
                 settings_active: false,
                 settings_selected: 0,
                 recalibrate_pending: false,
+                midi_sender,
             },
             Local {
                 audio: system.audio,
@@ -361,7 +433,7 @@ mod app {
                 led3,
                 timer2,
                 mux_raw: [[0u16; MUX_CHANNELS]; NUM_MUXES],
-                midi_sender,
+                usb: (usb_dev, usb_midi),
                 midi_rx,
                 filters,
                 dynamic_baselines: baselines,
@@ -373,6 +445,32 @@ mod app {
             },
             init::Monotonics(),
         )
+    }
+
+    #[task(binds = USART1, priority = 3, shared = [midi_sender])]
+    fn din_transmit(mut ctx: din_transmit::Context) {
+        ctx.shared.midi_sender.lock(|sender| sender.service_din());
+    }
+
+    #[task(binds = OTG_FS, priority = 3, local = [usb], shared = [midi_sender,display_state])]
+    fn usb_service(mut ctx: usb_service::Context) {
+        let (device, midi) = ctx.local.usb;
+        device.poll(&mut [midi]);
+        let ready = device.state() == UsbDeviceState::Configured;
+        let overflows = ctx.shared.midi_sender.lock(|sender| {
+            sender.service_usb(midi, ready);
+            sender.overflows()
+        });
+        let label = if ready { midi.mode_label() } else { "WAIT" };
+        let changed = ctx.shared.display_state.lock(|state| {
+            let changed = state.usb_status != label || state.transport_overflows != overflows;
+            state.usb_status = label;
+            state.transport_overflows = overflows;
+            changed
+        });
+        if changed {
+            display_update::spawn().ok();
+        }
     }
 
     #[idle]
@@ -442,6 +540,7 @@ mod app {
     )]
     fn timer_handler(mut ctx: timer_handler::Context) {
         ctx.local.timer2.clear_irq();
+        cortex_m::peripheral::NVIC::pend(stm32::Interrupt::OTG_FS);
 
         let now = ctx.shared.tick_ms.lock(|t| {
             *t = t.wrapping_add(1);
@@ -711,8 +810,7 @@ mod app {
     // ── MIDI output ───────────────────────────────────────────────────────────
     #[task(
         shared = [event_queue, midi_tx_flag, display_state, splash_done,
-                  settings, settings_active, settings_selected, recalibrate_pending, event_overflow],
-        local  = [midi_sender],
+                  settings, settings_active, settings_selected, recalibrate_pending, event_overflow, midi_sender],
         priority = 2,
         capacity = 32
     )]
@@ -745,8 +843,10 @@ mod app {
                     .lock(|queue| while queue.dequeue().is_some() {});
                 warn!("MIDI event queue overflow: clearing pending events and sounding notes");
                 for channel in 0..16 {
-                    ctx.local.midi_sender.set_channel(channel);
-                    ctx.local.midi_sender.all_notes_off();
+                    ctx.shared
+                        .midi_sender
+                        .lock(|sender| sender.set_channel(channel));
+                    ctx.shared.midi_sender.lock(|sender| sender.all_notes_off());
                 }
                 active = false;
                 nav_dirty = true;
@@ -785,9 +885,13 @@ mod app {
                         VOICE_PC_C
                     };
                     info!("Voice select PC={} ch={}", pc, settings.melody_channel + 1);
-                    ctx.local.midi_sender.set_channel(settings.melody_channel);
-                    ctx.local.midi_sender.all_notes_off();
-                    ctx.local.midi_sender.program_change(pc);
+                    ctx.shared
+                        .midi_sender
+                        .lock(|sender| sender.set_channel(settings.melody_channel));
+                    ctx.shared.midi_sender.lock(|sender| sender.all_notes_off());
+                    ctx.shared
+                        .midi_sender
+                        .lock(|sender| sender.program_change(pc));
                     ctx.shared
                         .display_state
                         .lock(|s| s.current_voice = Some(pc));
@@ -813,8 +917,8 @@ mod app {
                 if matches!(event, SwitchEvent::NoteOn { .. }) {
                     info!("All Notes Off — all 16 channels");
                     for ch in 0..16u8 {
-                        ctx.local.midi_sender.set_channel(ch);
-                        ctx.local.midi_sender.all_notes_off();
+                        ctx.shared.midi_sender.lock(|sender| sender.set_channel(ch));
+                        ctx.shared.midi_sender.lock(|sender| sender.all_notes_off());
                     }
                     did_send = true;
                 }
@@ -835,11 +939,17 @@ mod app {
                         }
                         SETTINGS_VAL_UP => {
                             settings.adjust(selected, 1);
+                            ctx.shared
+                                .midi_sender
+                                .lock(|sender| sender.set_route(settings.output_route));
                             settings_dirty = true;
                             nav_dirty = true;
                         }
                         SETTINGS_VAL_DOWN => {
                             settings.adjust(selected, -1);
+                            ctx.shared
+                                .midi_sender
+                                .lock(|sender| sender.set_route(settings.output_route));
                             settings_dirty = true;
                             nav_dirty = true;
                         }
@@ -873,7 +983,9 @@ mod app {
                 (raw_note as i16 + offset).clamp(1, 127) as u8
             };
 
-            ctx.local.midi_sender.set_channel(channel);
+            ctx.shared
+                .midi_sender
+                .lock(|sender| sender.set_channel(channel));
             match event {
                 SwitchEvent::NoteOn { velocity } => {
                     info!(
@@ -883,17 +995,23 @@ mod app {
                         note,
                         velocity
                     );
-                    ctx.local.midi_sender.note_on(note, velocity);
+                    ctx.shared
+                        .midi_sender
+                        .lock(|sender| sender.note_on(note, velocity));
                     new_display_event = Some(LastEvent::Note { note });
                 }
                 SwitchEvent::NoteOff => {
                     info!("NoteOff HE{} ch={} note={}", he, channel + 1, note);
-                    ctx.local.midi_sender.note_off(note, 0);
+                    ctx.shared
+                        .midi_sender
+                        .lock(|sender| sender.note_off(note, 0));
                     new_display_event = Some(LastEvent::Clear);
                 }
                 SwitchEvent::PotChange { cc, value } => {
                     info!("CC{} = {}", cc, value);
-                    ctx.local.midi_sender.control_change(cc, value);
+                    ctx.shared
+                        .midi_sender
+                        .lock(|sender| sender.control_change(cc, value));
                     new_display_event = Some(LastEvent::Cc { num: cc, value });
                     if cc == 7 {
                         new_volume = Some((value as u32 * 10 / 127) as u8);
@@ -901,7 +1019,9 @@ mod app {
                 }
                 SwitchEvent::PitchBend { value } => {
                     info!("PitchBend value={}", value);
-                    ctx.local.midi_sender.pitch_bend(value);
+                    ctx.shared
+                        .midi_sender
+                        .lock(|sender| sender.pitch_bend(value));
                 }
             }
             did_send = true;
@@ -910,6 +1030,9 @@ mod app {
         // ── Write back mutations ───────────────────────────────────────────────
         if settings_dirty {
             ctx.shared.settings.lock(|s| *s = settings);
+            ctx.shared
+                .display_state
+                .lock(|s| s.output_route = settings.output_route);
         }
         if nav_dirty {
             ctx.shared.settings_active.lock(|a| *a = active);
@@ -921,26 +1044,38 @@ mod app {
             // Kill held notes on every channel — covers old channel, new channel, and any
             // channel that was active before settings was opened.
             for ch in 0..16u8 {
-                ctx.local.midi_sender.set_channel(ch);
-                ctx.local.midi_sender.all_notes_off();
+                ctx.shared.midi_sender.lock(|sender| sender.set_channel(ch));
+                ctx.shared.midi_sender.lock(|sender| sender.all_notes_off());
             }
-            ctx.local.midi_sender.set_channel(settings.melody_channel);
-            ctx.local.midi_sender.pitch_bend(0x2000);
+            ctx.shared
+                .midi_sender
+                .lock(|sender| sender.set_channel(settings.melody_channel));
+            ctx.shared
+                .midi_sender
+                .lock(|sender| sender.pitch_bend(0x2000));
             did_send = true;
 
             if !active {
                 // Settings just closed — push updated parameters to the synth.
-                ctx.local.midi_sender.set_channel(settings.melody_channel);
-                ctx.local
+                ctx.shared
                     .midi_sender
-                    .set_pitch_bend_range(settings.pitch_bend_range);
-                ctx.local
+                    .lock(|sender| sender.set_channel(settings.melody_channel));
+                ctx.shared
                     .midi_sender
-                    .program_change(settings.melody_program);
-                ctx.local.midi_sender.set_channel(settings.drum_channel);
-                ctx.local.midi_sender.program_change(settings.drum_program);
+                    .lock(|sender| sender.set_pitch_bend_range(settings.pitch_bend_range));
+                ctx.shared
+                    .midi_sender
+                    .lock(|sender| sender.program_change(settings.melody_program));
+                ctx.shared
+                    .midi_sender
+                    .lock(|sender| sender.set_channel(settings.drum_channel));
+                ctx.shared
+                    .midi_sender
+                    .lock(|sender| sender.program_change(settings.drum_program));
             }
         }
+
+        cortex_m::peripheral::NVIC::pend(stm32::Interrupt::OTG_FS);
 
         // ── Update display ─────────────────────────────────────────────────────
         let done = ctx.shared.splash_done.lock(|d| *d);

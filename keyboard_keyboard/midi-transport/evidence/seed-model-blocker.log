@@ -1,0 +1,19 @@
+Python execution guard verified
+IRQ-aware wait pacing adapter verified
+NVIC active-count adapter verified
+Board: rev7
+Native instruction-fetch tag verified
+Unhandled exception. System.InvalidOperationException: Unsupported keyboard UART access 0x0, value=0x2000008D
+   at Antmicro.Renode.Peripherals.Miscellaneous.DaisyKeyboardUart.Access(Int64 offset, UInt32 value, UInt32 write) in /Users/nathanbradshaw/Documents/GitHub/synth-phone-e-v2-rust/tools/virtual-daisy/bridge/DaisyKeyboard.cs:line 55
+   at Antmicro.Renode.Peripherals.Miscellaneous.DaisyKeyboardUart.WriteDoubleWord(Int64 offset, UInt32 value) in /Users/nathanbradshaw/Documents/GitHub/synth-phone-e-v2-rust/tools/virtual-daisy/bridge/DaisyKeyboard.cs:line 59
+   at Antmicro.Renode.Peripherals.Bus.SystemBus.WriteDoubleWord(UInt64 address, UInt32 value, IPeripheral context, Nullable`1 cpuState)
+   at Antmicro.Renode.Peripherals.CPU.TranslationCPU.WriteDoubleWordToBus(UInt64 offset, UInt64 value, UInt64 cpuState)
+   at WriteDoubleWordToBusWrapper(DaisyCortexMWrappers, UInt64, UInt64, UInt64)
+--- End of stack trace from previous location ---
+   at Antmicro.Renode.Utilities.Binding.ExceptionKeeper.ThrowExceptions()
+   at TlibExecute(DaisyCortexMWrappers, Int32)
+   at Antmicro.Renode.Peripherals.CPU.TranslationCPU.ExecuteInstructions(UInt64 numberOfInstructionsToExecute, UInt64& numberOfExecutedInstructions)
+   at Antmicro.Renode.Peripherals.Miscellaneous.DaisyCortexM.ExecuteInstructions(UInt64 numberOfInstructionsToExecute, UInt64& numberOfExecutedInstructions) in /Users/nathanbradshaw/Documents/GitHub/synth-phone-e-v2-rust/tools/virtual-daisy/bridge/DaisyCpu.cs:line 40
+   at Antmicro.Renode.Peripherals.CPU.BaseCPU.CpuThreadBodyInner(Boolean singleStep, Boolean skipThisRound)
+   at Antmicro.Renode.Peripherals.CPU.BaseCPU.CpuThreadBody()
+   at System.Threading.Thread.StartCallback()

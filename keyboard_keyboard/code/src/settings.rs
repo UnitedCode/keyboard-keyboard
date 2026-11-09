@@ -1,4 +1,7 @@
-pub const NUM_SETTINGS_ITEMS: usize = 6;
+use keyboard_midi_transport::OutputRoute;
+
+pub const NUM_SETTINGS_ITEMS: usize = 7;
+pub const OUTPUT_SETTING: usize = 6;
 
 pub struct SettingsItem {
     pub name: &'static str,
@@ -37,10 +40,16 @@ pub const SETTINGS_ITEMS: [SettingsItem; NUM_SETTINGS_ITEMS] = [
         min: 0,
         max: 127,
     },
+    SettingsItem {
+        name: "MIDI OUTPUT",
+        min: 0,
+        max: 2,
+    },
 ];
 
 #[derive(Clone, Copy, Debug)]
 pub struct Settings {
+    pub output_route: OutputRoute,
     pub melody_channel: u8,   // 0-indexed (0–15), displayed as 1–16
     pub drum_channel: u8,     // 0-indexed (0–15), displayed as 1–16
     pub octave: i8,           // 0–8; offset = (octave - 4) * 12
@@ -52,6 +61,7 @@ pub struct Settings {
 impl Settings {
     pub const fn default() -> Self {
         Self {
+            output_route: OutputRoute::Both,
             melody_channel: 0,
             drum_channel: 9,
             octave: 2,
@@ -70,6 +80,11 @@ impl Settings {
             3 => self.pitch_bend_range as i16,
             4 => self.melody_program as i16,
             5 => self.drum_program as i16,
+            OUTPUT_SETTING => match self.output_route {
+                OutputRoute::Din => 0,
+                OutputRoute::Usb => 1,
+                OutputRoute::Both => 2,
+            },
             _ => 0,
         }
     }
@@ -85,6 +100,13 @@ impl Settings {
             3 => self.pitch_bend_range = v as u8,
             4 => self.melody_program = v as u8,
             5 => self.drum_program = v as u8,
+            OUTPUT_SETTING => {
+                self.output_route = match v {
+                    0 => OutputRoute::Din,
+                    1 => OutputRoute::Usb,
+                    _ => OutputRoute::Both,
+                }
+            }
             _ => {}
         }
     }

@@ -165,6 +165,7 @@ Sources: [Nexperia 74HC138](https://assets.nexperia.com/documents/data-sheet/74H
 | MIDI in  | D14 / `USART1_RX` (pin 15) | 31250 baud, U2 opto-isolator |
 | I2C      | D11/D12 (pins 12–13) | J3 — display (`ssd1306`) |
 | LEDs     | D1, D5, D6 (pins 2, 6, 7) | `led_1`, `led_2`, `led_3` |
-| USB      | D29/D30 (pins 36–37) | J6 + J7 — device + host |
+| Carrier USB | D29/D30 (pins 36–37) | J6/J7 routing; unused by this firmware experiment |
+| Built-in USB | PA11/PA12, USB2/OTG_FS | Seed micro-USB connector; MIDI device to a computer ([guide](USB_MIDI.md)) |
 | Audio in | pins 16–17 | J1 — stereo TRS |
 | Audio out| pins 18–19 | J2 — stereo TRS |

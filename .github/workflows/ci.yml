@@ -26,6 +26,13 @@ jobs:
         working-directory: keyboard_keyboard/code
         run: cargo fmt --check
 
+      - name: Check USB MIDI transport and simulated host
+        working-directory: keyboard_keyboard/midi-transport
+        run: |
+          cargo fmt --all -- --check
+          cargo clippy --locked --all-targets -- -D warnings
+          cargo test --locked
+
       - name: Check virtual Seed diagnostic
         working-directory: tools/seed-tests
         run: |
