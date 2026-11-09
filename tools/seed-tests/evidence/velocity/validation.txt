@@ -1,0 +1,31 @@
+Experiment: host-side production sensing code, synthetic ADC samples
+Algorithms: 6
+Presses per algorithm: 13824
+Total sweep presses: 82944
+Lifecycle failures: 0
+
+Checks completed:
+- Host cargo fmt --all -- --check
+- Host cargo clippy --offline --locked --all-targets -- -D warnings
+- Host cargo test --offline --locked: 19 passed, 1 ignored
+- Embedded cargo fmt --all -- --check
+- Embedded cargo clippy --release --offline --locked -- -D warnings
+- Embedded cargo build --release --offline --locked
+- Git diff --check
+
+Host commands used --target aarch64-apple-darwin.
+Embedded builds reused the existing keyboard firmware target cache.
+Release ELF SHA256:
+7ff4350714374045823009b166fbc5e671ab3b51ade577fbf7141ad8b518605e
+Debug paths affect exact ELF reproducibility across checkout locations.
+The release has an ARM vector table and a Reset function at 0x08000298.
+Existing build warnings remain: ignored dependency commit manifest fields and
+memory.x ENTRY(Reset_Handler) versus the actual Reset symbol. Flash boot uses
+the vector table; no physical boot is claimed here.
+
+NOT RUN for this revision:
+- Full-firmware Renode integration (runtime unavailable in inspected locations)
+- Physical keyboard flashing, ADC capture or listening acceptance
+
+Historical virtual Seed records elsewhere in evidence/ are not new runs.
+The detected ST-Link was not positively identified as this keyboard.

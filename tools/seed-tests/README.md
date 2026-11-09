@@ -1,5 +1,9 @@
 # Keyboard slowdown diagnostic
 
+For the separate host-side velocity experiments, shared firmware sensing tests,
+trace replay and per-key calibration, see [VELOCITY.md](VELOCITY.md). Those tests
+are synthetic and do not execute the whole ARM firmware described below.
+
 This Rust tool runs the **unmodified release keyboard ELF** on Virtual Daisy's
 Renode Cortex-M7, drives the carrier's GPIO-selected analog inputs, and measures
 completed ADC sweeps and actual UART bytes. It does not call a host replacement
