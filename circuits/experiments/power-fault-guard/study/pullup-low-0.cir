@@ -1,0 +1,5 @@
+Guard pullup low, declared sink0.4V
+Vseed seed 0 3.1
+Rpull seed good 10000
+Vsink good 0 0.4
+.end

@@ -87,5 +87,8 @@ impl MidiSender {
 
     fn send_byte(&mut self, byte: u8) {
         nb::block!(self.tx.write(byte)).ok();
+        // Bound committed data to one on-wire byte. Waiting is preemptible and
+        // occurs outside queue locks; TXFIFO must not retain several later notes.
+        nb::block!(self.tx.flush()).ok();
     }
 }

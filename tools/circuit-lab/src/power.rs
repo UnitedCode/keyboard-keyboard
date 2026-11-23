@@ -138,17 +138,29 @@ pub fn schematic_cli(a: &[String]) -> Result<()> {
     if e.components.len() != added.len() {
         return Err("allocation component count differs".into());
     }
+    let mut expected_export = Graph::default();
     for r in added {
+        expected_export
+            .components
+            .insert(r.clone(), g.components[r].clone());
         if e.components.get(r) != g.components.get(r) {
             return Err("allocation part mismatch".into());
         }
         for (net, nodes) in &g.nets {
             for p in nodes.iter().filter(|p| p.starts_with(&format!("{r}."))) {
-                if e.net(p)? != net {
+                expected_export
+                    .nets
+                    .entry(format!("/{net}"))
+                    .or_default()
+                    .push(p.clone());
+                if e.net(p)? != format!("/{net}") {
                     return Err(format!("allocation net mismatch: {p}").into());
                 }
             }
         }
+    }
+    if expected_export != e {
+        return Err("allocation contains unexpected pins/nets".into());
     }
     println!("SCHEMATIC_CONNECTIVITY=PASS (added allocation only; original pin changes in TSV)");
     Ok(())
@@ -225,7 +237,7 @@ pub fn rail(name: &str, t: u64) -> f64 {
         }
         "chatter" => {
             if (200_000_000..230_000_000).contains(&t) {
-                if t / 500_000 % 2 == 0 {
+                if (t / 500_000).is_multiple_of(2) {
                     2.9
                 } else {
                     3.12
@@ -369,7 +381,7 @@ fn study(a: &[String], out: &Path) -> Result<String> {
             }
         }
     }
-    let mut csv=String::from("rest_v,held,phase_us,pulse_us,threshold_v,release_ms,guarded,false_on,held_end,panic_bytes\n");
+    let mut csv=String::from("rest_v,held,phase_us,pulse_us,threshold_v,release_ms,fault_adc,guarded,false_on,held_end,panic_bytes\n");
     let mut cases = 0;
     let mut failures = 0;
     let mut negative = 0;
@@ -381,90 +393,92 @@ fn study(a: &[String], out: &Path) -> Result<String> {
                 for pulse in [25, 100, 500, 1000, 20_000] {
                     for threshold in [3.07 * 0.985, 3.07 * 1.015] {
                         for release in [12, 28] {
-                            for guarded in [false, true] {
-                                let anchor = (rest / 3.3 * 4095f64).round() as u16;
-                                let mut f = ChannelFilter::<FILTER_SIZE>::new();
-                                f.prime(anchor);
-                                let mut vf = ChannelFilter::<VELOCITY_FILTER_SIZE>::new();
-                                vf.prime(anchor);
-                                let mut state = SwitchState::new();
-                                assert!(
-                                    state.set_calibration(crate::velocity::SWITCH_CALIBRATIONS[0])
-                                );
-                                let mut guard = PowerGuard::new(true);
-                                let mut notes = Notes::default();
-                                let mut s = Supervisor::new(threshold, 20_000, release * 1_000_000);
-                                let mut active = false;
-                                let mut false_on = 0;
-                                let mut panic_bytes = 0;
-                                let fault = 200_000_000 + phase * 1000;
-                                // 1us circuit grid and 1ms firmware scans. Healthy supervisor is prequalified.
-                                for t in (0..=300_000_000u64).step_by(1000) {
-                                    let rail = if t >= fault && t < fault + pulse * 1000 {
-                                        2.7
-                                    } else {
-                                        3.3
-                                    };
-                                    let valid = s.sample(t, rail);
-                                    if t % 1_000_000 != 0 {
-                                        continue;
-                                    }
-                                    let ms = t / 1_000_000;
-                                    if ms < 30 {
-                                        continue;
-                                    }
-                                    if guarded && guard.observe(valid) {
-                                        notes.panic(|m| {
-                                            panic_bytes += 3;
-                                            if m[0] & 0xf0 == 0x80
-                                                || (m[0] & 0xf0 == 0xb0
-                                                    && [120, 123].contains(&m[1]))
-                                            {
-                                                active = false;
-                                            }
-                                        });
-                                    }
-                                    if guarded && guard.locked() {
-                                        continue;
-                                    }
-                                    let raw = if rail < 3.0 || !valid {
-                                        2048
-                                    } else if held && (100..250).contains(&ms) {
-                                        anchor + 683
-                                    } else {
-                                        anchor
-                                    };
-                                    if let Some(e) = state.update(
-                                        f.feed(raw),
-                                        vf.feed(raw),
-                                        anchor,
-                                        ms as u32,
-                                        0,
-                                    ) {
-                                        match e {
-                                            SwitchEvent::NoteOn { .. } => {
-                                                active = true;
-                                                notes.set(0, 54, true);
-                                                if ms >= 200 {
-                                                    false_on += 1;
+                            for fault_adc in [0, 2048, 4095] {
+                                for guarded in [false, true] {
+                                    let anchor = (rest / 3.3 * 4095f64).round() as u16;
+                                    let mut f = ChannelFilter::<FILTER_SIZE>::new();
+                                    f.prime(anchor);
+                                    let mut vf = ChannelFilter::<VELOCITY_FILTER_SIZE>::new();
+                                    vf.prime(anchor);
+                                    let mut state = SwitchState::new();
+                                    assert!(state
+                                        .set_calibration(crate::velocity::SWITCH_CALIBRATIONS[0]));
+                                    let mut guard = PowerGuard::new(true);
+                                    let mut notes = Notes::default();
+                                    let mut s =
+                                        Supervisor::new(threshold, 20_000, release * 1_000_000);
+                                    let mut active = false;
+                                    let mut false_on = 0;
+                                    let mut panic_bytes = 0;
+                                    let fault = 200_000_000 + phase * 1000;
+                                    // 1us circuit grid and 1ms firmware scans. Healthy supervisor is prequalified.
+                                    for t in (0..=300_000_000u64).step_by(1000) {
+                                        let rail = if t >= fault && t < fault + pulse * 1000 {
+                                            2.7
+                                        } else {
+                                            3.3
+                                        };
+                                        let valid = s.sample(t, rail);
+                                        if t % 1_000_000 != 0 {
+                                            continue;
+                                        }
+                                        let ms = t / 1_000_000;
+                                        if ms < 30 {
+                                            continue;
+                                        }
+                                        if guarded && guard.observe(valid) {
+                                            notes.panic(|m| {
+                                                panic_bytes += 3;
+                                                if m[0] & 0xf0 == 0x80
+                                                    || (m[0] & 0xf0 == 0xb0
+                                                        && [120, 123].contains(&m[1]))
+                                                {
+                                                    active = false;
                                                 }
+                                            });
+                                        }
+                                        if guarded && guard.locked() {
+                                            continue;
+                                        }
+                                        let raw = if rail < 3.0 || !valid {
+                                            fault_adc
+                                        } else if held && (100..250).contains(&ms) {
+                                            anchor + 683
+                                        } else {
+                                            anchor
+                                        };
+                                        if let Some(e) = state.update(
+                                            f.feed(raw),
+                                            vf.feed(raw),
+                                            anchor,
+                                            ms as u32,
+                                            0,
+                                        ) {
+                                            match e {
+                                                SwitchEvent::NoteOn { .. } => {
+                                                    active = true;
+                                                    notes.set(0, 54, true);
+                                                    if ms >= 200 {
+                                                        false_on += 1;
+                                                    }
+                                                }
+                                                SwitchEvent::NoteOff => {
+                                                    active = false;
+                                                    notes.set(0, 54, false);
+                                                }
+                                                _ => {}
                                             }
-                                            SwitchEvent::NoteOff => {
-                                                active = false;
-                                                notes.set(0, 54, false);
-                                            }
-                                            _ => {}
                                         }
                                     }
+                                    let failed = active || false_on > 0;
+                                    if guarded {
+                                        cases += 1;
+                                        failures += usize::from(failed);
+                                    } else {
+                                        negative += usize::from(failed);
+                                    }
+                                    csv.push_str(&format!("{rest},{held},{phase},{pulse},{threshold},{release},{fault_adc},{guarded},{false_on},{active},{panic_bytes}\n"));
                                 }
-                                let failed = active || false_on > 0;
-                                if guarded {
-                                    cases += 1;
-                                    failures += usize::from(failed);
-                                } else {
-                                    negative += usize::from(failed);
-                                }
-                                csv.push_str(&format!("{rest},{held},{phase},{pulse},{threshold},{release},{guarded},{false_on},{active},{panic_bytes}\n"));
                             }
                         }
                     }
@@ -495,6 +509,27 @@ fn study(a: &[String], out: &Path) -> Result<String> {
         start.push_str(&format!("{name},{boot},{}\n", guard.locked()));
     }
     fs::write(out.join("startup.csv"), start)?;
+    let mut margins = String::from("rail_v,threshold_v,hysteresis_ratio,valid_after32ms\n");
+    let mut nominal_low_lockouts = 0;
+    for rail in [2.7, 2.99, 3., 3.1, 3.168, 3.2, 3.3, 3.432] {
+        for threshold in [3.07 * 0.985, 3.07 * 1.015] {
+            for h in [0.01, 0.025] {
+                let mut s = Supervisor::new(threshold, 20_000, 28_000_000);
+                s.hysteresis = threshold * h;
+                s.sample(0, rail);
+                let valid = s.sample(32_000_000, rail);
+                if (rail < 3.0 && valid) || (rail >= 3.2 && !valid) {
+                    return Err("startup voltage margin gate failed".into());
+                }
+                if rail == 3.168 && !valid {
+                    nominal_low_lockouts += 1;
+                }
+                margins.push_str(&format!("{rail},{threshold},{h},{valid}\n"));
+            }
+        }
+    }
+    fs::write(out.join("startup-margins.csv"), margins)?;
+    fs::write(out.join("startup-margin-report.txt"),format!("STARTUP_MARGIN_STUDY=PASS (safety checks, not all nominal source corners arm)\nrail_3v168_lockout_corners={nominal_low_lockouts}\nDESIGN_ACCEPTANCE=CONDITIONAL_RAIL_AT_LEAST3V2_FOR_ARMING\nNOTE=3.3V module minus4percent is3.168V; selected supervisor worst rising threshold is about3.194V. Some within-module-tolerance startups intentionally remain disarmed. Rail tolerance/part choice must be resolved before physical promotion. Hall minimum3.0V must not be waived by lowering the trip point.\n"))?;
     if failures != 0 || negative == 0 {
         return Err(format!("fault failures={failures}, negatives={negative}").into());
     }

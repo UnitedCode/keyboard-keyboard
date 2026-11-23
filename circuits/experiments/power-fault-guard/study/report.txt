@@ -1,0 +1,16 @@
+GUARD_STUDY=PASS
+ISOLATION=PASS
+parent_sha256=82f4333b7b259081f6d4c707b7abbecfe73e620ead333fd2e1c20b46aa39a1d2
+candidate_sha256=9ce718ce53d1118f81376a1190c64064598f2e0274ab5463b580950c68fd2fb3
+original_fault_failures=8
+fixed_original_fault_failures=0
+guarded_fault_cases=3600
+guarded_failures=0
+unguarded_failure_controls=1788
+startup_and_seed_cases=5
+90_note_panic_bytes=510
+90_note_panic_wire_ns=163200000
+RECOVERY=sticky lockout; reset only with stable rails and released keys
+SCOPE=1us supervisor timing grid, 1ms production-kernel scans; 20us assertion scenario,12/28ms release corners
+UNQUALIFIED=sub20us glitches; complete Seed power loss; VDD below supervisor operating range; overvoltage; physical receiver behavior; PCB parasitics
+PHYSICAL_MEASURED=NOT_RUN

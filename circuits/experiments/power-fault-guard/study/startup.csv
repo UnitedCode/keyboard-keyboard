@@ -1,0 +1,6 @@
+scenario,valid_at_calibration,locked_after_restore
+healthy,true,false
+startup-late,false,true
+startup-ramp,false,true
+chatter,true,true
+seed-brownout,true,true

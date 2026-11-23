@@ -1,0 +1,5 @@
+Guard pullup DC, declared total leakage5uA
+Vseed seed 0 3.432
+Rpull seed good 10000
+Ileak good 0 5u
+.end
