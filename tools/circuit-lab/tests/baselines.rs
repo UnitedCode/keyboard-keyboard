@@ -92,6 +92,29 @@ fn frozen_current_source_still_matches_schematic() {
     .unwrap();
 }
 
+#[test]
+fn evolving_circuit_preserves_filter_lag_and_an_open_sensor_cannot_actuate() {
+    let g = graph("keyboard-current");
+    let f = Fixture::parse(
+        &fs::read_to_string(root().join("circuits/fixtures/reference.fixture")).unwrap(),
+    )
+    .unwrap();
+    let mut circuit = circuit_workbench::electrical::KeyboardCircuit::new(&g, &f).unwrap();
+    let mut open = circuit_workbench::electrical::KeyboardCircuit::new(&g, &f).unwrap();
+    open.open_control = Some("HE7".into());
+    for c in [&mut circuit, &mut open] {
+        c.observe(0, &[0; 11]).unwrap();
+        c.sample(100_000, 10, &[0; 11]).unwrap();
+        c.set_microvolts(100_000, "HE7", 2_200_000).unwrap();
+    }
+    let before = circuit.sample(100_000, 10, &[0; 11]).unwrap();
+    let after = circuit.sample(150_000, 10, &[0; 11]).unwrap();
+    assert!(before < 1_700_000);
+    assert!(after > 2_190_000 && after <= 2_200_000);
+    assert!(open.sample(150_000, 10, &[0; 11]).unwrap() < 1_700_000);
+    assert!(circuit.sample(140_000, 10, &[0; 11]).is_err());
+}
+
 #[cfg(feature = "daisy")]
 #[test]
 fn sdk_adapter_observes_changed_sensor_and_rejects_wrong_adc() {

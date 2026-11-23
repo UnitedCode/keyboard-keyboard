@@ -1,0 +1,5 @@
+ARM_DEVICE_OBSERVATIONS=PASS
+original_report_sha256=a1082dcbd5b0a85f68bf7f758121dacacd4a6c3eab34d562fa65054691b90c1e
+midi_trace_sha256=24a46f0693bcebd39189b0c26327c8c08011dd7cd9bec7b4278dd07b17d9a88d
+original_report_preserved=true
+policy=observable-only; no CPU execution or circuit-state changes

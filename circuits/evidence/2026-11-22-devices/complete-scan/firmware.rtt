@@ -1,0 +1,236 @@
+INFO - Starting system init
+INFO - Set up up DMA RAM in DRAM2...
+INFO - Memory Size 0xe
+INFO - Setting up GPIOs...
+INFO - Setting up SDRAM...
+INFO - SDRAM Memory Size 0x19
+INFO - Set up Audio...
+INFO - Setup up SAI...
+INFO - Setting up AK4556/PCM3060 Audio CODEC...
+INFO - Start audio stream...
+INFO - Audio started!
+INFO - Setup up Audio DMA: input: 0x30000000, output: 0x30004000
+INFO - System init done!
+INFO - keyboard_keyboard ready: 100 switches, 13 muxes
+INFO - display ok
+INFO - CC7 = 127
+INFO - CC10 = 127
+INFO - CC11 = 127
+INFO - CC74 = 127
+INFO - CC36 = 127
+INFO - CC37 = 127
+INFO - CC38 = 127
+INFO - CC39 = 127
+INFO - CC40 = 127
+INFO - CC41 = 127
+INFO - CC42 = 127
+INFO - CC43 = 127
+INFO - NoteOn  HE1 ch=1 note=54 vel=126
+INFO - NoteOn  HE2 ch=1 note=56 vel=126
+INFO - NoteOn  HE3 ch=1 note=58 vel=126
+INFO - NoteOn  HE4 ch=1 note=60 vel=126
+INFO - NoteOn  HE5 ch=1 note=62 vel=126
+INFO - NoteOn  HE6 ch=1 note=64 vel=126
+INFO - NoteOn  HE7 ch=1 note=66 vel=126
+INFO - NoteOn  HE8 ch=1 note=68 vel=126
+INFO - NoteOn  HE9 ch=1 note=70 vel=126
+INFO - NoteOn  HE10 ch=1 note=72 vel=126
+INFO - NoteOn  HE11 ch=1 note=74 vel=126
+INFO - NoteOn  HE12 ch=1 note=76 vel=126
+INFO - NoteOn  HE13 ch=1 note=78 vel=126
+INFO - NoteOn  HE14 ch=1 note=80 vel=126
+INFO - NoteOff HE1 ch=1 note=54
+INFO - NoteOff HE2 ch=1 note=56
+INFO - NoteOff HE3 ch=1 note=58
+INFO - NoteOff HE4 ch=1 note=60
+INFO - NoteOff HE5 ch=1 note=62
+INFO - NoteOff HE6 ch=1 note=64
+INFO - NoteOff HE7 ch=1 note=66
+INFO - NoteOff HE8 ch=1 note=68
+INFO - NoteOff HE9 ch=1 note=70
+INFO - NoteOff HE10 ch=1 note=72
+INFO - NoteOff HE11 ch=1 note=74
+INFO - NoteOff HE12 ch=1 note=76
+INFO - NoteOff HE13 ch=1 note=78
+INFO - NoteOff HE14 ch=1 note=80
+INFO - NoteOn  HE15 ch=1 note=47 vel=126
+INFO - NoteOn  HE16 ch=1 note=49 vel=126
+INFO - NoteOn  HE17 ch=1 note=51 vel=126
+INFO - NoteOn  HE18 ch=1 note=53 vel=126
+INFO - NoteOn  HE19 ch=1 note=55 vel=126
+INFO - NoteOn  HE20 ch=1 note=57 vel=126
+INFO - NoteOn  HE21 ch=1 note=59 vel=126
+INFO - NoteOn  HE22 ch=1 note=61 vel=126
+INFO - NoteOn  HE23 ch=1 note=63 vel=126
+INFO - NoteOn  HE24 ch=1 note=65 vel=126
+INFO - NoteOn  HE25 ch=1 note=67 vel=126
+INFO - NoteOn  HE26 ch=1 note=69 vel=126
+INFO - NoteOn  HE27 ch=1 note=71 vel=126
+INFO - NoteOn  HE28 ch=1 note=73 vel=126
+INFO - NoteOff HE15 ch=1 note=47
+INFO - NoteOff HE16 ch=1 note=49
+INFO - NoteOff HE17 ch=1 note=51
+INFO - NoteOff HE18 ch=1 note=53
+INFO - NoteOff HE19 ch=1 note=55
+INFO - NoteOff HE20 ch=1 note=57
+INFO - NoteOff HE21 ch=1 note=59
+INFO - NoteOff HE22 ch=1 note=61
+INFO - NoteOff HE23 ch=1 note=63
+INFO - NoteOff HE24 ch=1 note=65
+INFO - NoteOff HE25 ch=1 note=67
+INFO - NoteOff HE26 ch=1 note=69
+INFO - NoteOff HE27 ch=1 note=71
+INFO - NoteOff HE28 ch=1 note=73
+INFO - NoteOn  HE29 ch=1 note=75 vel=126
+INFO - NoteOn  HE30 ch=1 note=42 vel=126
+INFO - NoteOn  HE31 ch=1 note=44 vel=126
+INFO - NoteOn  HE32 ch=1 note=46 vel=126
+INFO - NoteOn  HE33 ch=1 note=48 vel=126
+INFO - NoteOn  HE34 ch=1 note=50 vel=126
+INFO - NoteOn  HE35 ch=1 note=52 vel=126
+INFO - NoteOn  HE36 ch=1 note=54 vel=126
+INFO - NoteOn  HE37 ch=1 note=56 vel=126
+INFO - NoteOn  HE38 ch=1 note=58 vel=126
+INFO - NoteOn  HE39 ch=1 note=60 vel=126
+INFO - NoteOn  HE40 ch=1 note=62 vel=126
+INFO - NoteOn  HE41 ch=1 note=64 vel=126
+INFO - NoteOn  HE42 ch=1 note=66 vel=126
+INFO - NoteOff HE29 ch=1 note=75
+INFO - NoteOff HE30 ch=1 note=42
+INFO - NoteOff HE31 ch=1 note=44
+INFO - NoteOff HE32 ch=1 note=46
+INFO - NoteOff HE33 ch=1 note=48
+INFO - NoteOff HE34 ch=1 note=50
+INFO - NoteOff HE35 ch=1 note=52
+INFO - NoteOff HE36 ch=1 note=54
+INFO - NoteOff HE37 ch=1 note=56
+INFO - NoteOff HE38 ch=1 note=58
+INFO - NoteOff HE39 ch=1 note=60
+INFO - NoteOff HE40 ch=1 note=62
+INFO - NoteOff HE41 ch=1 note=64
+INFO - NoteOff HE42 ch=1 note=66
+INFO - NoteOn  HE43 ch=1 note=68 vel=126
+INFO - NoteOn  HE44 ch=1 note=35 vel=126
+INFO - NoteOn  HE45 ch=1 note=37 vel=126
+INFO - NoteOn  HE46 ch=1 note=39 vel=126
+INFO - NoteOn  HE47 ch=1 note=41 vel=126
+INFO - NoteOn  HE48 ch=1 note=43 vel=126
+INFO - NoteOn  HE49 ch=1 note=45 vel=126
+INFO - NoteOn  HE50 ch=1 note=47 vel=126
+INFO - NoteOn  HE51 ch=1 note=49 vel=126
+INFO - NoteOn  HE52 ch=1 note=51 vel=126
+INFO - NoteOn  HE53 ch=1 note=53 vel=126
+INFO - NoteOn  HE54 ch=1 note=55 vel=126
+INFO - NoteOn  HE55 ch=1 note=57 vel=126
+INFO - NoteOn  HE56 ch=1 note=59 vel=126
+INFO - NoteOff HE43 ch=1 note=68
+INFO - NoteOff HE44 ch=1 note=35
+INFO - NoteOff HE45 ch=1 note=37
+INFO - NoteOff HE46 ch=1 note=39
+INFO - NoteOff HE47 ch=1 note=41
+INFO - NoteOff HE48 ch=1 note=43
+INFO - NoteOff HE49 ch=1 note=45
+INFO - NoteOff HE50 ch=1 note=47
+INFO - NoteOff HE51 ch=1 note=49
+INFO - NoteOff HE52 ch=1 note=51
+INFO - NoteOff HE53 ch=1 note=53
+INFO - NoteOff HE54 ch=1 note=55
+INFO - NoteOff HE55 ch=1 note=57
+INFO - NoteOff HE56 ch=1 note=59
+INFO - NoteOn  HE57 ch=1 note=61 vel=126
+INFO - NoteOn  HE58 ch=1 note=63 vel=126
+INFO - NoteOn  HE59 ch=1 note=30 vel=126
+INFO - NoteOn  HE60 ch=1 note=34 vel=126
+INFO - NoteOn  HE61 ch=1 note=36 vel=126
+INFO - NoteOn  HE62 ch=1 note=38 vel=126
+INFO - NoteOn  HE63 ch=1 note=40 vel=126
+INFO - NoteOn  HE64 ch=1 note=42 vel=126
+INFO - NoteOn  HE65 ch=1 note=44 vel=126
+INFO - NoteOn  HE66 ch=1 note=46 vel=126
+INFO - NoteOn  HE67 ch=1 note=48 vel=126
+INFO - NoteOn  HE68 ch=1 note=50 vel=126
+INFO - NoteOn  HE69 ch=1 note=52 vel=126
+INFO - NoteOn  HE70 ch=1 note=56 vel=126
+INFO - NoteOff HE57 ch=1 note=61
+INFO - NoteOff HE58 ch=1 note=63
+INFO - NoteOff HE59 ch=1 note=30
+INFO - NoteOff HE60 ch=1 note=34
+INFO - NoteOff HE61 ch=1 note=36
+INFO - NoteOff HE62 ch=1 note=38
+INFO - NoteOff HE63 ch=1 note=40
+INFO - NoteOff HE64 ch=1 note=42
+INFO - NoteOff HE65 ch=1 note=44
+INFO - NoteOff HE66 ch=1 note=46
+INFO - NoteOff HE67 ch=1 note=48
+INFO - NoteOff HE68 ch=1 note=50
+INFO - NoteOff HE69 ch=1 note=52
+INFO - NoteOff HE70 ch=1 note=56
+INFO - NoteOn  HE81 ch=10 note=36 vel=126
+INFO - NoteOn  HE82 ch=10 note=37 vel=126
+INFO - NoteOn  HE83 ch=10 note=38 vel=126
+INFO - NoteOn  HE84 ch=10 note=39 vel=126
+INFO - NoteOn  HE85 ch=10 note=40 vel=126
+INFO - NoteOn  HE86 ch=10 note=41 vel=126
+INFO - NoteOn  HE87 ch=10 note=42 vel=126
+INFO - NoteOn  HE88 ch=10 note=43 vel=126
+INFO - NoteOn  HE89 ch=10 note=44 vel=126
+INFO - NoteOn  HE90 ch=10 note=45 vel=126
+INFO - NoteOn  HE91 ch=10 note=46 vel=126
+INFO - NoteOn  HE92 ch=10 note=47 vel=126
+INFO - NoteOn  HE93 ch=10 note=48 vel=126
+INFO - NoteOn  HE94 ch=10 note=49 vel=126
+INFO - NoteOn  HE95 ch=10 note=50 vel=126
+INFO - NoteOn  HE96 ch=10 note=51 vel=126
+INFO - NoteOn  HE97 ch=10 note=52 vel=126
+INFO - NoteOn  HE98 ch=10 note=53 vel=126
+INFO - NoteOn  HE99 ch=10 note=54 vel=126
+INFO - NoteOn  HE100 ch=10 note=55 vel=126
+INFO - NoteOff HE81 ch=10 note=36
+INFO - NoteOff HE82 ch=10 note=37
+INFO - NoteOff HE83 ch=10 note=38
+INFO - NoteOff HE84 ch=10 note=39
+INFO - NoteOff HE85 ch=10 note=40
+INFO - NoteOff HE86 ch=10 note=41
+INFO - NoteOff HE87 ch=10 note=42
+INFO - NoteOff HE88 ch=10 note=43
+INFO - NoteOff HE89 ch=10 note=44
+INFO - NoteOff HE90 ch=10 note=45
+INFO - NoteOff HE91 ch=10 note=46
+INFO - NoteOff HE92 ch=10 note=47
+INFO - NoteOff HE93 ch=10 note=48
+INFO - NoteOff HE94 ch=10 note=49
+INFO - NoteOff HE95 ch=10 note=50
+INFO - NoteOff HE96 ch=10 note=51
+INFO - NoteOff HE97 ch=10 note=52
+INFO - NoteOff HE98 ch=10 note=53
+INFO - NoteOff HE99 ch=10 note=54
+INFO - NoteOff HE100 ch=10 note=55
+INFO - CC7 = 0
+INFO - CC10 = 0
+INFO - CC11 = 0
+INFO - CC74 = 0
+INFO - CC36 = 0
+INFO - CC37 = 0
+INFO - CC38 = 0
+INFO - CC39 = 0
+INFO - CC40 = 0
+INFO - CC41 = 0
+INFO - CC42 = 0
+INFO - CC43 = 0
+INFO - Voice select PC=0 ch=1
+INFO - Voice select PC=1 ch=1
+INFO - Voice select PC=2 ch=1
+INFO - PitchBend value=0
+INFO - PitchBend value=4711
+INFO - PitchBend value=8192
+INFO - CC1 = 127
+INFO - CC1 = 0
+INFO - All Notes Off — all 16 channels
+INFO - recalibration requested
+INFO - recalibration done tick=1004
+INFO - recalibration requested
+INFO - recalibration done tick=1029
+INFO - tick=2000
+INFO - PitchBend value=16383
+INFO - PitchBend value=11673
+INFO - PitchBend value=8192

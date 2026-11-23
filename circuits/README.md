@@ -1,5 +1,8 @@
 # Keyboard Keyboard circuit lab
 
+For production firmware connected to the circuit, display and MIDI output,
+use the [complete virtual-device guide](virtual-devices.md).
+
 Reproduce the existing board before changing its design:
 
 ```sh
@@ -100,8 +103,9 @@ The `daisy` feature implements the pinned SDK's `machine::Carrier` trait for
 SPICE fault model rather than an ideal digital approximation. OLED writes are
 counted/acknowledged, not rendered. Host tests exercise all 112 routes.
 
-This adapter is electrically ideal. The full production ARM run with this
-adapter and synchronized SPICE feedback is **NOT_RUN**. Existing
+This original adapter is electrically ideal. The new
+[device runner](virtual-devices.md) instead evolves circuit voltages from
+actual firmware GPIO activity and feeds them into its ADC conversions. Existing
 [firmware tests](../tools/seed-tests/README.md) remain a separate evidence source.
 Magnetic travel curves, temperature, true ADC sample/hold behavior, optocoupler,
 USB integrity, and complete power consumption are not modeled. `coverage.csv`
