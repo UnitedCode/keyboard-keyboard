@@ -27,13 +27,14 @@ commits. The ordinary firmware target is unchanged and is the failure control.
    clears pending events, resets switch state, and cancels recalibration.
 3. Send explicit NoteOff for tracked pitches, sustain off, All Sound Off, All Notes
    Off and neutral bend/modulation on all channels, outside the scan queue lock.
-4. Wait for UART completion after each byte. Clearing a software queue alone left
+4. Wait for UART completion after each MIDI message. Clearing a software queue alone left
    several future notes in the transmit FIFO; the retained failed brownout proves it.
 5. Restoring power never rearms the candidate. Use a **full Seed power cycle with
    stable rails and released keys**. Warm software reset remains unqualified below.
 
-MIDI has finite wire time: a 90-pitch panic is 510 bytes / 163.2 ms at 31,250 baud.
-The ARM gate allows a 3 ms detection / already-committed-message window, records
+MIDI has finite wire time: a 90-pitch panic is 510 bytes / 163.2 ms at 31,250 baud,
+before software scheduling overhead. The 14-key ARM fault gate allows a 3 ms
+detection / already-committed-message window, records
 those events separately, and requires panic completion within 170 ms. It does
 not claim instantaneous silence or control over an unpowered/failed receiver.
 

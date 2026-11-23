@@ -236,7 +236,7 @@ pub fn rail(name: &str, t: u64) -> f64 {
             }
         }
         "chatter" => {
-            if (200_000_000..230_000_000).contains(&t) {
+            if (300_000_000..330_000_000).contains(&t) {
                 if (t / 500_000).is_multiple_of(2) {
                     2.9
                 } else {
