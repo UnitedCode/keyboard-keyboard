@@ -1,5 +1,11 @@
 # Circuit improvement queue
 
+The [separate power-fault guard](experiments/power-fault-guard/README.md) addresses
+note handling without changing the frozen original: explicit panic and sticky
+lockout replace reliance on an arbitrary mid-bias voltage. Startup rail margin,
+warm-reset flash initialization and physical analog/power qualification remain
+open; the older rejection is preserved as its control.
+
 The new [power/noise studies](verify-power-noise.md) refine the priorities below:
 retain 4.7 nF pending dynamic source/noise measurements; the separate 4 Ω DC-test
 fixture passes with original capacitors. A lower-current Hall candidate reduces

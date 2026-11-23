@@ -1,0 +1,4 @@
+STARTUP_MARGIN_STUDY=PASS (safety checks, not all nominal source corners arm)
+rail_3v168_lockout_corners=1
+DESIGN_ACCEPTANCE=CONDITIONAL_RAIL_AT_LEAST3V2_FOR_ARMING
+NOTE=3.3V module minus4percent is3.168V; selected supervisor worst rising threshold is about3.194V. Some within-module-tolerance startups intentionally remain disarmed. Rail tolerance/part choice must be resolved before physical promotion. Hall minimum3.0V must not be waived by lowering the trip point.

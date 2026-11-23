@@ -1,7 +1,12 @@
 #[allow(dead_code)]
 #[path = "../../../keyboard_keyboard/code/src/constants.rs"]
 mod constants;
+#[path = "../../../circuits/experiments/power-fault-guard/firmware/src/guard.rs"]
+mod guard;
 mod noise;
+mod power;
+#[cfg(feature = "device")]
+mod power_device;
 #[allow(dead_code)]
 #[path = "../../../keyboard_keyboard/code/src/switch.rs"]
 mod switch;
@@ -15,6 +20,11 @@ fn main() {
         Some("noise-clock") => noise::clock_cli(&args[1..]),
         Some("power-kernel") => noise::power_fault_cli(&args[1..]),
         Some("hall-kernel") => noise::hall_fault_cli(&args[1..]),
+        Some("guard-candidate") => power::candidate_cli(&args[1..]),
+        Some("guard-study") => power::study_cli(&args[1..]),
+        Some("guard-check-schematic") => power::schematic_cli(&args[1..]),
+        #[cfg(feature = "device")]
+        Some("guard-device") => power_device::cli(&args[1..]),
         _ => circuit_workbench::cli(args),
     };
     if let Err(error) = result {

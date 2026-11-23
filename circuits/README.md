@@ -1,5 +1,9 @@
 # Keyboard Keyboard circuit lab
 
+For sensor-supply loss, startup and brownout tests, use the isolated
+[power-fault guard experiment](experiments/power-fault-guard/README.md) and its
+[verification commands](experiments/power-fault-guard/verify.md).
+
 For the latest power/thermal and noise comparisons, start with the
 [independent verification guide](verify-power-noise.md). It includes expected
 failures as well as passes; all changes remain separate from the frozen originals.
