@@ -9,6 +9,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f2032f911046de80f0a198e0901378627c33f59ea0ac00e363d481118bd70a53"
 
 [[package]]
+name = "az"
+version = "1.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "be5eb007b7cacc6c660343e96f650fedf4b5a77512399eb952ca6642cf8d13f7"
+
+[[package]]
 name = "bitflags"
 version = "2.13.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -38,8 +44,10 @@ checksum = "4e7648175b45a9a48536d676f68d918270699102aa8dab5496df06904c914600"
 [[package]]
 name = "circuit-workbench"
 version = "0.1.0"
-source = "git+https://github.com/UnitedCode/synth-phone-e-v2-rust?rev=a7870470019bb5827da88ba2a79b30c72ea0a5d2#a7870470019bb5827da88ba2a79b30c72ea0a5d2"
+source = "git+https://github.com/UnitedCode/synth-phone-e-v2-rust?rev=c41fa0c5d20e4e7fa3821f753014b9b0b386a3c1#c41fa0c5d20e4e7fa3821f753014b9b0b386a3c1"
 dependencies = [
+ "embedded-graphics",
+ "hound",
  "virtual-daisy",
 ]
 
@@ -73,10 +81,42 @@ dependencies = [
 ]
 
 [[package]]
+name = "embedded-graphics"
+version = "0.7.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "750082c65094fbcc4baf9ba31583ce9a8bb7f52cadfb96f6164b1bc7f922f32b"
+dependencies = [
+ "az",
+ "byteorder",
+ "embedded-graphics-core",
+ "float-cmp",
+ "micromath",
+]
+
+[[package]]
+name = "embedded-graphics-core"
+version = "0.3.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b8b1239db5f3eeb7e33e35bd10bd014e7b2537b17e071f726a09351431337cfa"
+dependencies = [
+ "az",
+ "byteorder",
+]
+
+[[package]]
 name = "enum-set"
 version = "0.0.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dbf2bab91676279dd3148f1d28737631e98b3f6c662e444d700d9d6ccf6665df"
+
+[[package]]
+name = "float-cmp"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e1267f4ac4f343772758f7b1bdcbe767c218bbab93bb432acbf5162bbf85a6c4"
+dependencies = [
+ "num-traits",
+]
 
 [[package]]
 name = "gdbstub"
@@ -142,6 +182,12 @@ name = "managed"
 version = "0.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0ca88d725a0a943b096803bd34e73a4437208b6077654cc4ecb2947a5f91618d"
+
+[[package]]
+name = "micromath"
+version = "1.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bc4010833aea396656c2f91ee704d51a6f1329ec2ab56ffd00bfd56f7481ea94"
 
 [[package]]
 name = "num-bigfloat"
@@ -247,8 +293,8 @@ checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
 
 [[package]]
 name = "virtual-daisy"
-version = "0.2.0"
-source = "git+https://github.com/UnitedCode/virtual-daisy?rev=a1c4b61c20355d54d9ca608331f307bae67a4a2e#a1c4b61c20355d54d9ca608331f307bae67a4a2e"
+version = "0.2.1"
+source = "git+https://github.com/UnitedCode/virtual-daisy?rev=f7892c73b36960d729e6c3bf8bbd0ce3e65498a0#f7892c73b36960d729e6c3bf8bbd0ce3e65498a0"
 dependencies = [
  "hound",
  "sha2",
@@ -258,7 +304,7 @@ dependencies = [
 [[package]]
 name = "zmu_cortex_m"
 version = "0.1.0"
-source = "git+https://github.com/UnitedCode/virtual-daisy?rev=a1c4b61c20355d54d9ca608331f307bae67a4a2e#a1c4b61c20355d54d9ca608331f307bae67a4a2e"
+source = "git+https://github.com/UnitedCode/virtual-daisy?rev=f7892c73b36960d729e6c3bf8bbd0ce3e65498a0#f7892c73b36960d729e6c3bf8bbd0ce3e65498a0"
 dependencies = [
  "byteorder",
  "enum-set",
