@@ -6,6 +6,8 @@ A hall-effect MIDI keyboard controller built around the Electrosmith Daisy Seed 
 
 ## Hardware
 
+Test existing revisions and isolated redesigns in the [virtual circuit lab](circuits/README.md).
+
 - **MCU:** Electrosmith Daisy Seed Rev4 (STM32H750V)
 - **Sensors:** 100x MT9105ET hall-effect sensors across 13 SN74LV4051A analog muxes (AM1–AM13)
 - **Pots:** 12 trim potentiometers on AM14–AM15, read as MIDI CC

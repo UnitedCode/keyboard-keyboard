@@ -1,0 +1,110 @@
+use circuit_workbench::{carrier::KeyboardCarrier, fixture::Fixture, netlist::Graph, profiles};
+use std::{fs, path::PathBuf};
+fn root() -> PathBuf {
+    PathBuf::from(env!("CARGO_MANIFEST_DIR")).join("../..")
+}
+fn graph(name: &str) -> Graph {
+    Graph::parse(
+        &fs::read_to_string(root().join(format!("circuits/baselines/{name}.net"))).unwrap(),
+    )
+    .unwrap()
+}
+#[test]
+fn preserves_both_board_revisions_and_detects_faults() {
+    let fixture = Fixture::parse(
+        &fs::read_to_string(root().join("circuits/fixtures/reference.fixture")).unwrap(),
+    )
+    .unwrap();
+    for name in ["keyboard-current", "keyboard-pre-repair"] {
+        let out =
+            std::env::temp_dir().join(format!("circuit-regression-{}-{name}", std::process::id()));
+        fs::create_dir(&out).unwrap();
+        let mut g = graph(name);
+        let report = profiles::verify(name, &g, &fixture, &out).unwrap();
+        assert!(report.contains("controls_routed=112"));
+        #[cfg(feature = "spice")]
+        {
+            assert!(report.contains("controls_sampled=112"));
+            assert!(report.contains(if name.ends_with("pre-repair") {
+                "unused_outputs_grounded=[true, true]"
+            } else {
+                "unused_outputs_grounded=[false, false]"
+            }));
+        }
+        g.disconnect("A1.35");
+        assert!(profiles::verify(name, &g, &fixture, &out).is_err());
+        fs::remove_dir_all(out).unwrap();
+    }
+}
+#[test]
+fn carrier_routes_all_controls_and_refuses_shorted_board() {
+    let g = graph("keyboard-current");
+    let mut c = KeyboardCarrier::new(&g).unwrap();
+    for (index, (r, m, ch, pad)) in profiles::keyboard_routes(&g).unwrap().iter().enumerate() {
+        let mux: usize = m[2..].parse().unwrap();
+        let decoder = mux.saturating_sub(10);
+        let mut outputs = [0; 11];
+        outputs[6] = ((*ch as u16 & 1) << 10) | (((*ch as u16 >> 1) & 1) << 11);
+        outputs[1] = ((*ch as u16 >> 2) & 1) << 4;
+        outputs[2] = ((decoder as u16 & 1) << 8)
+            | (((decoder as u16 >> 1) & 1) << 9)
+            | (((decoder as u16 >> 2) & 1) << 10);
+        let channel = match pad.as_str() {
+            "A1.22" => 10,
+            "A1.23" => 15,
+            "A1.24" => 5,
+            "A1.25" => 7,
+            "A1.26" => 3,
+            "A1.27" => 11,
+            "A1.28" => 4,
+            "A1.29" => 19,
+            "A1.30" => 18,
+            "A1.31" => 17,
+            "A1.32" => 16,
+            "A1.35" => 14,
+            _ => panic!("unknown pad"),
+        };
+        c.set_microvolts(r, 300_000 + index as u32 * 20_000)
+            .unwrap();
+        assert_eq!(
+            c.sample(channel, &outputs).unwrap(),
+            300_000 + index as u32 * 20_000
+        );
+    }
+    assert!(c.set_microvolts("HE1", 3_300_001).is_err());
+    assert!(c.set_microvolts("HE101", 1).is_err());
+    assert!(KeyboardCarrier::new(&graph("keyboard-pre-repair")).is_err());
+}
+
+#[test]
+fn frozen_current_source_still_matches_schematic() {
+    circuit_workbench::cli(vec![
+        "check-source".into(),
+        root()
+            .join("circuits/baselines/keyboard-current.net")
+            .display()
+            .to_string(),
+        root()
+            .join("keyboard_keyboard/kicad/keyboard_keyboard.kicad_sch")
+            .display()
+            .to_string(),
+    ])
+    .unwrap();
+}
+
+#[cfg(feature = "daisy")]
+#[test]
+fn sdk_adapter_observes_changed_sensor_and_rejects_wrong_adc() {
+    let (handle, mut adapter) = circuit_workbench::carrier::shared(
+        KeyboardCarrier::new(&graph("keyboard-current")).unwrap(),
+    );
+    // HE7 is AM1/X0 in the actual source, not HE1.
+    handle
+        .borrow_mut()
+        .set_microvolts("HE7", 2_000_000)
+        .unwrap();
+    assert_eq!(adapter.adc_input(1, 10, &[0; 11], 0).unwrap(), 2_000_000);
+    assert!(adapter.adc_input(2, 10, &[0; 11], 0).is_err());
+    adapter.i2c_write(1, 0x3c, &[0]).unwrap();
+    assert_eq!(handle.borrow().oled_writes, 1);
+}

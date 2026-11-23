@@ -1,0 +1,6 @@
+/results/
+# These are reviewed model inputs/evidence, not disposable KiCad exports.
+!/baselines/*.net
+!/evidence/**/*.csv
+!/experiments/**/*.net
+!/experiments/**/*.csv
