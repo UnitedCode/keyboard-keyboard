@@ -1,0 +1,9 @@
+# Conditional DC slice from MagnTek MT910X ROUT max4ohm at VOUT=2.5V, |IOUT|<=1.5mA.
+# This is not a measured dynamic impedance at the assembled keyboard's idle outputs.
+# charge-study separately clamps output current to +/-1.5mA; verify remains linear.
+driver_ohm=33
+contact_ohm=10
+pullup_ohm=40000
+mux_ron_ohm=100
+sensor_source_ohm=4
+adc_cap_f=50e-12

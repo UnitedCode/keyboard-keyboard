@@ -1,5 +1,9 @@
 # Keyboard Keyboard circuit lab
 
+For the latest power/thermal and noise comparisons, start with the
+[independent verification guide](verify-power-noise.md). It includes expected
+failures as well as passes; all changes remain separate from the frozen originals.
+
 For production firmware connected to the circuit, display and MIDI output,
 use the [complete virtual-device guide](virtual-devices.md).
 

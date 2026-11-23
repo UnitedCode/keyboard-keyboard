@@ -61,3 +61,10 @@ unused-connector and library/net-name findings remain visible in the paired ERC
 reports. The copied project settings and relative library tables keep the
 original HE60 library shared, without a second library copy. This is not a clean
 manufacturing ERC approval.
+# Subsequent qualification
+
+The [separate noise/source study](../filter-noise/README.md) retains this result
+as a 1 kΩ stress comparison and recommends keeping the original 4.7 nF pending
+measurements. The new 4 Ω conditioned fixture clears the original scan gate;
+strong injected interference can make 470 pF produce a false note. Reports below
+remain unchanged historical evidence.

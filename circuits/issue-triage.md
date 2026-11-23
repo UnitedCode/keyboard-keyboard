@@ -1,5 +1,12 @@
 # Circuit improvement queue
 
+The new [power/noise studies](verify-power-noise.md) refine the priorities below:
+retain 4.7 nF pending dynamic source/noise measurements; the separate 4 Ω DC-test
+fixture passes with original capacitors. A lower-current Hall candidate reduces
+the datasheet-based sensor budget but remains conditional on magnets/output/fit.
+The split-rail allocation is **rejected** after eight native firmware power-loss
+counterexamples. No physical hot-room cause or regulator rating has been proved.
+
 | Priority | Issue | Decision |
 |---|---|---|
 | 1 | Power headroom / hot-room report | 100 sensors imply 0.60–0.70 A before other loads. The fitted Seed regulator/source, rail drop and temperature have not been measured. The earlier 0.5 A envelope is hypothetical, not a rating. Do not claim overload proved or select a regulator by changing the fixture. |

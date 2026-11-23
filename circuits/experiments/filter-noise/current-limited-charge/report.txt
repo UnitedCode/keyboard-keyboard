@@ -1,0 +1,5 @@
+CHARGE_STUDY=PASS
+SOURCE_MODEL=2.5V DC test point, declared resistance and conservative +/-1.5mA clamp
+GATE=all three filters within 1mV after 4.5us
+NOT_RUN=dynamic sensor output impedance/feedback loop; sample aperture; physical load step
+DECISION=4ohm slice is conditional evidence against replacing 4.7n solely because of the older 1kohm stress fixture
