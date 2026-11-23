@@ -1,0 +1,465 @@
+reference,value,scope
+A1,"Electrosmith_Daisy_Seed_Rev4",inventory/connectivity only; no analog device model
+AM1,"SN74LV4051A",ideal switched resistance; topology checked
+AM10,"SN74LV4051A",ideal switched resistance; topology checked
+AM11,"SN74LV4051A",ideal switched resistance; topology checked
+AM12,"SN74LV4051A",ideal switched resistance; topology checked
+AM13,"SN74LV4051A",ideal switched resistance; topology checked
+AM14,"SN74LV4051A",ideal switched resistance; topology checked
+AM15,"SN74LV4051A",ideal switched resistance; topology checked
+AM2,"SN74LV4051A",ideal switched resistance; topology checked
+AM3,"SN74LV4051A",ideal switched resistance; topology checked
+AM4,"SN74LV4051A",ideal switched resistance; topology checked
+AM5,"SN74LV4051A",ideal switched resistance; topology checked
+AM6,"SN74LV4051A",ideal switched resistance; topology checked
+AM7,"SN74LV4051A",ideal switched resistance; topology checked
+AM8,"SN74LV4051A",ideal switched resistance; topology checked
+AM9,"SN74LV4051A",ideal switched resistance; topology checked
+C1,"100n",schematic capacitor in acquisition network
+C10,"470p",schematic capacitor in acquisition network
+C100,"470p",schematic capacitor in acquisition network
+C101,"100n",schematic capacitor in acquisition network
+C102,"470p",schematic capacitor in acquisition network
+C103,"100n",schematic capacitor in acquisition network
+C104,"470p",schematic capacitor in acquisition network
+C105,"100n",schematic capacitor in acquisition network
+C106,"470p",schematic capacitor in acquisition network
+C107,"100n",schematic capacitor in acquisition network
+C108,"470p",schematic capacitor in acquisition network
+C109,"100n",schematic capacitor in acquisition network
+C11,"100n",schematic capacitor in acquisition network
+C110,"470p",schematic capacitor in acquisition network
+C111,"100n",schematic capacitor in acquisition network
+C112,"470p",schematic capacitor in acquisition network
+C113,"100n",schematic capacitor in acquisition network
+C114,"470p",schematic capacitor in acquisition network
+C115,"100n",schematic capacitor in acquisition network
+C116,"470p",schematic capacitor in acquisition network
+C117,"100n",schematic capacitor in acquisition network
+C118,"470p",schematic capacitor in acquisition network
+C119,"100n",schematic capacitor in acquisition network
+C12,"470p",schematic capacitor in acquisition network
+C120,"470p",schematic capacitor in acquisition network
+C121,"100n",schematic capacitor in acquisition network
+C122,"470p",schematic capacitor in acquisition network
+C123,"100n",schematic capacitor in acquisition network
+C124,"470p",schematic capacitor in acquisition network
+C125,"100n",schematic capacitor in acquisition network
+C126,"470p",schematic capacitor in acquisition network
+C127,"100n",schematic capacitor in acquisition network
+C128,"470p",schematic capacitor in acquisition network
+C129,"100n",schematic capacitor in acquisition network
+C13,"100n",schematic capacitor in acquisition network
+C130,"470p",schematic capacitor in acquisition network
+C131,"100n",schematic capacitor in acquisition network
+C132,"470p",schematic capacitor in acquisition network
+C133,"100n",schematic capacitor in acquisition network
+C134,"470p",schematic capacitor in acquisition network
+C135,"100n",schematic capacitor in acquisition network
+C136,"470p",schematic capacitor in acquisition network
+C137,"100n",schematic capacitor in acquisition network
+C138,"470p",schematic capacitor in acquisition network
+C139,"100n",schematic capacitor in acquisition network
+C14,"470p",schematic capacitor in acquisition network
+C140,"100n",schematic capacitor in acquisition network
+C141,"100n",schematic capacitor in acquisition network
+C142,"100n",schematic capacitor in acquisition network
+C143,"100n",schematic capacitor in acquisition network
+C144,"100n",schematic capacitor in acquisition network
+C145,"100n",schematic capacitor in acquisition network
+C146,"100n",schematic capacitor in acquisition network
+C147,"100n",schematic capacitor in acquisition network
+C148,"100n",schematic capacitor in acquisition network
+C149,"100n",schematic capacitor in acquisition network
+C15,"100n",schematic capacitor in acquisition network
+C150,"100n",schematic capacitor in acquisition network
+C151,"100n",schematic capacitor in acquisition network
+C16,"470p",schematic capacitor in acquisition network
+C161,"100n",schematic capacitor in acquisition network
+C162,"100n",schematic capacitor in acquisition network
+C163,"100n",schematic capacitor in acquisition network
+C164,"470p",schematic capacitor in acquisition network
+C165,"100n",schematic capacitor in acquisition network
+C166,"470p",schematic capacitor in acquisition network
+C167,"100n",schematic capacitor in acquisition network
+C168,"470p",schematic capacitor in acquisition network
+C169,"100n",schematic capacitor in acquisition network
+C17,"100n",schematic capacitor in acquisition network
+C170,"470p",schematic capacitor in acquisition network
+C171,"100n",schematic capacitor in acquisition network
+C172,"470p",schematic capacitor in acquisition network
+C173,"100n",schematic capacitor in acquisition network
+C174,"470p",schematic capacitor in acquisition network
+C175,"100n",schematic capacitor in acquisition network
+C176,"470p",schematic capacitor in acquisition network
+C177,"100n",schematic capacitor in acquisition network
+C178,"470p",schematic capacitor in acquisition network
+C179,"100n",schematic capacitor in acquisition network
+C18,"470p",schematic capacitor in acquisition network
+C180,"470p",schematic capacitor in acquisition network
+C181,"100n",schematic capacitor in acquisition network
+C182,"470p",schematic capacitor in acquisition network
+C183,"100n",schematic capacitor in acquisition network
+C184,"470p",schematic capacitor in acquisition network
+C185,"100n",schematic capacitor in acquisition network
+C186,"470p",schematic capacitor in acquisition network
+C187,"100n",schematic capacitor in acquisition network
+C188,"470p",schematic capacitor in acquisition network
+C189,"100n",schematic capacitor in acquisition network
+C19,"100n",schematic capacitor in acquisition network
+C190,"470p",schematic capacitor in acquisition network
+C191,"100n",schematic capacitor in acquisition network
+C192,"470p",schematic capacitor in acquisition network
+C193,"100n",schematic capacitor in acquisition network
+C194,"470p",schematic capacitor in acquisition network
+C195,"100n",schematic capacitor in acquisition network
+C196,"470p",schematic capacitor in acquisition network
+C197,"100n",schematic capacitor in acquisition network
+C198,"470p",schematic capacitor in acquisition network
+C199,"100n",schematic capacitor in acquisition network
+C2,"470p",schematic capacitor in acquisition network
+C20,"470p",schematic capacitor in acquisition network
+C200,"470p",schematic capacitor in acquisition network
+C201,"100n",schematic capacitor in acquisition network
+C202,"470p",schematic capacitor in acquisition network
+C203,"100n",schematic capacitor in acquisition network
+C204,"470p",schematic capacitor in acquisition network
+C205,"100n",schematic capacitor in acquisition network
+C206,"470p",schematic capacitor in acquisition network
+C207,"100n",schematic capacitor in acquisition network
+C208,"470p",schematic capacitor in acquisition network
+C209,"100n",schematic capacitor in acquisition network
+C21,"100n",schematic capacitor in acquisition network
+C210,"470p",schematic capacitor in acquisition network
+C211,"100n",schematic capacitor in acquisition network
+C212,"470p",schematic capacitor in acquisition network
+C213,"100n",schematic capacitor in acquisition network
+C214,"470p",schematic capacitor in acquisition network
+C215,"100n",schematic capacitor in acquisition network
+C216,"470p",schematic capacitor in acquisition network
+C217,"100n",schematic capacitor in acquisition network
+C218,"470p",schematic capacitor in acquisition network
+C219,"100n",schematic capacitor in acquisition network
+C22,"470p",schematic capacitor in acquisition network
+C220,"470p",schematic capacitor in acquisition network
+C221,"100n",schematic capacitor in acquisition network
+C222,"470p",schematic capacitor in acquisition network
+C223,"100n",schematic capacitor in acquisition network
+C224,"470p",schematic capacitor in acquisition network
+C23,"100n",schematic capacitor in acquisition network
+C24,"470p",schematic capacitor in acquisition network
+C25,"100n",schematic capacitor in acquisition network
+C26,"470p",schematic capacitor in acquisition network
+C27,"100n",schematic capacitor in acquisition network
+C28,"470p",schematic capacitor in acquisition network
+C29,"100n",schematic capacitor in acquisition network
+C3,"100n",schematic capacitor in acquisition network
+C30,"470p",schematic capacitor in acquisition network
+C31,"100n",schematic capacitor in acquisition network
+C32,"470p",schematic capacitor in acquisition network
+C33,"100n",schematic capacitor in acquisition network
+C34,"470p",schematic capacitor in acquisition network
+C35,"100n",schematic capacitor in acquisition network
+C36,"470p",schematic capacitor in acquisition network
+C37,"100n",schematic capacitor in acquisition network
+C38,"470p",schematic capacitor in acquisition network
+C39,"100n",schematic capacitor in acquisition network
+C4,"470p",schematic capacitor in acquisition network
+C40,"470p",schematic capacitor in acquisition network
+C41,"100n",schematic capacitor in acquisition network
+C42,"470p",schematic capacitor in acquisition network
+C43,"100n",schematic capacitor in acquisition network
+C44,"470p",schematic capacitor in acquisition network
+C45,"100n",schematic capacitor in acquisition network
+C46,"470p",schematic capacitor in acquisition network
+C47,"100n",schematic capacitor in acquisition network
+C48,"470p",schematic capacitor in acquisition network
+C49,"100n",schematic capacitor in acquisition network
+C5,"100n",schematic capacitor in acquisition network
+C50,"470p",schematic capacitor in acquisition network
+C51,"100n",schematic capacitor in acquisition network
+C52,"470p",schematic capacitor in acquisition network
+C53,"100n",schematic capacitor in acquisition network
+C54,"470p",schematic capacitor in acquisition network
+C55,"100n",schematic capacitor in acquisition network
+C56,"470p",schematic capacitor in acquisition network
+C57,"100n",schematic capacitor in acquisition network
+C58,"470p",schematic capacitor in acquisition network
+C59,"100n",schematic capacitor in acquisition network
+C6,"470p",schematic capacitor in acquisition network
+C60,"470p",schematic capacitor in acquisition network
+C61,"100n",schematic capacitor in acquisition network
+C62,"470p",schematic capacitor in acquisition network
+C63,"100n",schematic capacitor in acquisition network
+C64,"470p",schematic capacitor in acquisition network
+C65,"100n",schematic capacitor in acquisition network
+C66,"470p",schematic capacitor in acquisition network
+C67,"100n",schematic capacitor in acquisition network
+C68,"470p",schematic capacitor in acquisition network
+C69,"100n",schematic capacitor in acquisition network
+C7,"100n",schematic capacitor in acquisition network
+C70,"470p",schematic capacitor in acquisition network
+C71,"100n",schematic capacitor in acquisition network
+C72,"470p",schematic capacitor in acquisition network
+C73,"100n",schematic capacitor in acquisition network
+C74,"470p",schematic capacitor in acquisition network
+C75,"100n",schematic capacitor in acquisition network
+C76,"470p",schematic capacitor in acquisition network
+C77,"100n",schematic capacitor in acquisition network
+C78,"470p",schematic capacitor in acquisition network
+C79,"100n",schematic capacitor in acquisition network
+C8,"470p",schematic capacitor in acquisition network
+C80,"470p",schematic capacitor in acquisition network
+C81,"100n",schematic capacitor in acquisition network
+C82,"470p",schematic capacitor in acquisition network
+C83,"100n",schematic capacitor in acquisition network
+C84,"470p",schematic capacitor in acquisition network
+C85,"100n",schematic capacitor in acquisition network
+C86,"470p",schematic capacitor in acquisition network
+C87,"100n",schematic capacitor in acquisition network
+C88,"470p",schematic capacitor in acquisition network
+C89,"100n",schematic capacitor in acquisition network
+C9,"100n",schematic capacitor in acquisition network
+C90,"470p",schematic capacitor in acquisition network
+C91,"100n",schematic capacitor in acquisition network
+C92,"470p",schematic capacitor in acquisition network
+C93,"100n",schematic capacitor in acquisition network
+C94,"470p",schematic capacitor in acquisition network
+C95,"100n",schematic capacitor in acquisition network
+C96,"470p",schematic capacitor in acquisition network
+C97,"100n",schematic capacitor in acquisition network
+C98,"470p",schematic capacitor in acquisition network
+C99,"100n",schematic capacitor in acquisition network
+D1,"LED",inventory/connectivity only; no analog device model
+D13,"1N4148",inventory/connectivity only; no analog device model
+D2,"LED",inventory/connectivity only; no analog device model
+D3,"LED",inventory/connectivity only; no analog device model
+HE1,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE10,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE100,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE11,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE12,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE13,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE14,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE15,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE16,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE17,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE18,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE19,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE2,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE20,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE21,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE22,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE23,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE24,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE25,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE26,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE27,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE28,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE29,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE3,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE30,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE31,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE32,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE33,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE34,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE35,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE36,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE37,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE38,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE39,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE4,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE40,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE41,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE42,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE43,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE44,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE45,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE46,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE47,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE48,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE49,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE5,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE50,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE51,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE52,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE53,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE54,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE55,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE56,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE57,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE58,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE59,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE6,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE60,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE61,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE62,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE63,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE64,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE65,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE66,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE67,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE68,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE69,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE7,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE70,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE71,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE72,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE73,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE74,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE75,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE76,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE77,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE78,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE79,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE8,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE80,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE81,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE82,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE83,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE84,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE85,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE86,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE87,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE88,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE89,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE9,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE90,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE91,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE92,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE93,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE94,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE95,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE96,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE97,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE98,"MT9102ET",declared output voltage and supply current; not magnetic curve
+HE99,"MT9102ET",declared output voltage and supply current; not magnetic curve
+J1,"AudioJack3_Ground",inventory/connectivity only; no analog device model
+J2,"AudioJack3_Ground",inventory/connectivity only; no analog device model
+J3,"Screen Connector",inventory/connectivity only; no analog device model
+J4,"DIN-5",inventory/connectivity only; no analog device model
+J5,"DIN-5",inventory/connectivity only; no analog device model
+J6,"Conn_01x04_Socket",inventory/connectivity only; no analog device model
+J7,"Conn_01x04_Socket",inventory/connectivity only; no analog device model
+MX1,"1U",inventory/connectivity only; no analog device model
+MX10,"1U",inventory/connectivity only; no analog device model
+MX100,"1U",inventory/connectivity only; no analog device model
+MX11,"1U",inventory/connectivity only; no analog device model
+MX12,"1U",inventory/connectivity only; no analog device model
+MX13,"1U",inventory/connectivity only; no analog device model
+MX14,"1.5U",inventory/connectivity only; no analog device model
+MX15,"1U",inventory/connectivity only; no analog device model
+MX16,"1U",inventory/connectivity only; no analog device model
+MX17,"1U",inventory/connectivity only; no analog device model
+MX18,"1U",inventory/connectivity only; no analog device model
+MX19,"1U",inventory/connectivity only; no analog device model
+MX2,"1U",inventory/connectivity only; no analog device model
+MX20,"1U",inventory/connectivity only; no analog device model
+MX21,"1U",inventory/connectivity only; no analog device model
+MX22,"1U",inventory/connectivity only; no analog device model
+MX23,"1U",inventory/connectivity only; no analog device model
+MX24,"1U",inventory/connectivity only; no analog device model
+MX25,"1U",inventory/connectivity only; no analog device model
+MX26,"1U",inventory/connectivity only; no analog device model
+MX27,"1U",inventory/connectivity only; no analog device model
+MX28,"1U",inventory/connectivity only; no analog device model
+MX29,"1U",inventory/connectivity only; no analog device model
+MX3,"1U",inventory/connectivity only; no analog device model
+MX30,"1.5U",inventory/connectivity only; no analog device model
+MX31,"1U",inventory/connectivity only; no analog device model
+MX32,"1U",inventory/connectivity only; no analog device model
+MX33,"1U",inventory/connectivity only; no analog device model
+MX34,"1U",inventory/connectivity only; no analog device model
+MX35,"1U",inventory/connectivity only; no analog device model
+MX36,"1U",inventory/connectivity only; no analog device model
+MX37,"1U",inventory/connectivity only; no analog device model
+MX38,"1U",inventory/connectivity only; no analog device model
+MX39,"1U",inventory/connectivity only; no analog device model
+MX4,"1U",inventory/connectivity only; no analog device model
+MX40,"1U",inventory/connectivity only; no analog device model
+MX41,"1U",inventory/connectivity only; no analog device model
+MX42,"1U",inventory/connectivity only; no analog device model
+MX43,"1.5U",inventory/connectivity only; no analog device model
+MX44,"1u",inventory/connectivity only; no analog device model
+MX45,"1U",inventory/connectivity only; no analog device model
+MX46,"1U",inventory/connectivity only; no analog device model
+MX47,"1U",inventory/connectivity only; no analog device model
+MX48,"1U",inventory/connectivity only; no analog device model
+MX49,"1U",inventory/connectivity only; no analog device model
+MX5,"1U",inventory/connectivity only; no analog device model
+MX50,"1U",inventory/connectivity only; no analog device model
+MX51,"1U",inventory/connectivity only; no analog device model
+MX52,"1U",inventory/connectivity only; no analog device model
+MX53,"1U",inventory/connectivity only; no analog device model
+MX54,"1U",inventory/connectivity only; no analog device model
+MX55,"1U",inventory/connectivity only; no analog device model
+MX56,"1U",inventory/connectivity only; no analog device model
+MX57,"1U",inventory/connectivity only; no analog device model
+MX58,"1U",inventory/connectivity only; no analog device model
+MX59,"1.5U",inventory/connectivity only; no analog device model
+MX6,"1U",inventory/connectivity only; no analog device model
+MX60,"1U",inventory/connectivity only; no analog device model
+MX61,"1U",inventory/connectivity only; no analog device model
+MX62,"1U",inventory/connectivity only; no analog device model
+MX63,"1U",inventory/connectivity only; no analog device model
+MX64,"1U",inventory/connectivity only; no analog device model
+MX65,"1U",inventory/connectivity only; no analog device model
+MX66,"1U",inventory/connectivity only; no analog device model
+MX67,"1U",inventory/connectivity only; no analog device model
+MX68,"1U",inventory/connectivity only; no analog device model
+MX69,"1U",inventory/connectivity only; no analog device model
+MX7,"1U",inventory/connectivity only; no analog device model
+MX70,"1.5U",inventory/connectivity only; no analog device model
+MX71,"1U",inventory/connectivity only; no analog device model
+MX72,"1U",inventory/connectivity only; no analog device model
+MX73,"1U",inventory/connectivity only; no analog device model
+MX74,"1U",inventory/connectivity only; no analog device model
+MX75,"1U",inventory/connectivity only; no analog device model
+MX76,"1U",inventory/connectivity only; no analog device model
+MX77,"1U",inventory/connectivity only; no analog device model
+MX78,"1U",inventory/connectivity only; no analog device model
+MX79,"1U",inventory/connectivity only; no analog device model
+MX8,"1U",inventory/connectivity only; no analog device model
+MX80,"1U",inventory/connectivity only; no analog device model
+MX81,"1U",inventory/connectivity only; no analog device model
+MX82,"1U",inventory/connectivity only; no analog device model
+MX83,"1U",inventory/connectivity only; no analog device model
+MX84,"1U",inventory/connectivity only; no analog device model
+MX85,"1U",inventory/connectivity only; no analog device model
+MX86,"1U",inventory/connectivity only; no analog device model
+MX87,"1U",inventory/connectivity only; no analog device model
+MX88,"1U",inventory/connectivity only; no analog device model
+MX89,"1U",inventory/connectivity only; no analog device model
+MX9,"1U",inventory/connectivity only; no analog device model
+MX90,"1U",inventory/connectivity only; no analog device model
+MX91,"1U",inventory/connectivity only; no analog device model
+MX92,"1U",inventory/connectivity only; no analog device model
+MX93,"1U",inventory/connectivity only; no analog device model
+MX94,"1U",inventory/connectivity only; no analog device model
+MX95,"1U",inventory/connectivity only; no analog device model
+MX96,"1U",inventory/connectivity only; no analog device model
+MX97,"1U",inventory/connectivity only; no analog device model
+MX98,"1U",inventory/connectivity only; no analog device model
+MX99,"1U",inventory/connectivity only; no analog device model
+R1,"R_Small_US",inventory/connectivity only; no analog device model
+R2,"R_Small_US",inventory/connectivity only; no analog device model
+R3,"R_Small_US",inventory/connectivity only; no analog device model
+R4,"220",inventory/connectivity only; no analog device model
+R5,"220",inventory/connectivity only; no analog device model
+R6,"4.7k",inventory/connectivity only; no analog device model
+R7,"33",inventory/connectivity only; no analog device model
+R8,"10",inventory/connectivity only; no analog device model
+RV1,"R_Potentiometer_Trim_US",declared wiper voltage; resistance unknown
+RV10,"R_Potentiometer_Trim_US",declared wiper voltage; resistance unknown
+RV11,"R_Potentiometer_Trim_US",declared wiper voltage; resistance unknown
+RV12,"R_Potentiometer_Trim_US",declared wiper voltage; resistance unknown
+RV2,"R_Potentiometer_Trim_US",declared wiper voltage; resistance unknown
+RV3,"R_Potentiometer_Trim_US",declared wiper voltage; resistance unknown
+RV4,"R_Potentiometer_Trim_US",declared wiper voltage; resistance unknown
+RV5,"R_Potentiometer_Trim_US",declared wiper voltage; resistance unknown
+RV6,"R_Potentiometer_Trim_US",declared wiper voltage; resistance unknown
+RV7,"R_Potentiometer_Trim_US",declared wiper voltage; resistance unknown
+RV8,"R_Potentiometer_Trim_US",declared wiper voltage; resistance unknown
+RV9,"R_Potentiometer_Trim_US",declared wiper voltage; resistance unknown
+U1,"74HC138",ideal decoder selection; loaded unused-output check
+U2,"6N138",inventory/connectivity only; no analog device model

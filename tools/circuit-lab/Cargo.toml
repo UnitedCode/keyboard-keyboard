@@ -13,4 +13,4 @@ daisy = ["circuit-workbench/daisy"]
 device = ["circuit-workbench/device"]
 
 [dependencies]
-circuit-workbench = { git = "https://github.com/UnitedCode/synth-phone-e-v2-rust", rev = "c41fa0c5d20e4e7fa3821f753014b9b0b386a3c1", default-features = false }
+circuit-workbench = { git = "https://github.com/UnitedCode/synth-phone-e-v2-rust", rev = "51c528e832d58dddd6f393cf89e03942546f5df6", default-features = false }

@@ -8,3 +8,14 @@ Do not edit the baseline to make a proposed repair pass. Preserve pre-repair
 faults as expected findings. New topology needs a new profile and expectations.
 The lab's engine is pinned to one revision in `tools/circuit-lab/Cargo.toml`;
 upgrading Synthphone or Virtual Daisy elsewhere cannot change this test suite.
+
+## First improvement comparisons
+
+- [1 nF trial](filter-1n/README.md): retained incomplete scan improvement.
+- [470 pF candidate](filter-470p/README.md): separate schematic, complete scan
+  improvement and explicit filtering tradeoff.
+- [Issue ranking](../issue-triage.md): power remains the highest unresolved risk.
+
+Both start from `keyboard-current.net`; their exact allowed delta is checked
+before comparisons. `COMPARISON=PASS` means the comparison executed, not physical
+acceptance. Read the scan gate, step errors and design acceptance independently.

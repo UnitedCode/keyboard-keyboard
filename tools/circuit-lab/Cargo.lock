@@ -44,7 +44,7 @@ checksum = "4e7648175b45a9a48536d676f68d918270699102aa8dab5496df06904c914600"
 [[package]]
 name = "circuit-workbench"
 version = "0.1.0"
-source = "git+https://github.com/UnitedCode/synth-phone-e-v2-rust?rev=c41fa0c5d20e4e7fa3821f753014b9b0b386a3c1#c41fa0c5d20e4e7fa3821f753014b9b0b386a3c1"
+source = "git+https://github.com/UnitedCode/synth-phone-e-v2-rust?rev=51c528e832d58dddd6f393cf89e03942546f5df6#51c528e832d58dddd6f393cf89e03942546f5df6"
 dependencies = [
  "embedded-graphics",
  "hound",

@@ -1,0 +1,14 @@
+COMPARISON=PASS
+experiment=keyboard-filter-1n
+ISOLATION=PASS
+parent_sha256=82f4333b7b259081f6d4c707b7abbecfe73e620ead333fd2e1c20b46aa39a1d2
+candidate_sha256=e8d9120c170b22ab50bd48f6223ef7b0c3cc78322ea1a0f6616f44d4656118b3
+fixture_sha256=ed0de487f7be1fad4fb04df75742e86b323572665230ab7f704d090d799d93ea
+PHYSICAL_MEASURED=NOT_RUN
+ACQUISITION=IMPROVED
+full_scan_failures_before=17
+full_scan_failures_after=4
+full_scale_step_error_before_v=1.3952843936191377
+full_scale_step_error_after_v=0.06634524318887447
+DESIGN_ACCEPTANCE=CONDITIONAL (weaker high-frequency filtering; source impedance unmeasured)
+NOT_RUN=physical noise; Hall magnetic dynamics; temperature; EMI

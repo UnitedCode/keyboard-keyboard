@@ -115,3 +115,13 @@ Pin behavior follows the [TI 4051 datasheet](https://www.ti.com/lit/ds/symlink/s
 and existing [hardware reference](../keyboard_keyboard/code/HARDWARE.md).
 The resistance/loading values above are explicit fixtures, not guaranteed
 datasheet maxima or extracted PCB parasitics.
+
+## Circuit improvements
+
+The frozen baselines remain the controls. [Issue ranking](issue-triage.md) separates
+reproduced problems from unverified power/thermal concerns. Independent
+[1 nF](experiments/filter-1n/README.md) and
+[470 pF](experiments/filter-470p/README.md) experiments include exact component
+deltas, SPICE comparisons and firmware evidence. The 470 pF schematic is a
+conditional virtual candidate because it trades noise filtering for settling.
+The builder retains ownership of physical PCB design and fabrication.
