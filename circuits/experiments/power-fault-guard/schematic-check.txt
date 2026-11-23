@@ -1,0 +1,4 @@
+SCHEMATIC_CONNECTIVITY=PASS (added allocation only; original pin changes in TSV)
+9ce718ce53d1118f81376a1190c64064598f2e0274ab5463b580950c68fd2fb3  circuits/experiments/power-fault-guard/candidate.net
+d7e54ad44ea868be0862a90f16c04a97e281b51e450cd19d0863d2dbf5ec2b5b  circuits/experiments/power-fault-guard/power-guard-allocation.kicad_sch
+337cdf9dcb48ad1f30117e1ff14db92707d69d1cb4ecc95eb669a6d9452a6991  circuits/results/guard-corrected.xml

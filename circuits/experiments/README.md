@@ -1,5 +1,10 @@
 # Experiments
 
+Latest fault-handling iteration: [sensor power-fault guard](power-fault-guard/README.md),
+with [independent verification](power-fault-guard/verify.md). It preserves the
+rejected power-offload experiment, fixes its note-handling contract in an isolated
+firmware target, and records startup-margin and warm-reset limitations.
+
 Latest: [power allocation rejection](power-offload/README.md),
 [lower-current Hall candidate](low-power-hall/README.md), and
 [filter noise / source-impedance comparison](filter-noise/README.md).
