@@ -1,0 +1,6 @@
+KERNEL_EXECUTION=PASS
+FAULT_CASES_FAILED=8
+DESIGN_ACCEPTANCE=FAIL_FOR_FIXED_MID_BIAS_ALONE
+MODEL=ideal guardian opens signal switches at 750ms; ADC biases to 1.65V; fixed calibrated anchors; unchanged ChannelFilter and SwitchState
+REQUIRED=power-valid must suppress new notes and release/reset active notes independently of analog rest voltage
+NOT_RUN=full ARM firmware; actual selected guardian/reset wiring

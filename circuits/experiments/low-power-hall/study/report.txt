@@ -1,0 +1,15 @@
+STUDY_EXECUTION=PASS
+ISOLATION=PASS
+parent_sha256=82f4333b7b259081f6d4c707b7abbecfe73e620ead333fd2e1c20b46aa39a1d2
+candidate_sha256=f0b682b3d6553bdf28dd780606c913d9009cfbdae2d10378b5255f765e5314b8
+scenarios_sha256=43fcda77aeb3f9d2803b615f31c04dbdb582ac986f4590acb62c0727e73573f2
+PHYSICAL_MEASURED=NOT_RUN
+SEED_REVISION=UNKNOWN
+ORIGINAL_SOURCE=UNKNOWN
+SENSOR_POWER_TYPICAL_W=1.98 -> 0.891
+SENSOR_POWER_HOT_MAX_W=2.31 -> 1.188
+SENSOR_POWER_REDUCTION_TYPICAL=55percent
+SENSOR_POWER_REDUCTION_HOT_MAX=48.5714percent
+DESIGN_ACCEPTANCE=CONDITIONAL_MAGNETIC_AND_OUTPUT_QUALIFICATION
+CONDITIONS=TI current typical at25C, maximum at125C; Hall sensitivity/Vq/endpoints differ; mechanical footprint and dynamic output loading unverified
+NOT_RUN=physical magnet travel; intrinsic noise qualification; full vendor sensor model

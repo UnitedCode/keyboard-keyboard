@@ -1,0 +1,4 @@
+SCOPE=host mirror of inline main.rs CC1/pitch-bend; localized output noise with other quiet, correlated ripple with identical simultaneous controls; HE1 timing used for phase stress
+cc1_cases_at_or_below_50mv_4n7_1n_470p=[488, 480, 452]
+pitchbend_cases_at_or_below_50mv_4n7_1n_470p=[40, 66, 76]
+NOTE=actual relative analog-channel phase not modeled; no-note pass does not imply quiet controls; not ARM/UART output

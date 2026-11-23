@@ -1,0 +1,17 @@
+# Scenario bounds, NOT measurements or fitted Seed/module ratings.
+# Sensor current uses existing MagnTek reference; all other loads are sensitivity assumptions.
+sensor_a=0.006,0.007
+seed_a=0.2,0.4,0.6
+aux_a=0.05,0.1,0.2
+vin_v=4.75,5.25
+source_a=0.5,1,1.5,2
+path_ohm=0.02,0.1,0.3
+efficiency=0.8,0.85,0.95
+ambient_c=25,40,55
+enclosure_k_w=3,5,8,20
+local_k_w=20,40,80
+heat_capacity_j_k=100
+temperature_budget_c=85
+# Covers both rail bleeders, buffer/switch/opamp and unselected guardian budget.
+# Divided equally between Seed and carrier for this sensitivity model.
+bridge_overhead_a=0.01

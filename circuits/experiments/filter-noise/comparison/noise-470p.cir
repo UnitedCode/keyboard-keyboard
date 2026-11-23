@@ -1,0 +1,8 @@
+Selected Hall output noise crosscheck; not switched ADC or sensor intrinsic noise
+Vs src 0 SIN(1.65 0.05 100000)
+Rs src hall 1000
+Cf hall 0 0.00000000047
+Rm hall adc 100
+Ca adc 0 50p
+Rl adc 0 1e9
+.end

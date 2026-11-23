@@ -1,0 +1,8 @@
+2.5V output load step; bounded Thevenin 4ohm / 1.5mA clamp; no sensor loop macromodel
+Vs src 0 2.5
+Bdrive src hall I=max(-0.0015,min(0.0015,(v(src)-v(hall))/4))
+Cf hall 0 0.00000000047 IC=2.5
+Rm hall adc 100
+Ca adc 0 0.00000000005 IC=0
+Rl adc 0 1e9
+.end

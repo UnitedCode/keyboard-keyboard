@@ -1,0 +1,6 @@
+calibrated_rest_v,off_bias_v,delta_adc,below_release_gate
+1,1.65,807,false
+1.3,1.65,434,false
+1.65,1.65,0,true
+2,1.65,434,false
+2.3,1.65,807,false

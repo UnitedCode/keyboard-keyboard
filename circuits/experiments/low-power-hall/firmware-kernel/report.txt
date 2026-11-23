@@ -1,0 +1,7 @@
+HALL_KERNEL=PASS (execution, strong-field gates and weak-field negatives)
+case_count=144
+20mt_cases_passed=36
+weak_field_cases_without_one_pair=60
+MODEL=declared Vq/sensitivity corners, conservative0.2-1.8V clipping,0/25us delay and5ms magnetic ramp; unchanged production ChannelFilter/SwitchState
+DESIGN_ACCEPTANCE=CONDITIONAL_MEASURE_MAGNETS_AND_DYNAMIC_OUTPUT
+NOT_RUN=real magnet geometry; intrinsic noise; vendor output-driver model; mechanical fit

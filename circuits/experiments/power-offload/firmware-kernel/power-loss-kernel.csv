@@ -1,0 +1,11 @@
+calibrated_rest_v,held_before_fault,note_on,note_off,held_after_fault,failed
+1,false,1,0,true,true
+1,true,1,0,true,true
+1.3,false,1,0,true,true
+1.3,true,1,0,true,true
+1.65,false,0,0,false,false
+1.65,true,1,1,false,false
+2,false,1,0,true,true
+2,true,1,0,true,true
+2.3,false,1,0,true,true
+2.3,true,1,0,true,true

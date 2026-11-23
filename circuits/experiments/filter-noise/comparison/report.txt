@@ -1,0 +1,17 @@
+NOISE_STUDY=PASS (execution and negative controls, not every stress case)
+ISOLATION=PASS
+KERNEL_SOURCE=unchanged production switch.rs,velocity.rs,constants.rs
+CLOCK_SHA256=b0c31b52b61dc653c1c28412688d285bf04f6fc9489b1fa0040e5893b8b72c7a
+case_count=21504
+clean_signal_checks_passed=96
+failed_stress_cases_4n7_1n_470p=[599, 761, 842]
+failed_cases_at_or_below_50mv_4n7_1n_470p=[0, 0, 0]
+strong_noise_counterexample=ideal_1ms,Rs=100,Ctol=0.9,Hz=400000,phase=1.5707963267948966,amplitude=0.4,false_on=1
+ANALOG_MODEL=continuous selected-channel two-node RC plus 1Gohm ADC leakage; burst transients included
+SPICE_CROSSCHECK=PASS
+DECISION=470p is not a universal upgrade; retain 4.7n baseline pending measured noise and source impedance
+POWER_REFERENCE_NOTE=correlated Vref ripple can change the ranking; input filtering and reference filtering are distinct
+NOT_RUN=full ARM under noise; intrinsic Hall noise; switched-mux noise propagation; reference decoupling; physical EMI
+ADC_APERTURE=NOT_MODELED
+SOURCE_NOTE=4ohm slice is conditioned on the datasheet DC test; 100/1000/3000ohm are stress assumptions
+ANALOG_CONTROLS=read analog-summary.txt; no false HE1 notes does not mean quiet CC1/pitch-bend

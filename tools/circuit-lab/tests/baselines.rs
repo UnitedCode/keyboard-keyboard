@@ -182,3 +182,48 @@ fn independent_filter_candidates_change_only_the_output_capacitors() {
         fs::remove_dir_all(out).unwrap();
     }
 }
+
+#[test]
+fn power_candidate_preserves_filters_and_rejects_bypasses() {
+    let base = graph("keyboard-current");
+    let c = circuit_workbench::qualification::offload(&base).unwrap();
+    for (r, v) in &base.components {
+        assert_eq!(c.components.get(r), Some(v));
+    }
+    assert_ne!(c.net("A1.38").unwrap(), c.net("HE1.1").unwrap());
+    assert_eq!(c.components["PG1"], "DUAL_RAIL_GUARD_UNSELECTED");
+    assert_eq!(c.components["R5"], "220");
+    assert_eq!(
+        base.components
+            .iter()
+            .filter(|(r, v)| r.starts_with('C') && *v == "4.7n")
+            .count(),
+        100
+    );
+    circuit_workbench::qualification::validate_offload(&base, &c).unwrap();
+    let mut bad = c.clone();
+    bad.disconnect("PU2.3");
+    assert!(circuit_workbench::qualification::validate_offload(&base, &bad).is_err());
+}
+
+#[test]
+fn lower_current_sensor_swap_changes_only_part_values() {
+    let base = graph("keyboard-current");
+    let candidate = circuit_workbench::qualification::hall_candidate(&base).unwrap();
+    assert_eq!(base.nets, candidate.nets);
+    for (r, v) in &candidate.components {
+        if r.starts_with("HE") {
+            assert_eq!(v, circuit_workbench::qualification::HALL_PART);
+        } else {
+            assert_eq!(Some(v), base.components.get(r));
+        }
+    }
+    assert_eq!(
+        candidate
+            .components
+            .iter()
+            .filter(|(r, v)| r.starts_with('C') && *v == "4.7n")
+            .count(),
+        100
+    );
+}

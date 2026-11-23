@@ -1,0 +1,6 @@
+Thermal RC analogy: V=degC,I=W,R=K/W,C=J/K; NOT calibrated enclosure
+Va ambient 0 40
+Iheat 0 body PWL(0 0 0.001 6.228749999999999)
+Rt body ambient 20
+Ct body 0 100 IC=40
+.end
