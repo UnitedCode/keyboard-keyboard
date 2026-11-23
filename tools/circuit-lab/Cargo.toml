@@ -10,8 +10,9 @@ publish = false
 default = ["spice"]
 spice = ["circuit-workbench/spice"]
 daisy = ["circuit-workbench/daisy"]
-device = ["circuit-workbench/device"]
+device = ["circuit-workbench/device", "dep:virtual-daisy"]
 
 [dependencies]
 circuit-workbench = { git = "https://github.com/UnitedCode/synth-phone-e-v2-rust", rev = "d0536fab4a2dc2265b0196ae5fca950b25cf5f9e", default-features = false }
 log = "0.4"
+virtual-daisy = { git = "https://github.com/UnitedCode/virtual-daisy", rev = "f7892c73b36960d729e6c3bf8bbd0ce3e65498a0", optional = true }
