@@ -1,0 +1,15 @@
+[package]
+name = "keyboard-circuit-lab"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+
+[features]
+default = ["spice"]
+spice = ["circuit-workbench/spice"]
+daisy = ["circuit-workbench/daisy"]
+
+[dependencies]
+circuit-workbench = { git = "https://github.com/UnitedCode/synth-phone-e-v2-rust", rev = "a7870470019bb5827da88ba2a79b30c72ea0a5d2", default-features = false }
