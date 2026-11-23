@@ -1,0 +1,8 @@
+# Provisional electrical assumptions; these are not measured fitted-part values.
+# Changing this file never changes the frozen connectivity or production firmware.
+driver_ohm=33
+contact_ohm=10
+pullup_ohm=40000
+mux_ron_ohm=100
+sensor_source_ohm=1000
+adc_cap_f=50e-12

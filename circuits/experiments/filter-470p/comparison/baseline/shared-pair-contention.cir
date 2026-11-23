@@ -1,0 +1,7 @@
+Shared ADC pair enabled together -- fault injection
+Va a 0 0.3
+Vb b 0 2.7
+Ra a adc 100
+Rb b adc 100
+Rload adc 0 1e9
+.end

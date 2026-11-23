@@ -1,0 +1,827 @@
+Full keyboard analog acquisition network -- declared ideal decoder stimulus
+Vrail rail 0 3.3
+.model route SW(Ron=100 Roff=1e12 Vt=1.65 Vh=0)
+C1 rail 0 0.00000010000000000000001
+C10 n62 0 0.00000000047
+C100 n63 0 0.00000000047
+C101 rail 0 0.00000010000000000000001
+C102 n64 0 0.00000000047
+C103 rail 0 0.00000010000000000000001
+C104 n65 0 0.00000000047
+C105 rail 0 0.00000010000000000000001
+C106 n66 0 0.00000000047
+C107 rail 0 0.00000010000000000000001
+C108 n67 0 0.00000000047
+C109 rail 0 0.00000010000000000000001
+C11 rail 0 0.00000010000000000000001
+C110 n68 0 0.00000000047
+C111 rail 0 0.00000010000000000000001
+C112 n69 0 0.00000000047
+C113 rail 0 0.00000010000000000000001
+C114 n70 0 0.00000000047
+C115 rail 0 0.00000010000000000000001
+C116 n71 0 0.00000000047
+C117 rail 0 0.00000010000000000000001
+C118 n72 0 0.00000000047
+C119 rail 0 0.00000010000000000000001
+C12 n73 0 0.00000000047
+C120 n74 0 0.00000000047
+C121 rail 0 0.00000010000000000000001
+C122 n75 0 0.00000000047
+C123 rail 0 0.00000010000000000000001
+C124 n76 0 0.00000000047
+C125 rail 0 0.00000010000000000000001
+C126 n77 0 0.00000000047
+C127 rail 0 0.00000010000000000000001
+C128 n78 0 0.00000000047
+C129 rail 0 0.00000010000000000000001
+C13 rail 0 0.00000010000000000000001
+C130 n79 0 0.00000000047
+C131 rail 0 0.00000010000000000000001
+C132 n80 0 0.00000000047
+C133 rail 0 0.00000010000000000000001
+C134 n81 0 0.00000000047
+C135 rail 0 0.00000010000000000000001
+C136 n82 0 0.00000000047
+C137 rail 0 0.00000010000000000000001
+C138 n83 0 0.00000000047
+C139 rail 0 0.00000010000000000000001
+C14 n84 0 0.00000000047
+C140 rail 0 0.00000010000000000000001
+C141 rail 0 0.00000010000000000000001
+C142 rail 0 0.00000010000000000000001
+C143 rail 0 0.00000010000000000000001
+C144 rail 0 0.00000010000000000000001
+C145 rail 0 0.00000010000000000000001
+C146 rail 0 0.00000010000000000000001
+C147 rail 0 0.00000010000000000000001
+C148 rail 0 0.00000010000000000000001
+C149 rail 0 0.00000010000000000000001
+C15 rail 0 0.00000010000000000000001
+C150 rail 0 0.00000010000000000000001
+C151 rail 0 0.00000010000000000000001
+C16 n95 0 0.00000000047
+C161 rail 0 0.00000010000000000000001
+C162 rail 0 0.00000010000000000000001
+C163 rail 0 0.00000010000000000000001
+C164 n85 0 0.00000000047
+C165 rail 0 0.00000010000000000000001
+C166 n86 0 0.00000000047
+C167 rail 0 0.00000010000000000000001
+C168 n87 0 0.00000000047
+C169 rail 0 0.00000010000000000000001
+C17 rail 0 0.00000010000000000000001
+C170 n88 0 0.00000000047
+C171 rail 0 0.00000010000000000000001
+C172 n89 0 0.00000000047
+C173 rail 0 0.00000010000000000000001
+C174 n90 0 0.00000000047
+C175 rail 0 0.00000010000000000000001
+C176 n91 0 0.00000000047
+C177 rail 0 0.00000010000000000000001
+C178 n92 0 0.00000000047
+C179 rail 0 0.00000010000000000000001
+C18 n106 0 0.00000000047
+C180 n93 0 0.00000000047
+C181 rail 0 0.00000010000000000000001
+C182 n94 0 0.00000000047
+C183 rail 0 0.00000010000000000000001
+C184 n96 0 0.00000000047
+C185 rail 0 0.00000010000000000000001
+C186 n97 0 0.00000000047
+C187 rail 0 0.00000010000000000000001
+C188 n98 0 0.00000000047
+C189 rail 0 0.00000010000000000000001
+C19 rail 0 0.00000010000000000000001
+C190 n99 0 0.00000000047
+C191 rail 0 0.00000010000000000000001
+C192 n100 0 0.00000000047
+C193 rail 0 0.00000010000000000000001
+C194 n101 0 0.00000000047
+C195 rail 0 0.00000010000000000000001
+C196 n102 0 0.00000000047
+C197 rail 0 0.00000010000000000000001
+C198 n103 0 0.00000000047
+C199 rail 0 0.00000010000000000000001
+C2 n17 0 0.00000000047
+C20 n18 0 0.00000000047
+C200 n104 0 0.00000000047
+C201 rail 0 0.00000010000000000000001
+C202 n105 0 0.00000000047
+C203 rail 0 0.00000010000000000000001
+C204 n107 0 0.00000000047
+C205 rail 0 0.00000010000000000000001
+C206 n108 0 0.00000000047
+C207 rail 0 0.00000010000000000000001
+C208 n109 0 0.00000000047
+C209 rail 0 0.00000010000000000000001
+C21 rail 0 0.00000010000000000000001
+C210 n110 0 0.00000000047
+C211 rail 0 0.00000010000000000000001
+C212 n111 0 0.00000000047
+C213 rail 0 0.00000010000000000000001
+C214 n112 0 0.00000000047
+C215 rail 0 0.00000010000000000000001
+C216 n113 0 0.00000000047
+C217 rail 0 0.00000010000000000000001
+C218 n114 0 0.00000000047
+C219 rail 0 0.00000010000000000000001
+C22 n20 0 0.00000000047
+C220 n115 0 0.00000000047
+C221 rail 0 0.00000010000000000000001
+C222 n116 0 0.00000000047
+C223 rail 0 0.00000010000000000000001
+C224 n19 0 0.00000000047
+C23 rail 0 0.00000010000000000000001
+C24 n21 0 0.00000000047
+C25 rail 0 0.00000010000000000000001
+C26 n22 0 0.00000000047
+C27 rail 0 0.00000010000000000000001
+C28 n23 0 0.00000000047
+C29 rail 0 0.00000010000000000000001
+C3 rail 0 0.00000010000000000000001
+C30 n24 0 0.00000000047
+C31 rail 0 0.00000010000000000000001
+C32 n25 0 0.00000000047
+C33 rail 0 0.00000010000000000000001
+C34 n26 0 0.00000000047
+C35 rail 0 0.00000010000000000000001
+C36 n27 0 0.00000000047
+C37 rail 0 0.00000010000000000000001
+C38 n28 0 0.00000000047
+C39 rail 0 0.00000010000000000000001
+C4 n29 0 0.00000000047
+C40 n30 0 0.00000000047
+C41 rail 0 0.00000010000000000000001
+C42 n31 0 0.00000000047
+C43 rail 0 0.00000010000000000000001
+C44 n32 0 0.00000000047
+C45 rail 0 0.00000010000000000000001
+C46 n33 0 0.00000000047
+C47 rail 0 0.00000010000000000000001
+C48 n34 0 0.00000000047
+C49 rail 0 0.00000010000000000000001
+C5 rail 0 0.00000010000000000000001
+C50 n35 0 0.00000000047
+C51 rail 0 0.00000010000000000000001
+C52 n36 0 0.00000000047
+C53 rail 0 0.00000010000000000000001
+C54 n37 0 0.00000000047
+C55 rail 0 0.00000010000000000000001
+C56 n38 0 0.00000000047
+C57 rail 0 0.00000010000000000000001
+C58 n39 0 0.00000000047
+C59 rail 0 0.00000010000000000000001
+C6 n40 0 0.00000000047
+C60 n41 0 0.00000000047
+C61 rail 0 0.00000010000000000000001
+C62 n42 0 0.00000000047
+C63 rail 0 0.00000010000000000000001
+C64 n43 0 0.00000000047
+C65 rail 0 0.00000010000000000000001
+C66 n44 0 0.00000000047
+C67 rail 0 0.00000010000000000000001
+C68 n45 0 0.00000000047
+C69 rail 0 0.00000010000000000000001
+C7 rail 0 0.00000010000000000000001
+C70 n46 0 0.00000000047
+C71 rail 0 0.00000010000000000000001
+C72 n47 0 0.00000000047
+C73 rail 0 0.00000010000000000000001
+C74 n48 0 0.00000000047
+C75 rail 0 0.00000010000000000000001
+C76 n49 0 0.00000000047
+C77 rail 0 0.00000010000000000000001
+C78 n50 0 0.00000000047
+C79 rail 0 0.00000010000000000000001
+C8 n51 0 0.00000000047
+C80 n52 0 0.00000000047
+C81 rail 0 0.00000010000000000000001
+C82 n53 0 0.00000000047
+C83 rail 0 0.00000010000000000000001
+C84 n54 0 0.00000000047
+C85 rail 0 0.00000010000000000000001
+C86 n55 0 0.00000000047
+C87 rail 0 0.00000010000000000000001
+C88 n56 0 0.00000000047
+C89 rail 0 0.00000010000000000000001
+C9 rail 0 0.00000010000000000000001
+C90 n57 0 0.00000000047
+C91 rail 0 0.00000010000000000000001
+C92 n58 0 0.00000000047
+C93 rail 0 0.00000010000000000000001
+C94 n59 0 0.00000000047
+C95 rail 0 0.00000010000000000000001
+C96 n60 0 0.00000000047
+C97 rail 0 0.00000010000000000000001
+C98 n61 0 0.00000000047
+C99 rail 0 0.00000010000000000000001
+VHE1 src0 0 0.3
+RHE1 src0 n17 1000
+VHE2 src1 0 0.32
+RHE2 src1 n29 1000
+VHE3 src2 0 0.33999999999999997
+RHE3 src2 n40 1000
+VHE4 src3 0 0.36
+RHE4 src3 n51 1000
+VHE5 src4 0 0.38
+RHE5 src4 n62 1000
+VHE6 src5 0 0.4
+RHE6 src5 n73 1000
+VHE7 src6 0 0.42
+RHE7 src6 n84 1000
+VHE8 src7 0 0.44
+RHE8 src7 n95 1000
+VHE9 src8 0 0.45999999999999996
+RHE9 src8 n106 1000
+VHE10 src9 0 0.48
+RHE10 src9 n18 1000
+VHE11 src10 0 0.5
+RHE11 src10 n20 1000
+VHE12 src11 0 0.52
+RHE12 src11 n21 1000
+VHE13 src12 0 0.54
+RHE13 src12 n22 1000
+VHE14 src13 0 0.56
+RHE14 src13 n23 1000
+VHE15 src14 0 0.5800000000000001
+RHE15 src14 n24 1000
+VHE16 src15 0 0.6
+RHE16 src15 n25 1000
+VHE17 src16 0 0.62
+RHE17 src16 n26 1000
+VHE18 src17 0 0.64
+RHE18 src17 n27 1000
+VHE19 src18 0 0.6599999999999999
+RHE19 src18 n28 1000
+VHE20 src19 0 0.6799999999999999
+RHE20 src19 n30 1000
+VHE21 src20 0 0.7
+RHE21 src20 n31 1000
+VHE22 src21 0 0.72
+RHE22 src21 n32 1000
+VHE23 src22 0 0.74
+RHE23 src22 n33 1000
+VHE24 src23 0 0.76
+RHE24 src23 n34 1000
+VHE25 src24 0 0.78
+RHE25 src24 n35 1000
+VHE26 src25 0 0.8
+RHE26 src25 n36 1000
+VHE27 src26 0 0.8200000000000001
+RHE27 src26 n37 1000
+VHE28 src27 0 0.8400000000000001
+RHE28 src27 n38 1000
+VHE29 src28 0 0.8600000000000001
+RHE29 src28 n39 1000
+VHE30 src29 0 0.8799999999999999
+RHE30 src29 n41 1000
+VHE31 src30 0 0.8999999999999999
+RHE31 src30 n42 1000
+VHE32 src31 0 0.9199999999999999
+RHE32 src31 n43 1000
+VHE33 src32 0 0.94
+RHE33 src32 n44 1000
+VHE34 src33 0 0.96
+RHE34 src33 n45 1000
+VHE35 src34 0 0.98
+RHE35 src34 n46 1000
+VHE36 src35 0 1
+RHE36 src35 n47 1000
+VHE37 src36 0 1.02
+RHE37 src36 n48 1000
+VHE38 src37 0 1.04
+RHE38 src37 n49 1000
+VHE39 src38 0 1.06
+RHE39 src38 n50 1000
+VHE40 src39 0 1.08
+RHE40 src39 n52 1000
+VHE41 src40 0 1.1
+RHE41 src40 n53 1000
+VHE42 src41 0 1.12
+RHE42 src41 n54 1000
+VHE43 src42 0 1.14
+RHE43 src42 n55 1000
+VHE44 src43 0 1.16
+RHE44 src43 n56 1000
+VHE45 src44 0 1.18
+RHE45 src44 n57 1000
+VHE46 src45 0 1.2
+RHE46 src45 n58 1000
+VHE47 src46 0 1.22
+RHE47 src46 n59 1000
+VHE48 src47 0 1.24
+RHE48 src47 n60 1000
+VHE49 src48 0 1.26
+RHE49 src48 n61 1000
+VHE50 src49 0 1.28
+RHE50 src49 n63 1000
+VHE51 src50 0 1.3
+RHE51 src50 n64 1000
+VHE52 src51 0 1.32
+RHE52 src51 n65 1000
+VHE53 src52 0 1.34
+RHE53 src52 n66 1000
+VHE54 src53 0 1.36
+RHE54 src53 n67 1000
+VHE55 src54 0 1.3800000000000001
+RHE55 src54 n68 1000
+VHE56 src55 0 1.4000000000000001
+RHE56 src55 n69 1000
+VHE57 src56 0 1.4200000000000002
+RHE57 src56 n70 1000
+VHE58 src57 0 1.4400000000000002
+RHE58 src57 n71 1000
+VHE59 src58 0 1.46
+RHE59 src58 n72 1000
+VHE60 src59 0 1.48
+RHE60 src59 n74 1000
+VHE61 src60 0 1.5
+RHE61 src60 n75 1000
+VHE62 src61 0 1.52
+RHE62 src61 n76 1000
+VHE63 src62 0 1.54
+RHE63 src62 n77 1000
+VHE64 src63 0 1.56
+RHE64 src63 n78 1000
+VHE65 src64 0 1.58
+RHE65 src64 n79 1000
+VHE66 src65 0 1.6
+RHE66 src65 n80 1000
+VHE67 src66 0 1.62
+RHE67 src66 n81 1000
+VHE68 src67 0 1.6400000000000001
+RHE68 src67 n82 1000
+VHE69 src68 0 1.6600000000000001
+RHE69 src68 n83 1000
+VHE70 src69 0 1.6800000000000002
+RHE70 src69 n85 1000
+VHE71 src70 0 1.7000000000000002
+RHE71 src70 n86 1000
+VHE72 src71 0 1.72
+RHE72 src71 n87 1000
+VHE73 src72 0 1.74
+RHE73 src72 n88 1000
+VHE74 src73 0 1.76
+RHE74 src73 n89 1000
+VHE75 src74 0 1.78
+RHE75 src74 n90 1000
+VHE76 src75 0 1.8
+RHE76 src75 n91 1000
+VHE77 src76 0 1.82
+RHE77 src76 n92 1000
+VHE78 src77 0 1.84
+RHE78 src77 n93 1000
+VHE79 src78 0 1.86
+RHE79 src78 n94 1000
+VHE80 src79 0 1.8800000000000001
+RHE80 src79 n96 1000
+VHE81 src80 0 1.9000000000000001
+RHE81 src80 n97 1000
+VHE82 src81 0 1.9200000000000002
+RHE82 src81 n98 1000
+VHE83 src82 0 1.9400000000000002
+RHE83 src82 n99 1000
+VHE84 src83 0 1.9600000000000002
+RHE84 src83 n100 1000
+VHE85 src84 0 1.98
+RHE85 src84 n101 1000
+VHE86 src85 0 2
+RHE86 src85 n102 1000
+VHE87 src86 0 2.02
+RHE87 src86 n103 1000
+VHE88 src87 0 2.04
+RHE88 src87 n104 1000
+VHE89 src88 0 2.06
+RHE89 src88 n105 1000
+VHE90 src89 0 2.08
+RHE90 src89 n107 1000
+VHE91 src90 0 2.1
+RHE91 src90 n108 1000
+VHE92 src91 0 2.12
+RHE92 src91 n109 1000
+VHE93 src92 0 2.14
+RHE93 src92 n110 1000
+VHE94 src93 0 2.16
+RHE94 src93 n111 1000
+VHE95 src94 0 2.18
+RHE95 src94 n112 1000
+VHE96 src95 0 2.2
+RHE96 src95 n113 1000
+VHE97 src96 0 2.2199999999999998
+RHE97 src96 n114 1000
+VHE98 src97 0 2.2399999999999998
+RHE98 src97 n115 1000
+VHE99 src98 0 2.26
+RHE99 src98 n116 1000
+VHE100 src99 0 2.28
+RHE100 src99 n19 1000
+VRV1 src100 0 2.3
+RRV1 src100 n143 1000
+VRV2 src101 0 2.32
+RRV2 src101 n147 1000
+VRV3 src102 0 2.34
+RRV3 src102 n148 1000
+VRV4 src103 0 2.36
+RRV4 src103 n149 1000
+VRV5 src104 0 2.38
+RRV5 src104 n150 1000
+VRV6 src105 0 2.4
+RRV6 src105 n151 1000
+VRV7 src106 0 2.42
+RRV7 src106 n152 1000
+VRV8 src107 0 2.44
+RRV8 src107 n153 1000
+VRV9 src108 0 2.46
+RRV9 src108 n154 1000
+VRV10 src109 0 2.48
+RRV10 src109 n144 1000
+VRV11 src110 0 2.5
+RRV11 src110 n145 1000
+VRV12 src111 0 2.52
+RRV12 src111 n146 1000
+Bsel1_0 e1_0 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==0)*1
+* disconnected S1_0 n84 n119 e1_0 0 route
+Rfloat1_0 n84 0 1e12
+Bsel1_1 e1_1 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==1)*1
+S1_1 n73 n119 e1_1 0 route
+Rfloat1_1 n73 0 1e12
+Bsel1_2 e1_2 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==2)*1
+S1_2 n62 n119 e1_2 0 route
+Rfloat1_2 n62 0 1e12
+Bsel1_3 e1_3 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==3)*1
+S1_3 n95 n119 e1_3 0 route
+Rfloat1_3 n95 0 1e12
+Bsel1_4 e1_4 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==4)*1
+S1_4 n17 n119 e1_4 0 route
+Rfloat1_4 n17 0 1e12
+Bsel1_5 e1_5 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==5)*1
+S1_5 n51 n119 e1_5 0 route
+Rfloat1_5 n51 0 1e12
+Bsel1_6 e1_6 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==6)*1
+S1_6 n29 n119 e1_6 0 route
+Rfloat1_6 n29 0 1e12
+Bsel1_7 e1_7 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==7)*1
+S1_7 n40 n119 e1_7 0 route
+Rfloat1_7 n40 0 1e12
+Bsel2_0 e2_0 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==0)*1
+S2_0 n39 n123 e2_0 0 route
+Rfloat2_0 n39 0 1e12
+Bsel2_1 e2_1 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==1)*1
+S2_1 n23 n123 e2_1 0 route
+Rfloat2_1 n23 0 1e12
+Bsel2_2 e2_2 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==2)*1
+S2_2 n22 n123 e2_2 0 route
+Rfloat2_2 n22 0 1e12
+Bsel2_3 e2_3 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==3)*1
+S2_3 n38 n123 e2_3 0 route
+Rfloat2_3 n38 0 1e12
+Bsel2_4 e2_4 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==4)*1
+S2_4 n106 n123 e2_4 0 route
+Rfloat2_4 n106 0 1e12
+Bsel2_5 e2_5 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==5)*1
+S2_5 n21 n123 e2_5 0 route
+Rfloat2_5 n21 0 1e12
+Bsel2_6 e2_6 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==6)*1
+S2_6 n18 n123 e2_6 0 route
+Rfloat2_6 n18 0 1e12
+Bsel2_7 e2_7 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==7)*1
+S2_7 n20 n123 e2_7 0 route
+Rfloat2_7 n20 0 1e12
+Bsel3_0 e3_0 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==0)*1
+S3_0 n31 n124 e3_0 0 route
+Rfloat3_0 n31 0 1e12
+Bsel3_1 e3_1 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==1)*1
+S3_1 n30 n124 e3_1 0 route
+Rfloat3_1 n30 0 1e12
+Bsel3_2 e3_2 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==2)*1
+S3_2 n28 n124 e3_2 0 route
+Rfloat3_2 n28 0 1e12
+Bsel3_3 e3_3 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==3)*1
+S3_3 n32 n124 e3_3 0 route
+Rfloat3_3 n32 0 1e12
+Bsel3_4 e3_4 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==4)*1
+S3_4 n24 n124 e3_4 0 route
+Rfloat3_4 n24 0 1e12
+Bsel3_5 e3_5 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==5)*1
+S3_5 n27 n124 e3_5 0 route
+Rfloat3_5 n27 0 1e12
+Bsel3_6 e3_6 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==6)*1
+S3_6 n25 n124 e3_6 0 route
+Rfloat3_6 n25 0 1e12
+Bsel3_7 e3_7 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==7)*1
+S3_7 n26 n124 e3_7 0 route
+Rfloat3_7 n26 0 1e12
+Bsel4_0 e4_0 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==0)*1
+S4_0 n54 n125 e4_0 0 route
+Rfloat4_0 n54 0 1e12
+Bsel4_1 e4_1 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==1)*1
+S4_1 n53 n125 e4_1 0 route
+Rfloat4_1 n53 0 1e12
+Bsel4_2 e4_2 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==2)*1
+S4_2 n37 n125 e4_2 0 route
+Rfloat4_2 n37 0 1e12
+Bsel4_3 e4_3 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==3)*1
+S4_3 n55 n125 e4_3 0 route
+Rfloat4_3 n55 0 1e12
+Bsel4_4 e4_4 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==4)*1
+S4_4 n33 n125 e4_4 0 route
+Rfloat4_4 n33 0 1e12
+Bsel4_5 e4_5 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==5)*1
+S4_5 n36 n125 e4_5 0 route
+Rfloat4_5 n36 0 1e12
+Bsel4_6 e4_6 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==6)*1
+S4_6 n34 n125 e4_6 0 route
+Rfloat4_6 n34 0 1e12
+Bsel4_7 e4_7 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==7)*1
+S4_7 n35 n125 e4_7 0 route
+Rfloat4_7 n35 0 1e12
+Bsel5_0 e5_0 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==0)*1
+S5_0 n47 n126 e5_0 0 route
+Rfloat5_0 n47 0 1e12
+Bsel5_1 e5_1 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==1)*1
+S5_1 n46 n126 e5_1 0 route
+Rfloat5_1 n46 0 1e12
+Bsel5_2 e5_2 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==2)*1
+S5_2 n45 n126 e5_2 0 route
+Rfloat5_2 n45 0 1e12
+Bsel5_3 e5_3 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==3)*1
+S5_3 n48 n126 e5_3 0 route
+Rfloat5_3 n48 0 1e12
+Bsel5_4 e5_4 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==4)*1
+S5_4 n41 n126 e5_4 0 route
+Rfloat5_4 n41 0 1e12
+Bsel5_5 e5_5 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==5)*1
+S5_5 n44 n126 e5_5 0 route
+Rfloat5_5 n44 0 1e12
+Bsel5_6 e5_6 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==6)*1
+S5_6 n42 n126 e5_6 0 route
+Rfloat5_6 n42 0 1e12
+Bsel5_7 e5_7 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==7)*1
+S5_7 n43 n126 e5_7 0 route
+Rfloat5_7 n43 0 1e12
+Bsel6_0 e6_0 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==0)*1
+S6_0 n70 n127 e6_0 0 route
+Rfloat6_0 n70 0 1e12
+Bsel6_1 e6_1 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==1)*1
+S6_1 n69 n127 e6_1 0 route
+Rfloat6_1 n69 0 1e12
+Bsel6_2 e6_2 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==2)*1
+S6_2 n68 n127 e6_2 0 route
+Rfloat6_2 n68 0 1e12
+Bsel6_3 e6_3 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==3)*1
+S6_3 n71 n127 e6_3 0 route
+Rfloat6_3 n71 0 1e12
+Bsel6_4 e6_4 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==4)*1
+S6_4 n49 n127 e6_4 0 route
+Rfloat6_4 n49 0 1e12
+Bsel6_5 e6_5 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==5)*1
+S6_5 n67 n127 e6_5 0 route
+Rfloat6_5 n67 0 1e12
+Bsel6_6 e6_6 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==6)*1
+S6_6 n50 n127 e6_6 0 route
+Rfloat6_6 n50 0 1e12
+Bsel6_7 e6_7 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==7)*1
+S6_7 n52 n127 e6_7 0 route
+Rfloat6_7 n52 0 1e12
+Bsel7_0 e7_0 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==0)*1
+S7_0 n63 n128 e7_0 0 route
+Rfloat7_0 n63 0 1e12
+Bsel7_1 e7_1 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==1)*1
+S7_1 n61 n128 e7_1 0 route
+Rfloat7_1 n61 0 1e12
+Bsel7_2 e7_2 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==2)*1
+S7_2 n60 n128 e7_2 0 route
+Rfloat7_2 n60 0 1e12
+Bsel7_3 e7_3 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==3)*1
+S7_3 n64 n128 e7_3 0 route
+Rfloat7_3 n64 0 1e12
+Bsel7_4 e7_4 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==4)*1
+S7_4 n56 n128 e7_4 0 route
+Rfloat7_4 n56 0 1e12
+Bsel7_5 e7_5 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==5)*1
+S7_5 n59 n128 e7_5 0 route
+Rfloat7_5 n59 0 1e12
+Bsel7_6 e7_6 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==6)*1
+S7_6 n57 n128 e7_6 0 route
+Rfloat7_6 n57 0 1e12
+Bsel7_7 e7_7 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==7)*1
+S7_7 n58 n128 e7_7 0 route
+Rfloat7_7 n58 0 1e12
+Bsel8_0 e8_0 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==0)*1
+S8_0 0 n129 e8_0 0 route
+Rfloat8_0 0 0 1e12
+Bsel8_1 e8_1 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==1)*1
+S8_1 n85 n129 e8_1 0 route
+Rfloat8_1 n85 0 1e12
+Bsel8_2 e8_2 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==2)*1
+S8_2 n83 n129 e8_2 0 route
+Rfloat8_2 n83 0 1e12
+Bsel8_3 e8_3 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==3)*1
+S8_3 0 n129 e8_3 0 route
+Rfloat8_3 0 0 1e12
+Bsel8_4 e8_4 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==4)*1
+S8_4 n65 n129 e8_4 0 route
+Rfloat8_4 n65 0 1e12
+Bsel8_5 e8_5 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==5)*1
+S8_5 n82 n129 e8_5 0 route
+Rfloat8_5 n82 0 1e12
+Bsel8_6 e8_6 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==6)*1
+S8_6 n66 n129 e8_6 0 route
+Rfloat8_6 n66 0 1e12
+Bsel8_7 e8_7 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==7)*1
+S8_7 n81 n129 e8_7 0 route
+Rfloat8_7 n81 0 1e12
+Bsel9_0 e9_0 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==0)*1
+S9_0 n79 n130 e9_0 0 route
+Rfloat9_0 n79 0 1e12
+Bsel9_1 e9_1 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==1)*1
+S9_1 n78 n130 e9_1 0 route
+Rfloat9_1 n78 0 1e12
+Bsel9_2 e9_2 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==2)*1
+S9_2 n77 n130 e9_2 0 route
+Rfloat9_2 n77 0 1e12
+Bsel9_3 e9_3 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==3)*1
+S9_3 n80 n130 e9_3 0 route
+Rfloat9_3 n80 0 1e12
+Bsel9_4 e9_4 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==4)*1
+S9_4 n72 n130 e9_4 0 route
+Rfloat9_4 n72 0 1e12
+Bsel9_5 e9_5 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==5)*1
+S9_5 n76 n130 e9_5 0 route
+Rfloat9_5 n76 0 1e12
+Bsel9_6 e9_6 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==6)*1
+S9_6 n74 n130 e9_6 0 route
+Rfloat9_6 n74 0 1e12
+Bsel9_7 e9_7 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==7)*1
+S9_7 n75 n130 e9_7 0 route
+Rfloat9_7 n75 0 1e12
+Bsel10_0 e10_0 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==0)*(floor(time/40u)==0)
+S10_0 n100 n120 e10_0 0 route
+Rfloat10_0 n100 0 1e12
+Bsel10_1 e10_1 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==1)*(floor(time/40u)==0)
+S10_1 n99 n120 e10_1 0 route
+Rfloat10_1 n99 0 1e12
+Bsel10_2 e10_2 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==2)*(floor(time/40u)==0)
+S10_2 n98 n120 e10_2 0 route
+Rfloat10_2 n98 0 1e12
+Bsel10_3 e10_3 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==3)*(floor(time/40u)==0)
+S10_3 0 n120 e10_3 0 route
+Rfloat10_3 0 0 1e12
+Bsel10_4 e10_4 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==4)*(floor(time/40u)==0)
+S10_4 n86 n120 e10_4 0 route
+Rfloat10_4 n86 0 1e12
+Bsel10_5 e10_5 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==5)*(floor(time/40u)==0)
+S10_5 n97 n120 e10_5 0 route
+Rfloat10_5 n97 0 1e12
+Bsel10_6 e10_6 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==6)*(floor(time/40u)==0)
+S10_6 n87 n120 e10_6 0 route
+Rfloat10_6 n87 0 1e12
+Bsel10_7 e10_7 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==7)*(floor(time/40u)==0)
+S10_7 n88 n120 e10_7 0 route
+Rfloat10_7 n88 0 1e12
+Bsel11_0 e11_0 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==0)*(floor(time/40u)==1)
+S11_0 n96 n120 e11_0 0 route
+Rfloat11_0 n96 0 1e12
+Bsel11_1 e11_1 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==1)*(floor(time/40u)==1)
+S11_1 n94 n120 e11_1 0 route
+Rfloat11_1 n94 0 1e12
+Bsel11_2 e11_2 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==2)*(floor(time/40u)==1)
+S11_2 n93 n120 e11_2 0 route
+Rfloat11_2 n93 0 1e12
+Bsel11_3 e11_3 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==3)*(floor(time/40u)==1)
+S11_3 0 n120 e11_3 0 route
+Rfloat11_3 0 0 1e12
+Bsel11_4 e11_4 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==4)*(floor(time/40u)==1)
+S11_4 n89 n120 e11_4 0 route
+Rfloat11_4 n89 0 1e12
+Bsel11_5 e11_5 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==5)*(floor(time/40u)==1)
+S11_5 n92 n120 e11_5 0 route
+Rfloat11_5 n92 0 1e12
+Bsel11_6 e11_6 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==6)*(floor(time/40u)==1)
+S11_6 n90 n120 e11_6 0 route
+Rfloat11_6 n90 0 1e12
+Bsel11_7 e11_7 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==7)*(floor(time/40u)==1)
+S11_7 n91 n120 e11_7 0 route
+Rfloat11_7 n91 0 1e12
+Bsel12_0 e12_0 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==0)*(floor(time/40u)==2)
+S12_0 n108 n121 e12_0 0 route
+Rfloat12_0 n108 0 1e12
+Bsel12_1 e12_1 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==1)*(floor(time/40u)==2)
+S12_1 n107 n121 e12_1 0 route
+Rfloat12_1 n107 0 1e12
+Bsel12_2 e12_2 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==2)*(floor(time/40u)==2)
+S12_2 n105 n121 e12_2 0 route
+Rfloat12_2 n105 0 1e12
+Bsel12_3 e12_3 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==3)*(floor(time/40u)==2)
+S12_3 n109 n121 e12_3 0 route
+Rfloat12_3 n109 0 1e12
+Bsel12_4 e12_4 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==4)*(floor(time/40u)==2)
+S12_4 n101 n121 e12_4 0 route
+Rfloat12_4 n101 0 1e12
+Bsel12_5 e12_5 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==5)*(floor(time/40u)==2)
+S12_5 n104 n121 e12_5 0 route
+Rfloat12_5 n104 0 1e12
+Bsel12_6 e12_6 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==6)*(floor(time/40u)==2)
+S12_6 n102 n121 e12_6 0 route
+Rfloat12_6 n102 0 1e12
+Bsel12_7 e12_7 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==7)*(floor(time/40u)==2)
+S12_7 n103 n121 e12_7 0 route
+Rfloat12_7 n103 0 1e12
+Bsel13_0 e13_0 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==0)*(floor(time/40u)==3)
+S13_0 n116 n121 e13_0 0 route
+Rfloat13_0 n116 0 1e12
+Bsel13_1 e13_1 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==1)*(floor(time/40u)==3)
+S13_1 n115 n121 e13_1 0 route
+Rfloat13_1 n115 0 1e12
+Bsel13_2 e13_2 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==2)*(floor(time/40u)==3)
+S13_2 n114 n121 e13_2 0 route
+Rfloat13_2 n114 0 1e12
+Bsel13_3 e13_3 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==3)*(floor(time/40u)==3)
+S13_3 n19 n121 e13_3 0 route
+Rfloat13_3 n19 0 1e12
+Bsel13_4 e13_4 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==4)*(floor(time/40u)==3)
+S13_4 n110 n121 e13_4 0 route
+Rfloat13_4 n110 0 1e12
+Bsel13_5 e13_5 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==5)*(floor(time/40u)==3)
+S13_5 n113 n121 e13_5 0 route
+Rfloat13_5 n113 0 1e12
+Bsel13_6 e13_6 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==6)*(floor(time/40u)==3)
+S13_6 n111 n121 e13_6 0 route
+Rfloat13_6 n111 0 1e12
+Bsel13_7 e13_7 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==7)*(floor(time/40u)==3)
+S13_7 n112 n121 e13_7 0 route
+Rfloat13_7 n112 0 1e12
+Bsel14_0 e14_0 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==0)*(floor(time/40u)==4)
+S14_0 n152 n122 e14_0 0 route
+Rfloat14_0 n152 0 1e12
+Bsel14_1 e14_1 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==1)*(floor(time/40u)==4)
+S14_1 n151 n122 e14_1 0 route
+Rfloat14_1 n151 0 1e12
+Bsel14_2 e14_2 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==2)*(floor(time/40u)==4)
+S14_2 n150 n122 e14_2 0 route
+Rfloat14_2 n150 0 1e12
+Bsel14_3 e14_3 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==3)*(floor(time/40u)==4)
+S14_3 n153 n122 e14_3 0 route
+Rfloat14_3 n153 0 1e12
+Bsel14_4 e14_4 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==4)*(floor(time/40u)==4)
+S14_4 n143 n122 e14_4 0 route
+Rfloat14_4 n143 0 1e12
+Bsel14_5 e14_5 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==5)*(floor(time/40u)==4)
+S14_5 n149 n122 e14_5 0 route
+Rfloat14_5 n149 0 1e12
+Bsel14_6 e14_6 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==6)*(floor(time/40u)==4)
+S14_6 n147 n122 e14_6 0 route
+Rfloat14_6 n147 0 1e12
+Bsel14_7 e14_7 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==7)*(floor(time/40u)==4)
+S14_7 n148 n122 e14_7 0 route
+Rfloat14_7 n148 0 1e12
+Bsel15_0 e15_0 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==0)*(floor(time/40u)==5)
+S15_0 0 n122 e15_0 0 route
+Rfloat15_0 0 0 1e12
+Bsel15_1 e15_1 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==1)*(floor(time/40u)==5)
+S15_1 0 n122 e15_1 0 route
+Rfloat15_1 0 0 1e12
+Bsel15_2 e15_2 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==2)*(floor(time/40u)==5)
+S15_2 0 n122 e15_2 0 route
+Rfloat15_2 0 0 1e12
+Bsel15_3 e15_3 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==3)*(floor(time/40u)==5)
+S15_3 0 n122 e15_3 0 route
+Rfloat15_3 0 0 1e12
+Bsel15_4 e15_4 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==4)*(floor(time/40u)==5)
+S15_4 n154 n122 e15_4 0 route
+Rfloat15_4 n154 0 1e12
+Bsel15_5 e15_5 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==5)*(floor(time/40u)==5)
+S15_5 n146 n122 e15_5 0 route
+Rfloat15_5 n146 0 1e12
+Bsel15_6 e15_6 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==6)*(floor(time/40u)==5)
+S15_6 n144 n122 e15_6 0 route
+Rfloat15_6 n144 0 1e12
+Bsel15_7 e15_7 0 V=3.3*((floor(time/5u)-8*floor(time/40u))==7)*(floor(time/40u)==5)
+S15_7 n145 n122 e15_7 0 route
+Rfloat15_7 n145 0 1e12
+Cadc0 n119 0 0.00000000005
+Rload0 n119 0 1e9
+Cadc1 n120 0 0.00000000005
+Rload1 n120 0 1e9
+Cadc2 n121 0 0.00000000005
+Rload2 n121 0 1e9
+Cadc3 n122 0 0.00000000005
+Rload3 n122 0 1e9
+Cadc4 n123 0 0.00000000005
+Rload4 n123 0 1e9
+Cadc5 n124 0 0.00000000005
+Rload5 n124 0 1e9
+Cadc6 n125 0 0.00000000005
+Rload6 n125 0 1e9
+Cadc7 n126 0 0.00000000005
+Rload7 n126 0 1e9
+Cadc8 n127 0 0.00000000005
+Rload8 n127 0 1e9
+Cadc9 n128 0 0.00000000005
+Rload9 n128 0 1e9
+Cadc10 n129 0 0.00000000005
+Rload10 n129 0 1e9
+Cadc11 n130 0 0.00000000005
+Rload11 n130 0 1e9
+.end

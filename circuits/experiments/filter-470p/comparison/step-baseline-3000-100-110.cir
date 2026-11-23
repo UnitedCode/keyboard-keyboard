@@ -1,0 +1,8 @@
+Full scale step; provisional sensor/ADC model
+Vs src 0 PWL(0 0 1n 0 2n 3.3)
+Rs src sensor 3000
+Cf sensor 0 0.000000005170000000000001
+Rm sensor adc 100
+Ca adc 0 0.00000000005
+Rl adc 0 1e9
+.end

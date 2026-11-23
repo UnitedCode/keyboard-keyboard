@@ -1,0 +1,5 @@
+Unused decoder HIGH output load: declared output resistance
+Vdrive drive 0 3.3
+Rdriver drive output 33
+Rboard output 0 1000000000000
+.end

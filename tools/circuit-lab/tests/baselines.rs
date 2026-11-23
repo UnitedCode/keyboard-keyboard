@@ -131,3 +131,54 @@ fn sdk_adapter_observes_changed_sensor_and_rejects_wrong_adc() {
     adapter.i2c_write(1, 0x3c, &[0]).unwrap();
     assert_eq!(handle.borrow().oled_writes, 1);
 }
+
+#[test]
+fn independent_filter_candidates_change_only_the_output_capacitors() {
+    use circuit_workbench::improvements::{self, FILTER, FILTER470};
+    let base = graph("keyboard-current");
+    for (name, dir) in [(FILTER, "filter-1n"), (FILTER470, "filter-470p")] {
+        let changed = Graph::parse(
+            &fs::read_to_string(root().join(format!("circuits/experiments/{dir}/candidate.net")))
+                .unwrap(),
+        )
+        .unwrap();
+        improvements::validate(name, &base, &changed).unwrap();
+        assert_eq!(base.nets, changed.nets);
+        assert_eq!(changed.components["C1"], "100n");
+        let mut wrong = changed.clone();
+        wrong.components.insert("C1".into(), "1n".into());
+        assert!(improvements::validate(name, &base, &wrong).is_err());
+        wrong = changed.clone();
+        wrong.disconnect("HE1.2");
+        assert!(improvements::validate(name, &base, &wrong).is_err());
+        let out =
+            std::env::temp_dir().join(format!("keyboard-candidate-{}-{dir}", std::process::id()));
+        circuit_workbench::cli(vec![
+            "compare".into(),
+            name.into(),
+            root()
+                .join("circuits/baselines/keyboard-current.net")
+                .display()
+                .to_string(),
+            root()
+                .join(format!("circuits/experiments/{dir}/candidate.net"))
+                .display()
+                .to_string(),
+            root()
+                .join("circuits/fixtures/reference.fixture")
+                .display()
+                .to_string(),
+            out.display().to_string(),
+        ])
+        .unwrap();
+        let report = fs::read_to_string(out.join("report.txt")).unwrap();
+        assert!(report.contains("ISOLATION=PASS"));
+        #[cfg(feature = "spice")]
+        assert!(report.contains(if name == FILTER {
+            "full_scan_failures_after=4"
+        } else {
+            "full_scan_failures_after=0"
+        }));
+        fs::remove_dir_all(out).unwrap();
+    }
+}
