@@ -1,0 +1,37 @@
+INFO - Starting system init
+INFO - Set up up DMA RAM in DRAM2...
+INFO - Memory Size 0xe
+INFO - Setting up GPIOs...
+INFO - Setting up SDRAM...
+INFO - SDRAM Memory Size 0x19
+INFO - Set up Audio...
+INFO - Setup up SAI...
+INFO - Setting up AK4556/PCM3060 Audio CODEC...
+INFO - Start audio stream...
+INFO - Audio started!
+INFO - Setup up Audio DMA: input: 0x30000000, output: 0x30004000
+INFO - System init done!
+INFO - keyboard_keyboard ready: 100 switches, 13 muxes
+INFO - display ok
+WARN - MIDI event queue overflow: clearing pending events and sounding notes
+INFO - CC7 = 127
+INFO - CC10 = 127
+INFO - CC11 = 127
+INFO - CC74 = 127
+INFO - CC36 = 127
+INFO - CC37 = 127
+INFO - CC38 = 127
+INFO - CC39 = 127
+INFO - CC40 = 127
+INFO - CC41 = 127
+INFO - CC42 = 127
+INFO - CC43 = 127
+INFO - NoteOn  HE1 ch=1 note=54 vel=126
+INFO - NoteOn  HE2 ch=1 note=56 vel=126
+INFO - NoteOn  HE3 ch=1 note=58 vel=126
+INFO - NoteOn  HE4 ch=1 note=60 vel=126
+INFO - NoteOn  HE5 ch=1 note=62 vel=126
+INFO - NoteOn  HE6 ch=1 note=64 vel=126
+INFO - NoteOn  HE7 ch=1 note=66 vel=126
+WARN - SENSOR POWER LOCKOUT: reset with stable rails and released keys required
+WARN - MIDI event queue overflow: clearing pending events and sounding notes
